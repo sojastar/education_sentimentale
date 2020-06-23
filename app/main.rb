@@ -33,30 +33,25 @@ def setup(args)
                                               height:   64,
                                               speed:    8 } ]
 
-  #player_animation      = Animation.new 'sprites/walking_man.png',
-  player_animation      = Animation.new 'sprites/guy.png',
-                                        16,#32,
-                                        16,#32,
-                                        #{ idle_right: { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0], [6,0], [7,0] ],
-                                        { idle_right: { frames:             [ [0,2] ],
+  player_animation      = Animation.new 'sprites/man_2.png',
+                                        32,
+                                        32,
+                                        { idle_right: { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
                                                         mode:               :loop,
                                                         speed:              6,
                                                         flip_horizontally:  false,
                                                         flip_vertically:    false },
-                                          #idle_left:  { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0], [6,0], [7,0] ],
-                                          idle_left:  { frames:             [ [0,2] ],
+                                          idle_left:  { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
                                                         mode:               :loop,
                                                         speed:              6,
                                                         flip_horizontally:  true,
                                                         flip_vertically:    false },
-                                          #walk_right: { frames:             [ [0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [8,1], [9,1], [10,1], [11,1] ], # Walking right
-                                          walk_right: { frames:             [ [0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [6,2], [7,2], [8,2], [9,2], [10,2], [11,2] ], # Walking right
+                                          walk_right: { frames:             [ [0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [8,1], [9,1], [10,1], [11,1] ], # Walking right
                                                         mode:               :loop,
                                                         speed:              6,
                                                         flip_horizontally:  false,
                                                         flip_vertically:    false },
-                                          #walk_right: { frames:             [ [0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [6,2], [7,2], [8,2], [9,2], [10,2], [11,2] ], # Walking right
-                                          walk_left:  { frames:             [ [0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [6,2], [7,2], [8,2], [9,2], [10,2], [11,2] ], # Walking right
+                                          walk_left:  { frames:             [ [0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [8,1], [9,1], [10,1], [11,1] ], # Walking left
                                                         mode:               :loop,
                                                         speed:              6,
                                                         flip_horizontally:  true,
@@ -86,7 +81,7 @@ def tick(args)
   
   # 3.1 Render to virtual 64x64 screen :
   args.render_target(:display).sprites << args.state.background.render
-  args.render_target(:display).sprites << args.state.player.render_at(24, 4)
+  args.render_target(:display).sprites << args.state.player.render_at(8, 4)
 
   # 3.2 Render to DragonRuby window :
   args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
