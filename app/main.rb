@@ -1,3 +1,5 @@
+require 'lib/fsm_machine.rb'
+require 'lib/fsm_state.rb'
 require 'lib/animation.rb'
 require 'app/background.rb'
 require 'app/player.rb'
@@ -25,36 +27,41 @@ def setup(args)
                                           64,
                                           [ { width:    256,
                                               height:   64,
-                                              speed:    32 },
-                                            { width:    256,
-                                              height:   64,
                                               speed:    16 },
                                             { width:    256,
                                               height:   64,
-                                              speed:    8 } ]
+                                              speed:    8 },
+                                            { width:    256,
+                                              height:   64,
+                                              speed:    4 } ]
 
   player_animation      = Animation.new 'sprites/man_2.png',
                                         32,
                                         32,
-                                        { idle_right: { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
+                                        { idle:       { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
                                                         mode:               :loop,
                                                         speed:              6,
                                                         flip_horizontally:  false,
                                                         flip_vertically:    false },
-                                          idle_left:  { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
-                                                        mode:               :loop,
-                                                        speed:              6,
-                                                        flip_horizontally:  true,
-                                                        flip_vertically:    false },
-                                          walk_right: { frames:             [ [0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [8,1], [9,1], [10,1], [11,1] ], # Walking right
+                                          run:        { frames:             [ [0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1] ],
                                                         mode:               :loop,
                                                         speed:              6,
                                                         flip_horizontally:  false,
                                                         flip_vertically:    false },
-                                          walk_left:  { frames:             [ [0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [8,1], [9,1], [10,1], [11,1] ], # Walking left
+                                          walk:       { frames:             [ [0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [6,2], [7,2], [8,2], [9,2], [10,2], [11,2] ],
                                                         mode:               :loop,
                                                         speed:              6,
-                                                        flip_horizontally:  true,
+                                                        flip_horizontally:  false,
+                                                        flip_vertically:    false },
+                                          jump_up:    { frames:             [ [4,3], [5,3], [6,3] ],
+                                                        mode:               :once,
+                                                        speed:              6,
+                                                        flip_horizontally:  false,
+                                                        flip_vertically:    false },
+                                          jump_down:  { frames:             [ [7,3], [8,3], [9,3] ],
+                                                        mode:               :once,
+                                                        speed:              6,
+                                                        flip_horizontally:  false,
                                                         flip_vertically:    false } },
                                           :idle_right
 

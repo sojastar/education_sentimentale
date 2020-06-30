@@ -1,34 +1,83 @@
 class Player
+
+  GRAVITY       = -0.5
+  JUMP_STRENGTH = 6
+
   def initialize(animation)
-    @animation = animation
+    @y  = 0
+    @dy = 0
+    @facing_right =  true
+    @animation    =  animation
+    @machine      =  FSM::new_machine(self) do
+                       add_state(:idle) do
+                         define_setup do 
+                           @animation.set_clip :idle
+                         end
+
+                         add_event(next_state: :running) do |args|
+                           args.key_held.right || args.key_held.left
+                         end
+
+                         add_event(next_state: :jumping_up) do |args|
+                           args.key_held.space
+                         end
+                       end
+
+                       add_state(:running) do
+                         define_setup do
+                           @animation.set_clip :run
+                         end
+
+                         add_event(next_state: :idle) do |args|
+                           !args.key_held.right && !args.key_held.left
+                         end
+
+                         add_event(next_state: :jumping_up) do |args|
+                           args.key_held.space
+                         end
+                       end
+
+                       add_state(:jumping_up) do
+                         define_setup do
+                           @dy = JUMP_STRENGTH
+                           @animation.set_clip :jump_up
+                         end
+
+                         add_event(next_state: :jumping_down) do |args|
+                           @dy <= 0
+                         end
+                       end
+
+                       add_state(:jumping_down) do
+                         define_setup do
+                           @animation.set_clip :jump_down
+                         end
+
+                         add_event(next_state: :idle) do |args|
+                           @y <= 0
+                         end
+                       end
+
+                       set_initial_state :idle
+                     end
   end
 
   def update(args)
-    if args.inputs.keyboard.key_held.right then
-      @animation.set_clip :walk_right if @animation.current_clip != @animation.clips[:walk_right]
+    @machine.update(args.inputs.keyboard)
 
-    elsif args.inputs.keyboard.key_held.left then
-      @animation.set_clip :walk_left  if @animation.current_clip != @animation.clips[:walk_left]
-
-    else
-      if  @animation.current_clip != @animation.clips[:idle_right]  ||
-          @animation.current_clip == @animation.clips[:walk_right] then
-        @animation.set_clip :idle_right 
-        return
-      end
-
-      #if  @animation.current_clip != @animation.clips[:idle_left]   ||
-      #    @animation.current_clip == @animation.clips[:walk_left] then
-      #  @animation.set_clip :idle_left  
-      #end
-
+    if [:jumping_up, :jumping_down].include? @machine.current_state then
+      @y  += @dy
+      @dy += GRAVITY
     end
 
+    @facing_right   = true  if args.inputs.keyboard.key_held.right
+    @facing_right   = false if args.inputs.keyboard.key_held.left
+    
     @animation.update
   end
 
   def render_at(x,y)
-    @animation.frame_at x, y
+    @animation.frame_at x, y + @y, !@facing_right
   end
 
   def serialize

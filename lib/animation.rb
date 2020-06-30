@@ -76,18 +76,20 @@ class Animation
     @frame[:tile_y] = @current_clip[:frames][@frame_index][1] * @height
   end
 
-  def frame_at(x,y)
-    @frame[:x]      = x
-    @frame[:y]      = y
+  def frame_at(x,y,flip)
+    @frame[:x]                  = x
+    @frame[:y]                  = y
+    @frame[:flip_horizontally]  = flip
 
     @frame
   end
 
   def scaled_frame_at(x,y,scale)
-    @frame[:x]      = x
-    @frame[:y]      = y
-    @frame[:w]      = scale * @width
-    @frame[:h]      = scale * @height
+    @frame[:x]                  = x
+    @frame[:y]                  = y
+    @frame[:w]                  = scale * @width
+    @frame[:h]                  = scale * @height
+    @frame[:flip_horizontally]  = flip
 
     @frame
   end
