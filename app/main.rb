@@ -22,7 +22,7 @@ DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
 
 def setup(args)
-  args.state.background = Background.new  'sprites/background.png',
+  args.state.background = Background.new  'sprites/panoramic_sample_4.png',#'sprites/background.png',
                                           64,
                                           64,
                                           [ { width:    256,
@@ -33,7 +33,10 @@ def setup(args)
                                               speed:    8 },
                                             { width:    256,
                                               height:   64,
-                                              speed:    4 } ]
+                                              speed:    4 },
+                                            { width:    256,
+                                              height:   64,
+                                              speed:    2 } ]
 
   player_animation      = Animation.new 'sprites/man_2.png',
                                         32,
@@ -88,7 +91,7 @@ def tick(args)
   
   # 3.1 Render to virtual 64x64 screen :
   args.render_target(:display).sprites << args.state.background.render
-  args.render_target(:display).sprites << args.state.player.render_at(8, 4)
+  args.render_target(:display).sprites << args.state.player.render_at(8, 8)
 
   # 3.2 Render to DragonRuby window :
   args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
