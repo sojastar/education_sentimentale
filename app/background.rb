@@ -105,51 +105,70 @@ class TileBackground < Background
     
     @size   = size
 
-    @layers = layers.map |layers|
-                generate_layer layer, size, rules
-              end
+    @layers = layers.map { |layer| generate_layer layer, size, rules }
   end
 
   def generate_layer(layer,size,rules)
     width_in_tiles  = layer[:width]   / size
     height_in_tiles = layer[:height]  / size
+    puts "#{width_in_tiles} - #{height_in_tiles}"
     min_height      = 0
     max_height      = height_in_tiles - 4
 
     x, y            = 0, min_height
     last_tile_group = :horizontal
-    tile            = rules[:groups][:horizontal][:indices]
+    tile            = rules[:groups][:horizontal][:indices].sample
+    offset          = [ 0, 0 ]
     while x < width_in_tiles do
+      puts "#{x};#{y} - #{last_tile_group} - #{tile} - #{offset}"
       place_tile_at tile, x, y
-      last_tile_groupe, tile, offset = next_tile_at last_tile_group,
-                                                    rules 
+      last_tile_groupe, tile, offset = next_tile  last_tile_group,
+                                                  rules 
       x  += offset[0]
       y  += offset[1] 
+      puts "new x,y: #{x};#{y}"
     end
+    puts 'done!'
   end
 
-  def next_tile_at(last_tile_group,x,y,rules)
-    rule    = rules[last_tile]
+  def next_tile(last_tile_group,rules)
+    #puts "last tile group: #{last_tile_group}"
+    rule    = rules[:rules][last_tile_group]
+    #puts '1'
+    #puts rule
+    #puts rule.keys
+    #puts '2'
     ranges  = ( [ 0.0 ] + rule.keys ).each_cons(2).map { |pair| Range.new pair[0], pair[0] + pair[1], true }
+    puts ranges
     sample  = rand()
+    puts sample
+    tile_group  = :horizontal
+    next_tile   = rules[:groups][tile_group][:indices].sample
+    offset      = rules[:groups][tile_group][:offset]
     ranges.each do |range|
       if range === sample then
-        tile_group  = rules[:rules][last_tile_group][range.end].sample
+        puts rules[:rules][tile_group]
+        tile_group  = rules[:rules][tile_group][range.end].sample
         next_tile   = rules[:groups][tile_group][:indices].sample
         offset      = rules[:groups][tile_group][:offset]
+
+        puts "in next_tile: #{tile_group} - #{next_tile} - #{offset}"
         
-        return [ tile_group, next_tile, offset ]
+        #return [ tile_group, next_tile, offset ]
+        break
       end
+
+      [ tile_group, next_tile, offset ]
     end
   end
 
   def place_tile_at(tile_index,x,y)
-    $gtk.args.render_target(render_target) << { x:      x * @size,
-                                                y:      y * @size,
-                                                w:      @size,
-                                                h:      @size,
-                                                path:   :procedural_background,
-                                                tile_x: tile_index * @size,
-                                                tile_y: 0 }
+    $gtk.args.render_target(:procedural_background).sprites << {  x:      x * @size,
+                                                                  y:      y * @size,
+                                                                  w:      @size,
+                                                                  h:      @size,
+                                                                  path:   :procedural_background,
+                                                                  tile_x: tile_index * @size,
+                                                                  tile_y: 0 }
   end
 end

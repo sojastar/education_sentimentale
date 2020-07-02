@@ -37,24 +37,22 @@ def setup(args)
                                             #{ width:    256,
                                             #  height:   64,
                                             #  speed:    2 } ]
-
-  args.state.ground     = TileBackground.news(  'sprites/tiles.png',
+  args.state.ground     = TileBackground.new  'sprites/tiles.png',
                                               8,
-                                              [ { name:   :ground,
-                                                  width:  256,
+                                              [ { width:  256,
                                                   height: 64,
                                                   speed:  2 } ],
                                               { groups: { horizontal:   { indices: [ 0, 1, 2, 3, 4 ], offset: [ 1,  0 ] },
                                                           bottom_right: { indices: [ 5 ],             offset: [ 0,  1 ] },
-                                                          bottom_left:  { indices: [ 6 ],             offset: [ 1,  0 ] },
+                                                          bottom_left:  { indices: [ 6 ],             offset: [ 1,  0 ] },
                                                           top_left:     { indices: [ 7 ],             offset: [ 1,  0 ] },
                                                           top_right:    { indices: [ 8 ],             offset: [ 0, -1 ] },
                                                           empty:        { indices: [ 9 ],             offset: [ 0,  0 ] } },
-                                                rules:  { horizontal:   { 0.7: [ :horizontal ], 0.3: [ :bottom_right, :top_right ] },
-                                                          bottom_right: { 1.0: [ :top_left ] },
-                                                          top_left:     { 1.0: [ :horizontal ] },
-                                                          top_right:    { 1.0: [ :bottom_left ] },
-                                                          bottom_left:  { 1.0: [ :horizontal ] } } } )
+                                                rules:  { horizontal:   { 0.7 => [ :horizontal ], 0.3 => [ :bottom_right, :top_right ] },
+                                                          bottom_right: { 1.0 => [ :top_left ] },
+                                                          top_left:     { 1.0 => [ :horizontal ] },
+                                                          top_right:    { 1.0 => [ :bottom_left ] },
+                                                          bottom_left:  { 1.0 => [ :horizontal ] } } }
 
   player_animation      = Animation.new 'sprites/man_2.png',
                                         32,
