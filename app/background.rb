@@ -111,7 +111,7 @@ class TileBackground < Background
   def generate_layer(layer,size,rules)
     width_in_tiles  = layer[:width]   / size
     height_in_tiles = layer[:height]  / size
-    puts "#{width_in_tiles} - #{height_in_tiles}"
+    #puts "#{width_in_tiles} - #{height_in_tiles}"
     min_height      = 0
     max_height      = height_in_tiles - 4
 
@@ -119,47 +119,40 @@ class TileBackground < Background
     last_tile_group = :horizontal
     tile            = rules[:groups][:horizontal][:indices].sample
     offset          = [ 0, 0 ]
+    place_tile_at tile, x, y
     while x < width_in_tiles do
-      puts "#{x};#{y} - #{last_tile_group} - #{tile} - #{offset}"
+      #puts "before: #{x};#{y} - #{last_tile_group} - #{tile} - #{offset}"
+      last_tile_group, tile, offset = next_tile( last_tile_group, rules )
+      #puts "after: #{x};#{y} - #{last_tile_group} - #{tile} - #{offset}"
       place_tile_at tile, x, y
-      last_tile_groupe, tile, offset = next_tile  last_tile_group,
-                                                  rules 
       x  += offset[0]
       y  += offset[1] 
-      puts "new x,y: #{x};#{y}"
+      #puts "new x,y: #{x};#{y}"
     end
-    puts 'done!'
+    #puts 'done!'
   end
 
   def next_tile(last_tile_group,rules)
-    #puts "last tile group: #{last_tile_group}"
     rule    = rules[:rules][last_tile_group]
-    #puts '1'
-    #puts rule
-    #puts rule.keys
-    #puts '2'
-    ranges  = ( [ 0.0 ] + rule.keys ).each_cons(2).map { |pair| Range.new pair[0], pair[0] + pair[1], true }
-    puts ranges
+    ranges  = ( [ 0.0 ] + rule.keys ).each_cons(2).map { |pair| Range.new pair[0], pair[1], true }
+    #puts "-- ranges: #{ranges}"
     sample  = rand()
-    puts sample
-    tile_group  = :horizontal
+    #puts "-- sample: #{sample}"
+    tile_group  = last_tile_group#:horizontal
     next_tile   = rules[:groups][tile_group][:indices].sample
     offset      = rules[:groups][tile_group][:offset]
     ranges.each do |range|
       if range === sample then
-        puts rules[:rules][tile_group]
+        #puts "-- tile group: #{tile_group}"
+        #puts "-- rules: #{rules[:rules][tile_group]}"
         tile_group  = rules[:rules][tile_group][range.end].sample
         next_tile   = rules[:groups][tile_group][:indices].sample
         offset      = rules[:groups][tile_group][:offset]
-
-        puts "in next_tile: #{tile_group} - #{next_tile} - #{offset}"
-        
-        #return [ tile_group, next_tile, offset ]
         break
       end
-
-      [ tile_group, next_tile, offset ]
     end
+    #puts "-- in next_tile: #{tile_group} - #{next_tile} - #{offset}"
+    [ tile_group, next_tile, offset ]
   end
 
   def place_tile_at(tile_index,x,y)
@@ -167,8 +160,10 @@ class TileBackground < Background
                                                                   y:      y * @size,
                                                                   w:      @size,
                                                                   h:      @size,
-                                                                  path:   :procedural_background,
+                                                                  path:   @tiles_path,
                                                                   tile_x: tile_index * @size,
-                                                                  tile_y: 0 }
+                                                                  tile_y: 0,
+                                                                  tile_w: @size,
+                                                                  tile_h: @size }
   end
 end

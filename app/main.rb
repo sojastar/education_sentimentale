@@ -42,13 +42,15 @@ def setup(args)
                                               [ { width:  256,
                                                   height: 64,
                                                   speed:  2 } ],
-                                              { groups: { horizontal:   { indices: [ 0, 1, 2, 3, 4 ], offset: [ 1,  0 ] },
-                                                          bottom_right: { indices: [ 5 ],             offset: [ 0,  1 ] },
-                                                          bottom_left:  { indices: [ 6 ],             offset: [ 1,  0 ] },
-                                                          top_left:     { indices: [ 7 ],             offset: [ 1,  0 ] },
-                                                          top_right:    { indices: [ 8 ],             offset: [ 0, -1 ] },
-                                                          empty:        { indices: [ 9 ],             offset: [ 0,  0 ] } },
-                                                rules:  { horizontal:   { 0.7 => [ :horizontal ], 0.3 => [ :bottom_right, :top_right ] },
+                                              { groups: { horizontal:   { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },
+                                                          connection:   { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },
+                                                          bottom_right: { indices: [ 4 ],          offset: [ 0,  1 ] },
+                                                          bottom_left:  { indices: [ 5 ],          offset: [ 1,  0 ] },
+                                                          top_left:     { indices: [ 6 ],          offset: [ 1,  0 ] },
+                                                          top_right:    { indices: [ 7 ],          offset: [ 0, -1 ] },
+                                                          empty:        { indices: [ 8 ],          offset: [ 0,  0 ] } },
+                                                rules:  { horizontal:   { 1.0 => [ :connection ] },
+                                                          connection:   { 0.7 => [ :connection ], 1.0 => [ :bottom_right, :top_right ] },
                                                           bottom_right: { 1.0 => [ :top_left ] },
                                                           top_left:     { 1.0 => [ :horizontal ] },
                                                           top_right:    { 1.0 => [ :bottom_left ] },
@@ -108,11 +110,11 @@ def tick(args)
   
   # 3.1 Render to virtual 64x64 screen :
   args.render_target(:display).sprites << args.state.background.render
-  args.render_target(:display).sprites << args.state.ground.render
+  #args.render_target(:display).sprites << args.state.ground.render
   args.render_target(:display).sprites << args.state.player.render_at(8, 8)
 
   # 3.2 Render to DragonRuby window :
-  args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
+  #args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
   args.outputs.sprites  <<  { x:      DISPLAY_X,
                               y:      DISPLAY_Y,
                               w:      DISPLAY_SIZE,
@@ -122,5 +124,6 @@ def tick(args)
                               tile_y: 720 - DISPLAY_BASE_SIZE,
                               tile_w: DISPLAY_BASE_SIZE,
                               tile_h: DISPLAY_BASE_SIZE }
+  args.outputs.sprites << { x:200, y:200, w:1280, h:720, path: :procedural_background, tile_x:0, tile_y:0, tile_w:1280, tile_h:720 }
 
 end
