@@ -22,7 +22,19 @@ DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
 
 def setup(args)
-  args.state.background = Background.new  'sprites/background_bitmaps.png',
+  args.render_target(:bitmap_background).width  = 256
+  args.render_target(:bitmap_background).height = 192
+  args.render_target(:bitmap_background).sprites << { x:        0,
+                                                      y:        0,
+                                                      w:        256,
+                                                      h:        192,
+                                                      path:     'sprites/background_bitmaps.png',
+                                                      source_x: 0,
+                                                      source_y: 0,
+                                                      source_w: 256,
+                                                      source_h: 192 }
+
+  args.state.background = Background.new  :bitmap_background,
                                           64,
                                           64,
                                           [ { width:    256,
@@ -124,6 +136,9 @@ def tick(args)
                               tile_y: 720 - DISPLAY_BASE_SIZE,
                               tile_w: DISPLAY_BASE_SIZE,
                               tile_h: DISPLAY_BASE_SIZE }
-  args.outputs.sprites << { x:200, y:200, w:1280, h:720, path: :procedural_background, tile_x:0, tile_y:0, tile_w:1280, tile_h:720 }
+
+  ### DEBUG DEBUG DEBUG :
+  #args.outputs.sprites << { x:200, y:200, w:1280, h:720, path: :procedural_background, tile_x:0, tile_y:0, tile_w:1280, tile_h:720 }
+  #args.outputs.sprites << [ 100, 100, 256, 192, :bitmap_background ]
 
 end

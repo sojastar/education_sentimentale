@@ -128,58 +128,57 @@ class TileBackground < Background
   def generate_layer(layer,size,rules)
     width_in_tiles  = layer[:width]   / size
     height_in_tiles = layer[:height]  / size
-    #puts "#{width_in_tiles} - #{height_in_tiles}"
     min_height      = 0
     max_height      = height_in_tiles - 5
     height_range    = min_height...max_height
 
     x, y            = 0, min_height
     last_tile_group = :horizontal
+    next_last_tile_group = last_tile_group
     tile            = rules[:groups][:horizontal][:indices].sample
     offset          = [ 0, 0 ]
     place_tile_at tile, x, y
-    #while x < width_in_tiles do
     until x > width_in_tiles && y == 0
-      #puts "before: #{x};#{y} - #{last_tile_group} - #{tile} - #{offset}"
       loop do
-        last_tile_group, tile, offset = next_tile( last_tile_group, rules )
+        next_last_tile_group, tile, offset = next_tile( last_tile_group, rules )
         break if height_range === y + offset[1]
       end
 
-      y.times { |j| place_tile_at rules[:groups][:empty][:indices].first, x, j } if rules[:fill].include? tile
-      #puts "after: #{x};#{y} - #{last_tile_group} - #{tile} - #{offset}"
+      last_tile_group = next_last_tile_group
+
       place_tile_at tile, x, y
+      y.times { |j| place_tile_at rules[:groups][:empty][:indices].first, x, j } if rules[:fill].include? tile
+
       x  += offset[0]
       y  += offset[1] 
-      #puts "new x,y: #{x};#{y}"
     end
 
-    place_tile_at rules[:groups][:bottom_left][:indices].first, x, y if last_tile_group == :top_right
-    #puts 'done!'
+    if last_tile_group == :top_right then
+      place_tile_at rules[:groups][:bottom_left][:indices].first, x, y 
+    else
+      place_tile_at rules[:groups][:horizontal][:indices].sample, x, y
+    end
+    place_tile_at rules[:groups][:horizontal][:indices].sample, x + 1, y
 
     @size * ( x + 1 )
   end
 
   def next_tile(last_tile_group,rules)
-    rule    = rules[:rules][last_tile_group]
-    ranges  = ( [ 0.0 ] + rule.keys ).each_cons(2).map { |pair| Range.new pair[0], pair[1], true }
-    #puts "-- ranges: #{ranges}"
-    sample  = rand()
-    #puts "-- sample: #{sample}"
-    tile_group  = last_tile_group#:horizontal
+    rule        = rules[:rules][last_tile_group]
+    ranges      = ( [ 0.0 ] + rule.keys ).each_cons(2).map { |pair| Range.new pair[0], pair[1], true }
+    sample      = rand()
+
+    tile_group  = last_tile_group
     next_tile   = rules[:groups][tile_group][:indices].sample
     offset      = rules[:groups][tile_group][:offset]
     ranges.each do |range|
       if range === sample then
-        #puts "-- tile group: #{tile_group}"
-        #puts "-- rules: #{rules[:rules][tile_group]}"
         tile_group  = rules[:rules][tile_group][range.end].sample
         next_tile   = rules[:groups][tile_group][:indices].sample
         offset      = rules[:groups][tile_group][:offset]
         break
       end
     end
-    #puts "-- in next_tile: #{tile_group} - #{next_tile} - #{offset}"
     [ tile_group, next_tile, offset ]
   end
 
