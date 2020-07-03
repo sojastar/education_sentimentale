@@ -2,7 +2,7 @@ class Background
   def initialize(path,width,height,layers)
     @path     = path
 
-    y_offset  = 720
+    y_offset  = 720 - height # ?????????????????????
     @layers   = layers.map do |layer|
                   new_layer = { width:    layer[:width],
                                 height:   layer[:height],
@@ -49,31 +49,31 @@ class Background
 
   def render_layer(layer)
     if layer[:width] - layer[:position] > @width then
-      [ { x:      0,
-          y:      0,
-          w:      @width,
-          h:      @height,
-          path:   @path,
+      [ { x:        0,
+          y:        0,
+          w:        @width,
+          h:        @height,
+          path:     @path,
           source_x: layer[:position],
           source_y: layer[:y_offset],
           source_w: @width,
           source_h: @height } ]
 
     else
-      [ { x:      0,
-          y:      0,
-          w:      layer[:width] - layer[:position],
-          h:      @height,
-          path:   @path,
+      [ { x:        0,
+          y:        0,
+          w:        layer[:width] - layer[:position],
+          h:        @height,
+          path:     @path,
           source_x: layer[:position],
           source_y: layer[:y_offset],
           source_w: layer[:width] - layer[:position],
           source_h: @height },
-        { x:      layer[:width] - layer[:position],
-          y:      0,
-          w:      @width - layer[:width] + layer[:position],
-          h:      @height,
-          path:   @path,
+        { x:        layer[:width] - layer[:position],
+          y:        0,
+          w:        @width - layer[:width] + layer[:position],
+          h:        @height,
+          path:     @path,
           source_x: 0,
           source_y: layer[:y_offset],
           source_w: @width - layer[:width] + layer[:position],
@@ -130,7 +130,7 @@ class TileBackground < Background
     height_in_tiles = layer[:height]  / size
     #puts "#{width_in_tiles} - #{height_in_tiles}"
     min_height      = 0
-    max_height      = height_in_tiles - 4
+    max_height      = height_in_tiles - 5
     height_range    = min_height...max_height
 
     x, y            = 0, min_height
@@ -157,7 +157,7 @@ class TileBackground < Background
     place_tile_at rules[:groups][:bottom_left][:indices].first, x, y if last_tile_group == :top_right
     #puts 'done!'
 
-    @size * x
+    @size * ( x + 1 )
   end
 
   def next_tile(last_tile_group,rules)
