@@ -54,7 +54,8 @@ def setup(args)
                                                           bottom_right: { 1.0 => [ :top_left ] },
                                                           top_left:     { 1.0 => [ :horizontal ] },
                                                           top_right:    { 1.0 => [ :bottom_left ] },
-                                                          bottom_left:  { 1.0 => [ :horizontal ] } } }
+                                                          bottom_left:  { 1.0 => [ :horizontal ] } },
+                                                fill:   [ 0, 1, 2, 3, 4, 5 ] }
 
   player_animation      = Animation.new 'sprites/man_2.png',
                                         32,

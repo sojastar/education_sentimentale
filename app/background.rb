@@ -114,6 +114,7 @@ class TileBackground < Background
     #puts "#{width_in_tiles} - #{height_in_tiles}"
     min_height      = 0
     max_height      = height_in_tiles - 4
+    height_range    = min_height...max_height
 
     x, y            = 0, min_height
     last_tile_group = :horizontal
@@ -122,7 +123,12 @@ class TileBackground < Background
     place_tile_at tile, x, y
     while x < width_in_tiles do
       #puts "before: #{x};#{y} - #{last_tile_group} - #{tile} - #{offset}"
-      last_tile_group, tile, offset = next_tile( last_tile_group, rules )
+      loop do
+        last_tile_group, tile, offset = next_tile( last_tile_group, rules )
+        break if height_range === y + offset[1]
+      end
+
+      y.times { |j| place_tile_at 8, x, j } if rules[:fill].include? tile
       #puts "after: #{x};#{y} - #{last_tile_group} - #{tile} - #{offset}"
       place_tile_at tile, x, y
       x  += offset[0]
