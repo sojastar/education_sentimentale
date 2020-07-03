@@ -22,7 +22,7 @@ DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
 
 def setup(args)
-  args.state.background = Background.new  'sprites/panoramic_sample_4.png',#'sprites/background.png',
+  args.state.background = Background.new  'sprites/background_bitmaps.png',
                                           64,
                                           64,
                                           [ { width:    256,
@@ -33,11 +33,10 @@ def setup(args)
                                               speed:    8 },
                                             { width:    256,
                                               height:   64,
-                                              speed:    4 } ]#,
-                                            #{ width:    256,
-                                            #  height:   64,
-                                            #  speed:    2 } ]
-  args.state.ground     = TileBackground.new  'sprites/tiles.png',
+                                              speed:    4 } ]
+  args.state.ground     = TileBackground.new  'sprites/background_tiles.png',
+                                              64,
+                                              64,
                                               8,
                                               [ { width:  256,
                                                   height: 64,
@@ -49,7 +48,7 @@ def setup(args)
                                                           top_left:     { indices: [ 6 ],          offset: [ 1,  0 ] },
                                                           top_right:    { indices: [ 7 ],          offset: [ 0, -1 ] },
                                                           empty:        { indices: [ 8 ],          offset: [ 0,  0 ] } },
-                                                rules:  { horizontal:   { 1.0 => [ :connection ] },
+                                                rules:  { horizontal:   { 0.5 => [ :horizontal ], 1.0 => [ :connection ] },
                                                           connection:   { 0.7 => [ :connection ], 1.0 => [ :bottom_right, :top_right ] },
                                                           bottom_right: { 1.0 => [ :top_left ] },
                                                           top_left:     { 1.0 => [ :horizontal ] },
@@ -111,11 +110,11 @@ def tick(args)
   
   # 3.1 Render to virtual 64x64 screen :
   args.render_target(:display).sprites << args.state.background.render
-  #args.render_target(:display).sprites << args.state.ground.render
+  args.render_target(:display).sprites << args.state.ground.render
   args.render_target(:display).sprites << args.state.player.render_at(8, 8)
 
   # 3.2 Render to DragonRuby window :
-  #args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
+  args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
   args.outputs.sprites  <<  { x:      DISPLAY_X,
                               y:      DISPLAY_Y,
                               w:      DISPLAY_SIZE,
@@ -125,6 +124,7 @@ def tick(args)
                               tile_y: 720 - DISPLAY_BASE_SIZE,
                               tile_w: DISPLAY_BASE_SIZE,
                               tile_h: DISPLAY_BASE_SIZE }
-  args.outputs.sprites << { x:200, y:200, w:1280, h:720, path: :procedural_background, tile_x:0, tile_y:0, tile_w:1280, tile_h:720 }
+  #args.outputs.sprites << { x:200, y:200, w:1280, h:720, path: :procedural_background, tile_x:0, tile_y:0, tile_w:1280, tile_h:720 }
+  args.outputs.sprites << { x:200, y:200, w:256, h:256, path: :procedural_background, source_x:0, source_y:0, source_w:64, source_h:64 }
 
 end

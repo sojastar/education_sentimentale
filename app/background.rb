@@ -2,7 +2,7 @@ class Background
   def initialize(path,width,height,layers)
     @path     = path
 
-    y_offset  = 0
+    y_offset  = 720
     @layers   = layers.map do |layer|
                   new_layer = { width:    layer[:width],
                                 height:   layer[:height],
@@ -10,7 +10,7 @@ class Background
                                 speed:    layer[:speed],
                                 tick:     0,
                                 position: 0 }
-                  y_offset += layer[:height]
+                  y_offset -= layer[:height]
                   new_layer
                 end
 
@@ -54,10 +54,10 @@ class Background
           w:      @width,
           h:      @height,
           path:   @path,
-          tile_x: layer[:position],
-          tile_y: layer[:y_offset],
-          tile_w: @width,
-          tile_h: @height } ]
+          source_x: layer[:position],
+          source_y: layer[:y_offset],
+          source_w: @width,
+          source_h: @height } ]
 
     else
       [ { x:      0,
@@ -65,19 +65,19 @@ class Background
           w:      layer[:width] - layer[:position],
           h:      @height,
           path:   @path,
-          tile_x: layer[:position],
-          tile_y: layer[:y_offset],
-          tile_w: layer[:width] - layer[:position],
-          tile_h: @height },
+          source_x: layer[:position],
+          source_y: layer[:y_offset],
+          source_w: layer[:width] - layer[:position],
+          source_h: @height },
         { x:      layer[:width] - layer[:position],
           y:      0,
           w:      @width - layer[:width] + layer[:position],
           h:      @height,
           path:   @path,
-          tile_x: 0,
-          tile_y: layer[:y_offset],
-          tile_w: @width - layer[:width] + layer[:position],
-          tile_h: @height } ]
+          source_x: 0,
+          source_y: layer[:y_offset],
+          source_w: @width - layer[:width] + layer[:position],
+          source_h: @height } ]
     end
   end
 
@@ -99,13 +99,30 @@ end
 
 
 class TileBackground < Background
-  def initialize(tiles_path,size,layers,rules)
+  def initialize(tiles_path,width,height,size,layers,rules)
     @tiles_path = tiles_path
     @path       = :procedural_background
     
-    @size   = size
+    @size       = size
 
-    @layers = layers.map { |layer| generate_layer layer, size, rules }
+    y_offset    = 0
+    @layers     = layers.map do |layer|
+                    new_layer = { width:    layer[:width],
+                                  height:   layer[:height],
+                                  y_offset: y_offset,
+                                  speed:    layer[:speed],
+                                  tick:     0,
+                                  position: 0 }
+      
+                    new_layer[:width] = generate_layer layer, size, rules
+
+                    y_offset += layer[:height]
+
+                    new_layer
+                  end
+
+    @width      = width
+    @height     = height
   end
 
   def generate_layer(layer,size,rules)
@@ -121,21 +138,26 @@ class TileBackground < Background
     tile            = rules[:groups][:horizontal][:indices].sample
     offset          = [ 0, 0 ]
     place_tile_at tile, x, y
-    while x < width_in_tiles do
+    #while x < width_in_tiles do
+    until x > width_in_tiles && y == 0
       #puts "before: #{x};#{y} - #{last_tile_group} - #{tile} - #{offset}"
       loop do
         last_tile_group, tile, offset = next_tile( last_tile_group, rules )
         break if height_range === y + offset[1]
       end
 
-      y.times { |j| place_tile_at 8, x, j } if rules[:fill].include? tile
+      y.times { |j| place_tile_at rules[:groups][:empty][:indices].first, x, j } if rules[:fill].include? tile
       #puts "after: #{x};#{y} - #{last_tile_group} - #{tile} - #{offset}"
       place_tile_at tile, x, y
       x  += offset[0]
       y  += offset[1] 
       #puts "new x,y: #{x};#{y}"
     end
+
+    place_tile_at rules[:groups][:bottom_left][:indices].first, x, y if last_tile_group == :top_right
     #puts 'done!'
+
+    @size * x
   end
 
   def next_tile(last_tile_group,rules)
