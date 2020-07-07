@@ -4,6 +4,8 @@ require 'lib/animation.rb'
 require 'app/background.rb'
 require 'app/player.rb'
 
+require 'app/debug.rb'
+
 
 
 
@@ -22,38 +24,46 @@ DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
 
 def setup(args)
-  args.render_target(:bitmap_background).width  = 256
-  args.render_target(:bitmap_background).height = 192
   args.render_target(:bitmap_background).sprites << { x:        0,
                                                       y:        0,
                                                       w:        256,
                                                       h:        192,
                                                       path:     'sprites/background_bitmaps.png',
                                                       source_x: 0,
-                                                      source_y: 0,
+                                                      source_y: 720-192,
                                                       source_w: 256,
                                                       source_h: 192 }
 
-  args.state.background = Background.new  :bitmap_background,
-                                          64,
-                                          64,
-                                          [ { width:    256,
-                                              height:   64,
-                                              speed:    16 },
-                                            { width:    256,
-                                              height:   64,
-                                              speed:    8 },
-                                            { width:    256,
-                                              height:   64,
-                                              speed:    4 } ]
-  args.state.ground     = TileBackground.new  'sprites/background_tiles.png',
+  args.state.backgrounds  = [ Background.new( 64,
                                               64,
+                                              { path:     :bitmap_background,
+                                                y_offset: 128,
+                                                width:    256,
+                                                height:   64,
+                                                speed:    16 } ),
+                              Background.new( 64,
                                               64,
-                                              8,
-                                              [ { width:  256,
-                                                  height: 64,
-                                                  speed:  2 } ],
-                                              { groups: { horizontal:   { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },
+                                              { path:     :bitmap_background,
+                                                y_offset: 64,
+                                                width:    256,
+                                                height:   64,
+                                                speed:    8 } ),
+                              Background.new( 64,
+                                              64,
+                                              { path:     :bitmap_background,
+                                                y_offset: 0,
+                                                width:    256,
+                                                height:   64,
+                                                speed:    4 } ) ]
+  args.state.ground     = TileBackground.new( 64,
+                                              64,
+                                              { render_target_name: :ground,
+                                                width:              256,
+                                                height:             64,
+                                                speed:              2 },
+                                              { tiles:  { path:         'sprites/background_tiles.png',
+                                                          size:         8 },
+                                                groups: { horizontal:   { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },
                                                           connection:   { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },
                                                           bottom_right: { indices: [ 4 ],          offset: [ 0,  1 ] },
                                                           bottom_left:  { indices: [ 5 ],          offset: [ 1,  0 ] },
@@ -66,7 +76,7 @@ def setup(args)
                                                           top_left:     { 1.0 => [ :horizontal ] },
                                                           top_right:    { 1.0 => [ :bottom_left ] },
                                                           bottom_left:  { 1.0 => [ :horizontal ] } },
-                                                fill:   [ 0, 1, 2, 3, 4, 5 ] }
+                                                fill:   [ 0, 1, 2, 3, 4, 5 ] } )
 
   player_animation      = Animation.new 'sprites/man_2.png',
                                         32,
@@ -98,7 +108,12 @@ def setup(args)
                                                         flip_vertically:    false } },
                                           :idle_right
 
-  args.state.player     = Player.new player_animation
+  args.state.player     = Player.new  player_animation,   # animation
+                                      [ -16, 0 ],         # animation draw offset
+                                      16,                 # start x position
+                                      8,                  # start y position
+                                      12,                 # collision box width
+                                      14                  # collision box height
 
   args.state.setup_done = true
 end
@@ -113,17 +128,21 @@ def tick(args)
   setup(args) unless args.state.setup_done
 
   # 2. Actors Updates :
-  args.state.background.update(args)
-  args.state.ground.update(args)
   args.state.player.update(args)
+  args.state.backgrounds.each { |background| background.update(args.state.player.dx) }
+  args.state.ground.update(args.state.player.dx)
 
 
   # 3. Render :
   
   # 3.1 Render to virtual 64x64 screen :
-  args.render_target(:display).sprites << args.state.background.render
+  args.state.backgrounds.each { |background| args.render_target(:display).sprites << background.render }
   args.render_target(:display).sprites << args.state.ground.render
-  args.render_target(:display).sprites << args.state.player.render_at(8, 8)
+  #args.render_target(:display).sprites << args.state.player.render_at(  args.state.player.x,
+  #                                                                      args.state.player.y )
+  args.render_target(:display).sprites << args.state.player.render
+  Debug::draw_player_bounds [ 153, 229, 80, 255 ]
+  Debug::draw_tiles_bounds  [ 217, 87, 99, 255 ]
 
   # 3.2 Render to DragonRuby window :
   args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
