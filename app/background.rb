@@ -1,88 +1,82 @@
 class Background
-  def initialize(path,width,height,layers)
-    @path     = path
+  def initialize(render_width,render_height,description)
+    description.each_pair do |key,value|
+      variable_name = '@' + key.to_s
+      instance_variable_set variable_name, value
+    end
 
-    y_offset  = 720 - height # ?????????????????????
-    @layers   = layers.map do |layer|
-                  new_layer = { width:    layer[:width],
-                                height:   layer[:height],
-                                y_offset: y_offset,
-                                speed:    layer[:speed],
-                                tick:     0,
-                                position: 0 }
-                  y_offset -= layer[:height]
-                  new_layer
-                end
+    @render_width   = render_width
+    @render_height  = render_height
 
-    @width  = width
-    @height = height
+    @tick           = 0
+    @position       = 0
   end
 
-  def update(args)
-    @layers.each { |layer| update_layer(layer,args) }
-  end
+  #def update(args)
+  def update(dx)
+    #if args.inputs.keyboard.key_held.right then
+    if dx > 0 then
+      #@tick += 1
+      @tick += dx
 
-  def update_layer(layer,args)
-    if args.inputs.keyboard.key_held.right then
-      layer[:tick] += 1
-
-      if layer[:tick] == layer[:speed] then
-        layer[:tick]      = 0
-        layer[:position]  = ( layer[:position] + 1 ) % layer[:width]
+      #if @tick == @speed then
+      if @tick >= @speed then
+        @tick      = 0
+        @position  = ( @position + 1 ) % @width
       end
 
-    elsif args.inputs.keyboard.key_held.left then
-      layer[:tick] += 1
+    #elsif args.inputs.keyboard.key_held.left then
+    elsif dx < 0 then
+      #@tick += 1
+      @tick += -dx
 
-      if layer[:tick] == layer[:speed] then
-        layer[:tick]      = 0
-        layer[:position] -= 1
-        layer[:position]  = layer[:width] - 1 if layer[:position] == -1
+      #if @tick == @speed then
+      if @tick >= @speed then
+        @tick      = 0
+        @position -= 1
+        @position  = @width - 1 if @position == -1
       end
 
     end
   end
 
   def render
-    @layers.map { |layer| render_layer(layer) }
-  end
-
-  def render_layer(layer)
-    if layer[:width] - layer[:position] > @width then
+    if @width - @position > @render_width then
       [ { x:        0,
           y:        0,
-          w:        @width,
-          h:        @height,
+          w:        @render_width,#@width,
+          h:        @render_height,#@height,
           path:     @path,
-          source_x: layer[:position],
-          source_y: layer[:y_offset],
-          source_w: @width,
-          source_h: @height } ]
+          source_x: @position,
+          source_y: @y_offset,
+          source_w: @render_width,#@width,
+          source_h: @render_height } ]#@height } ]
 
     else
       [ { x:        0,
           y:        0,
-          w:        layer[:width] - layer[:position],
-          h:        @height,
+          w:        @width - @position,
+          h:        @render_height,#@height,
           path:     @path,
-          source_x: layer[:position],
-          source_y: layer[:y_offset],
-          source_w: layer[:width] - layer[:position],
-          source_h: @height },
-        { x:        layer[:width] - layer[:position],
+          source_x: @position,
+          source_y: @y_offset,
+          source_w: @width - @position,
+          source_h: @render_height },#@height },
+        { x:        @width - @position,
           y:        0,
-          w:        @width - layer[:width] + layer[:position],
-          h:        @height,
+          w:        @render_width - @width + @position,
+          h:        @render_height,#height,
           path:     @path,
           source_x: 0,
-          source_y: layer[:y_offset],
-          source_w: @width - layer[:width] + layer[:position],
-          source_h: @height } ]
+          source_y: @y_offset,
+          source_y: @y_offset,
+          source_w: @render_width - @width + @position,
+          source_h: @render_height } ]
     end
   end
 
   def serialize
-    { width: @width, height: @height, path: @path, layers: @layers.length }
+    { width: @width, height: @height, path: @path, speed: @speed, tick: @tick, position: @position }
   end
 
   def inspect
@@ -99,68 +93,69 @@ end
 
 
 class TileBackground < Background
-  def initialize(tiles_path,width,height,size,layers,rules)
-    @tiles_path = tiles_path
-    @path       = :procedural_background
+  attr_reader :collision_tiles
+
+  def initialize(render_width,render_height,description,rules)
+    @path             = description[:render_target_name]
     
-    @size       = size
+    @width,
+    @collision_tiles  = generate_background description, rules
+    @height           = description[:height]
 
-    y_offset    = 0
-    @layers     = layers.map do |layer|
-                    new_layer = { width:    layer[:width],
-                                  height:   layer[:height],
-                                  y_offset: y_offset,
-                                  speed:    layer[:speed],
-                                  tick:     0,
-                                  position: 0 }
-      
-                    new_layer[:width] = generate_layer layer, size, rules
+    @render_width     = render_width
+    @render_height    = render_height
+    @y_offset         = 0
 
-                    y_offset += layer[:height]
-
-                    new_layer
-                  end
-
-    @width      = width
-    @height     = height
+    @speed            = description[:speed]
+    @tick             = 0
+    @position         = 0
   end
 
-  def generate_layer(layer,size,rules)
-    width_in_tiles  = layer[:width]   / size
-    height_in_tiles = layer[:height]  / size
-    min_height      = 0
-    max_height      = height_in_tiles - 5
-    height_range    = min_height...max_height
+  def generate_background(description,rules)
+    width_in_tiles      = description[:width]   / rules[:tiles][:size]
+    height_in_tiles     = description[:height]  / rules[:tiles][:size]
+    min_height          = 0
+    max_height          = height_in_tiles - 5
+    height_range        = min_height...max_height
 
-    x, y            = 0, min_height
-    last_tile_group = :horizontal
-    next_last_tile_group = last_tile_group
-    tile            = rules[:groups][:horizontal][:indices].sample
-    offset          = [ 0, 0 ]
-    place_tile_at tile, x, y
+    target              = description[:render_target_name]
+
+    x, y                = 0, min_height
+    last_tile_group     = :horizontal
+    proposed_tile_group = last_tile_group
+    tile                = rules[:groups][:horizontal][:indices].sample
+    offset              = [ 0, 0 ]
+    place_tile_at target, rules, tile, x, y
+    collision_tiles     = [y]   # at this point, x = 0, so the first collision tile is at (0;y)
     until x > width_in_tiles && y == 0
       loop do
-        next_last_tile_group, tile, offset = next_tile( last_tile_group, rules )
+        proposed_tile_group, tile, offset = next_tile( last_tile_group, rules )
         break if height_range === y + offset[1]
       end
 
-      last_tile_group = next_last_tile_group
+      last_tile_group = proposed_tile_group
 
-      place_tile_at tile, x, y
-      y.times { |j| place_tile_at rules[:groups][:empty][:indices].first, x, j } if rules[:fill].include? tile
+      place_tile_at target, rules, tile, x, y     # place the new tile ...
+      collision_tiles[x] = y if collision_tiles[x].nil? || collision_tiles[x] < y
+      if rules[:fill].include? tile then          # ... and fill the space under it
+        y.times do |j|
+          place_tile_at target, rules, rules[:groups][:empty][:indices].first, x, j
+        end
+      end
 
       x  += offset[0]
       y  += offset[1] 
     end
 
     if last_tile_group == :top_right then
-      place_tile_at rules[:groups][:bottom_left][:indices].first, x, y 
+      place_tile_at target, rules, rules[:groups][:bottom_left][:indices].first, x, y
     else
-      place_tile_at rules[:groups][:horizontal][:indices].sample, x, y
+      place_tile_at target, rules, rules[:groups][:horizontal][:indices].sample, x, y
     end
-    place_tile_at rules[:groups][:horizontal][:indices].sample, x + 1, y
+    place_tile_at target, rules, rules[:groups][:horizontal][:indices].sample, x + 1, y
+    collision_tiles[x + 1] = y
 
-    @size * ( x + 1 )
+    [ rules[:tiles][:size] * ( x + 1 ), collision_tiles ]
   end
 
   def next_tile(last_tile_group,rules)
@@ -182,15 +177,18 @@ class TileBackground < Background
     [ tile_group, next_tile, offset ]
   end
 
-  def place_tile_at(tile_index,x,y)
-    $gtk.args.render_target(:procedural_background).sprites << {  x:      x * @size,
-                                                                  y:      y * @size,
-                                                                  w:      @size,
-                                                                  h:      @size,
-                                                                  path:   @tiles_path,
-                                                                  tile_x: tile_index * @size,
+  def place_tile_at(target,rules,tile_index,x,y)
+    size  = rules[:tiles][:size]
+    path  = rules[:tiles][:path]
+
+    $gtk.args.render_target(target).sprites << {  x:      x * size,
+                                                                  y:      y * size,
+                                                                  w:      size,
+                                                                  h:      size,
+                                                                  path:   path,
+                                                                  tile_x: tile_index * size,
                                                                   tile_y: 0,
-                                                                  tile_w: @size,
-                                                                  tile_h: @size }
+                                                                  tile_w: size,
+                                                                  tile_h: size }
   end
 end
