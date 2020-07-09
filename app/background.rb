@@ -1,4 +1,6 @@
 class Background
+  attr_reader :position
+
   def initialize(render_width,render_height,description)
     description.each_pair do |key,value|
       variable_name = '@' + key.to_s
@@ -12,25 +14,18 @@ class Background
     @position       = 0
   end
 
-  #def update(args)
   def update(dx)
-    #if args.inputs.keyboard.key_held.right then
     if dx > 0 then
-      #@tick += 1
       @tick += dx
 
-      #if @tick == @speed then
       if @tick >= @speed then
         @tick      = 0
         @position  = ( @position + 1 ) % @width
       end
 
-    #elsif args.inputs.keyboard.key_held.left then
     elsif dx < 0 then
-      #@tick += 1
       @tick += -dx
 
-      #if @tick == @speed then
       if @tick >= @speed then
         @tick      = 0
         @position -= 1
@@ -44,28 +39,28 @@ class Background
     if @width - @position > @render_width then
       [ { x:        0,
           y:        0,
-          w:        @render_width,#@width,
-          h:        @render_height,#@height,
+          w:        @render_width,
+          h:        @render_height,
           path:     @path,
           source_x: @position,
           source_y: @y_offset,
-          source_w: @render_width,#@width,
-          source_h: @render_height } ]#@height } ]
+          source_w: @render_width,
+          source_h: @render_height } ]
 
     else
       [ { x:        0,
           y:        0,
           w:        @width - @position,
-          h:        @render_height,#@height,
+          h:        @render_height,
           path:     @path,
           source_x: @position,
           source_y: @y_offset,
           source_w: @width - @position,
-          source_h: @render_height },#@height },
+          source_h: @render_height },
         { x:        @width - @position,
           y:        0,
           w:        @render_width - @width + @position,
-          h:        @render_height,#height,
+          h:        @render_height,
           path:     @path,
           source_x: 0,
           source_y: @y_offset,

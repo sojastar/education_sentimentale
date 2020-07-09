@@ -10,6 +10,8 @@ require 'app/debug.rb'
 
 
 
+MODE_COUNT        = 2
+
 SCREEN_WIDTH      = 1280
 SCREEN_HEIGHT     = 720
 
@@ -111,9 +113,11 @@ def setup(args)
   args.state.player     = Player.new  player_animation,   # animation
                                       [ -16, 0 ],         # animation draw offset
                                       16,                 # start x position
-                                      8,                  # start y position
+                                      65,                 # start y position
                                       12,                 # collision box width
                                       14                  # collision box height
+
+  args.state.debug_mode = 0
 
   args.state.setup_done = true
 end
@@ -135,16 +139,20 @@ def tick(args)
 
   # 3. Render :
   
-  # 3.1 Render to virtual 64x64 screen :
+  # 3.1 Render to the virtual 64x64 screen :
   args.state.backgrounds.each { |background| args.render_target(:display).sprites << background.render }
   args.render_target(:display).sprites << args.state.ground.render
-  #args.render_target(:display).sprites << args.state.player.render_at(  args.state.player.x,
-  #                                                                      args.state.player.y )
   args.render_target(:display).sprites << args.state.player.render
-  Debug::draw_player_bounds [ 153, 229, 80, 255 ]
-  Debug::draw_tiles_bounds  [ 217, 87, 99, 255 ]
 
-  # 3.2 Render to DragonRuby window :
+  # 3.2 Render debug visual aides if necessary :
+  args.state.debug_mode = ( args.state.debug_mode + 1 ) % MODE_COUNT if args.inputs.keyboard.key_down.tab
+  if args.state.debug_mode == 1 then
+    Debug::draw_player_bounds [ 153, 229,  80, 255 ]
+    Debug::draw_player_v      [  91, 110, 225, 255 ], [  95, 205, 228, 255 ]
+    #Debug::draw_tiles_bounds  [ 217,  87,  99, 125 ]
+  end
+
+  # 3.3 Render to DragonRuby window :
   args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
   args.outputs.sprites  <<  { x:      DISPLAY_X,
                               y:      DISPLAY_Y,
