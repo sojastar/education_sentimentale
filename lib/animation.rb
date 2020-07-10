@@ -1,6 +1,7 @@
 class Animation
   attr_reader :width, :height,
               :frame_index,
+              :status,
               :clips, :current_clip
 
   def initialize(path,width,height,clips,first_clip)
@@ -16,6 +17,8 @@ class Animation
     @count_dir    = :up
     @max_frames   = @current_clip[:frames].length
     @mode         = @current_clip[:mode] 
+
+    @status       = :running
 
     @tick         = 0
 
@@ -42,6 +45,7 @@ class Animation
     @tick         = 0
     @frame[:w]    = @width
     @frame[:h]    = @height
+    @status       = :running
   end
 
   def set_clip(clip)
@@ -51,6 +55,7 @@ class Animation
     @mode                       = @current_clip[:mode] 
     @frame[:flip_horizontally]  = @current_clip[:flip_horizontally]
     @frame[:flip_vertically]    = @current_clip[:flip_vertically]
+    @status                     = :running
   end
 
   def update
@@ -58,9 +63,12 @@ class Animation
 
     if @tick == 0 then
       case @current_clip[:mode]
-      when :single
+      when :once
         @frame_index += 1
-        @frame_index  = @max_frames - 1 if @frame_index >= @max_frames
+        if @frame_index >= @max_frames then
+          @frame_index  = @max_frames - 1
+          @status       = :finished
+        end
 
       when :loop
         @frame_index  = ( @frame_index + 1 ) % @max_frames

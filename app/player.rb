@@ -34,7 +34,11 @@ class Player
                                  end
 
                                  add_event(next_state: :jumping_up) do |args|
-                                   args.key_held.space
+                                   args.key_down.space
+                                 end
+
+                                 add_event(next_state: :attack) do |args|
+                                   args.key_down.x
                                  end
                                end
 
@@ -49,7 +53,11 @@ class Player
                                  end
 
                                  add_event(next_state: :jumping_up) do |args|
-                                   args.key_held.space
+                                   args.key_down.space
+                                 end
+
+                                 add_event(next_state: :attack) do |args|
+                                   args.key_down.x
                                  end
                                end
 
@@ -76,6 +84,17 @@ class Player
                                  end
                                end
 
+                               add_state(:attack) do
+                                 define_setup do
+                                   @character_animation.set_clip  @weapons[@current_weapon][:animation]
+                                   @weapon_animation.set_clip     @weapons[@current_weapon][:animation]
+                                 end
+
+                                 add_event(next_state: :idle) do |args|
+                                   @character_animation.status == :finished
+                                 end
+                               end
+
                                set_initial_state :jumping_down
                              end
   end
@@ -88,7 +107,6 @@ class Player
     # Switching weapons :
     if args.inputs.keyboard.key_down.w then
       @current_weapon = ( @current_weapon + 1 ) % @weapons.length
-      puts "weapon index: #{@current_weapon} - weapon png path: #{@weapons[@current_weapon][:path]}"
       @weapon_animation.set_path @weapons[@current_weapon][:path]
     end
 

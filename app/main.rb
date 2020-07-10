@@ -111,14 +111,14 @@ def setup(args)
                                             speed:              6,
                                             flip_horizontally:  false,
                                             flip_vertically:    false },
-                            gun_attack:   { frames:             [ [0,5] ],
+                            gun_attack:   { frames:             [ [0,5], [1,5], [2,5], [3,5] ],
                                             mode:               :once,
-                                            speed:              6,
+                                            speed:              3,
                                             flip_horizontally:  false,
                                             flip_vertically:    false },
-                            sword_attack: { frames:             [ [0,4] ],
+                            sword_attack: { frames:             [ [0,4], [1,4], [2,4], [3,4] ],
                                             mode:               :once,
-                                            speed:              6,
+                                            speed:              5,
                                             flip_horizontally:  false,
                                             flip_vertically:    false } }
 
@@ -133,12 +133,15 @@ def setup(args)
                                         32,
                                         player_frames,
                                         :idle_right
-  weapons_list          = [ { path:   'sprites/all_sword.png',
-                              damage: 1 },
-                            { path:   'sprites/all_axe.png',
-                              damage: 2 },
-                            { path:   'sprites/all_gun.png',
-                              damage: 3 } ]
+  weapons_list          = [ { path:       'sprites/all_sword.png',
+                              animation:  :sword_attack,
+                              damage:     1 },
+                            { path:       'sprites/all_axe.png',
+                              animation:  :sword_attack,
+                              damage:     2 },
+                            { path:       'sprites/all_gun.png',
+                              animation:  :gun_attack,
+                              damage:     3 } ]
 
   args.state.player     = Player.new  character_animation,                          # animation...
                                       weapon_animation,     
