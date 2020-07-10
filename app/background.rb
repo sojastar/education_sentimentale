@@ -146,8 +146,9 @@ class TileBackground < Background
       place_tile_at target, rules, rules[:groups][:bottom_left][:indices].first, x, y
     else
       place_tile_at target, rules, rules[:groups][:horizontal][:indices].sample, x, y
-      collision_tiles[x] = y
     end
+    collision_tiles[x] = y
+
     place_tile_at target, rules, rules[:groups][:horizontal][:indices].sample, x + 1, y
     collision_tiles[x + 1] = y
 
