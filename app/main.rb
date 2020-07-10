@@ -10,6 +10,7 @@ require 'app/debug.rb'
 
 
 
+# ---=== CONSTANTS : ===---
 MODE_COUNT        = 2
 
 SCREEN_WIDTH      = 1280
@@ -25,7 +26,10 @@ DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
 
 
+# ---===  SETUP ===---
 def setup(args)
+
+  # --- Backgroound : ---
   args.render_target(:bitmap_background).sprites << { x:        0,
                                                       y:        0,
                                                       w:        256,
@@ -80,43 +84,64 @@ def setup(args)
                                                           bottom_left:  { 1.0 => [ :horizontal ] } },
                                                 fill:   [ 0, 1, 2, 3, 4, 5 ] } )
 
-  player_animation      = Animation.new 'sprites/man_2.png',
-                                        32,
-                                        32,
-                                        { idle:       { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
-                                                        mode:               :loop,
-                                                        speed:              6,
-                                                        flip_horizontally:  false,
-                                                        flip_vertically:    false },
-                                          run:        { frames:             [ [0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1] ],
-                                                        mode:               :loop,
-                                                        speed:              6,
-                                                        flip_horizontally:  false,
-                                                        flip_vertically:    false },
-                                          walk:       { frames:             [ [0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [6,2], [7,2], [8,2], [9,2], [10,2], [11,2] ],
-                                                        mode:               :loop,
-                                                        speed:              6,
-                                                        flip_horizontally:  false,
-                                                        flip_vertically:    false },
-                                          jump_up:    { frames:             [ [4,3], [5,3], [6,3] ],
-                                                        mode:               :once,
-                                                        speed:              6,
-                                                        flip_horizontally:  false,
-                                                        flip_vertically:    false },
-                                          jump_down:  { frames:             [ [7,3], [8,3], [9,3] ],
-                                                        mode:               :once,
-                                                        speed:              6,
-                                                        flip_horizontally:  false,
-                                                        flip_vertically:    false } },
-                                          :idle_right
 
-  args.state.player     = Player.new  player_animation,   # animation
-                                      [ -16, 0 ],         # animation draw offset
-                                      16,                 # start x position
-                                      65,                 # start y position
-                                      12,                 # collision box width
-                                      14                  # collision box height
+  # --- Player : ---
+  player_frames         = { idle:       { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
+                                          mode:               :loop,
+                                          speed:              6,
+                                          flip_horizontally:  false,
+                                          flip_vertically:    false },
+                            run:        { frames:             [ [0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1] ],
+                                          mode:               :loop,
+                                          speed:              6,
+                                          flip_horizontally:  false,
+                                          flip_vertically:    false },
+                            walk:       { frames:             [ [0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [6,2], [7,2], [8,2], [9,2], [10,2], [11,2] ],
+                                          mode:               :loop,
+                                          speed:              6,
+                                          flip_horizontally:  false,
+                                          flip_vertically:    false },
+                            jump_up:    { frames:             [ [4,3], [5,3], [6,3] ],
+                                          mode:               :once,
+                                          speed:              6,
+                                          flip_horizontally:  false,
+                                          flip_vertically:    false },
+                            jump_down:  { frames:             [ [7,3], [8,3], [9,3] ],
+                                          mode:               :once,
+                                          speed:              6,
+                                          flip_horizontally:  false,
+                                          flip_vertically:    false } }
 
+  character_animation   = Animation.new 'sprites/all_body.png',
+                                        48,
+                                        32,
+                                        player_frames,
+                                        :idle_right
+
+  weapon_animation      = Animation.new 'sprites/all_sword.png',
+                                        48,
+                                        32,
+                                        player_frames,
+                                        :idle_right
+  weapons_list          = [ { path:   'sprites/all_sword.png',
+                              damage: 1 },
+                            { path:   'sprites/all_axe.png',
+                              damage: 2 },
+                            { path:   'sprites/all_gun.png',
+                              damage: 3 } ]
+
+
+
+  args.state.player     = Player.new  character_animation,  # animation...
+                                      weapon_animation,     
+                                      [ -16, 0 ],           # animation draw offset
+                                      16,                   # start x position
+                                      65,                   # start y position
+                                      12,                   # collision box width
+                                      14,                   # collision box height
+                                      weapons_list
+
+  # --- MISCELLANEOUS : ---
   args.state.debug_mode = 0
 
   args.state.setup_done = true

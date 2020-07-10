@@ -1,5 +1,7 @@
 class Animation
-  attr_reader :width, :height, :frame_index, :clips, :current_clip
+  attr_reader :width, :height,
+              :frame_index,
+              :clips, :current_clip
 
   def initialize(path,width,height,clips,first_clip)
     @path         = path
@@ -28,6 +30,11 @@ class Animation
                       tile_y:             0,
                       tile_w:             @width,
                       tile_h:             @height }
+  end
+
+  def set_path(new_path)
+    @path         = new_path
+    @frame[:path] = new_path
   end
 
   def reset_clip
