@@ -17,8 +17,7 @@ class Player
     @facing_right         =  true
     @character_animation  = character_animation
     @weapon_animation     = weapon_animation
-    @animation_offset_x   = animation_offset[0]
-    @animation_offset_y   = animation_offset[1]
+    @animation_offset     = animation_offset
 
     @weapons              = weapons
     @current_weapon       = 0
@@ -151,8 +150,8 @@ class Player
   end
 
   def render
-    [ @character_animation.frame_at( @x + @animation_offset_x, @y, !@facing_right ),
-      @weapon_animation.frame_at(    @x + @animation_offset_x, @y, !@facing_right ) ]
+    [ @character_animation.frame_at( @x + @animation_offset[@facing_right][0], @y, !@facing_right ),
+      @weapon_animation.frame_at(    @x + @animation_offset[@facing_right][0], @y, !@facing_right ) ]
   end
 
   def serialize

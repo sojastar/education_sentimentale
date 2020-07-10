@@ -140,15 +140,13 @@ def setup(args)
                             { path:   'sprites/all_gun.png',
                               damage: 3 } ]
 
-
-
-  args.state.player     = Player.new  character_animation,  # animation...
+  args.state.player     = Player.new  character_animation,                          # animation...
                                       weapon_animation,     
-                                      [ -16, 0 ],           # animation draw offset
-                                      16,                   # start x position
-                                      65,                   # start y position
-                                      12,                   # collision box width
-                                      14,                   # collision box height
+                                      { true => [ -16, 0 ], false => [ -32, 0 ] },  # animation draw offset
+                                      16,                                           # start x position
+                                      65,                                           # start y position
+                                      12,                                           # collision box width
+                                      14,                                           # collision box height
                                       weapons_list
 
   # --- MISCELLANEOUS : ---
