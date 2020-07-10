@@ -1,4 +1,5 @@
 class Player
+  CAN_MOVE_STATES         = [ :walking, :running, :jumping_up, :jumping_down ]
 
   GRAVITY                 = -0.4
   JUMP_STRENGTH           = 4
@@ -112,12 +113,14 @@ class Player
 
     # Horizontal movement :
     @dx = 0
-    if args.inputs.keyboard.key_held.right then
-      @facing_right   = true
-      @dx             = 1
-    elsif args.inputs.keyboard.key_held.left then
-      @facing_right   = false
-      @dx             = -1
+    if CAN_MOVE_STATES.include? @machine.current_state then
+      if args.inputs.keyboard.key_held.right then
+        @facing_right   = true
+        @dx             = 1
+      elsif args.inputs.keyboard.key_held.left then
+        @facing_right   = false
+        @dx             = -1
+      end
     end
 
     # Vertical movement :
