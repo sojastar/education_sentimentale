@@ -134,12 +134,17 @@ def setup(args)
                                         player_frames,
                                         :idle_right
   weapons_list          = [ { path:       'sprites/all_sword.png',
+                              collisions: [ [nil,nil, 8], [nil,nil, 8], [30,20, 8], [38, 5, 8] ],
+                              speed:      5,
                               animation:  :sword_attack,
                               damage:     1 },
                             { path:       'sprites/all_axe.png',
+                              collisions: [ [nil,nil,14], [nil,nil,14], [27,18,14], [30, 4,14] ],
+                              speed:      8,
                               animation:  :sword_attack,
                               damage:     2 },
                             { path:       'sprites/all_gun.png',
+                              speed:      3,
                               animation:  :gun_attack,
                               damage:     3 } ]
 

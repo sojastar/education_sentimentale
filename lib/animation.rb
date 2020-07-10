@@ -35,17 +35,21 @@ class Animation
                       tile_h:             @height }
   end
 
-  def set_path(new_path)
-    @path         = new_path
-    @frame[:path] = new_path
-  end
-
   def reset_clip
     @frame_index  = 0
     @tick         = 0
     @frame[:w]    = @width
     @frame[:h]    = @height
     @status       = :running
+  end
+
+  def path=(new_path)
+    @path         = new_path
+    @frame[:path] = new_path
+  end
+
+  def speed=(new_speed)
+    @current_clip[:speed] = new_speed
   end
 
   def set_clip(clip)
