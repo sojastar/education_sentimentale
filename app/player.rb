@@ -87,8 +87,10 @@ class Player
 
                                add_state(:attack) do
                                  define_setup do
-                                   @character_animation.set_clip  @weapons[@current_weapon][:animation]
-                                   @weapon_animation.set_clip     @weapons[@current_weapon][:animation]
+                                   @character_animation.set_clip    @weapons[@current_weapon][:animation]
+                                   @character_animation.speed     = @weapons[@current_weapon][:speed]
+                                   @weapon_animation.set_clip       @weapons[@current_weapon][:animation]
+                                   @weapon_animation.speed        = @weapons[@current_weapon][:speed]
                                  end
 
                                  add_event(next_state: :idle) do |args|
@@ -105,13 +107,13 @@ class Player
     #puts @machine.current_state
     #puts "position: #{x};#{@y} - displacement: #{@dx};#{@dy}"
 
-    # Switching weapons :
+    # --- Switching weapons :
     if args.inputs.keyboard.key_down.w then
-      @current_weapon = ( @current_weapon + 1 ) % @weapons.length
-      @weapon_animation.set_path @weapons[@current_weapon][:path]
+      @current_weapon         = ( @current_weapon + 1 ) % @weapons.length
+      @weapon_animation.path  =  @weapons[@current_weapon][:path]
     end
 
-    # Horizontal movement :
+    # --- Horizontal movement :
     @dx = 0
     if CAN_MOVE_STATES.include? @machine.current_state then
       if args.inputs.keyboard.key_held.right then
@@ -123,7 +125,7 @@ class Player
       end
     end
 
-    # Vertical movement :
+    # --- Vertical movement :
     @dy += GRAVITY
 
     # Ground collisions :
@@ -146,7 +148,7 @@ class Player
                         8,
                         8 ]
 
-      Debug::draw_box ground_box, [ 255, 0, 0, 255 ] if args.state.debug_mode == 1
+      Debug::draw_box ground_box, [ 255, 0, 255, 255 ] if args.state.debug_mode == 1
 
       # Checking collisions for the bottom left corner :
       @dx = ground_box_x + 8 - ( @x - ( @width >> 1 ) - 1)  if point_in_rect( [ @x - ( @width >> 1 ) + @dx, @y + 1   ], ground_box )
@@ -156,7 +158,23 @@ class Player
       @dx = ground_box_x - ( @x + ( @width >> 1 ) + 1 )     if point_in_rect( [ @x + ( @width >> 1 ) + @dx, @y + 1   ], ground_box )
       @dy = ground_box_y + 8 - @y                           if point_in_rect( [ @x + ( @width >> 1 ),       @y + @dy ], ground_box )
     end
-    
+
+    # --- Weapons collisions :
+    if @weapons[@current_weapon][:animation] == :sword_attack && @machine.current_state == :attack then
+      collision_index = @weapon_animation.frame_index
+      unless @weapons[@current_weapon][:collisions][collision_index][0].nil? then
+        weapon_box_x    = @x + @animation_offset[@facing_right][0] + @weapons[@current_weapon][:collisions][collision_index][0] - ( @weapons[@current_weapon][:collisions][collision_index][2] >> 1 )
+        weapon_box_y    = @y + @weapons[@current_weapon][:collisions][collision_index][1] - ( @weapons[@current_weapon][:collisions][collision_index][2] >> 1 )
+        weapon_box_size = @weapons[@current_weapon][:collisions][collision_index][2]
+        if args.state.debug_mode == 1
+          Debug::draw_box [ weapon_box_x, weapon_box_y, weapon_box_size, weapon_box_size ], [ 255, 0, 0, 255 ]
+        end
+      end
+    #else
+
+    end
+
+    # --- Updates :
     @y  += @dy
     
     @character_animation.update
