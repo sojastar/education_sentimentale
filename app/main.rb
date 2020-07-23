@@ -3,6 +3,8 @@ require 'lib/fsm_state.rb'
 require 'lib/animation.rb'
 require 'app/background.rb'
 require 'app/player.rb'
+#require 'app/monster.rb'
+#require 'app/monster_root.rb'
 
 require 'app/debug.rb'
 
@@ -126,13 +128,13 @@ def setup(args)
                                         48,
                                         32,
                                         player_frames,
-                                        :idle_right
+                                        :idle
 
   weapon_animation      = Animation.new 'sprites/all_sword.png',
                                         48,
                                         32,
                                         player_frames,
-                                        :idle_right
+                                        :idle
   weapons_list          = [ { path:       'sprites/all_sword.png',
                               collisions: [ [nil,nil, 8], [nil,nil, 8], [30,20, 8], [38, 5, 8] ],
                               speed:      5,
@@ -156,6 +158,9 @@ def setup(args)
                                       12,                                           # collision box width
                                       14,                                           # collision box height
                                       weapons_list
+
+  # --- MONSTERS : ---
+  args.state.monsters   =  []
 
   # --- MISCELLANEOUS : ---
   args.state.debug_mode = 0

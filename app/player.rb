@@ -15,7 +15,7 @@ class Player
     @width                = width
     @height               = height
 
-    @facing_right         =  true
+    @facing_right         = true
     @character_animation  = character_animation
     @weapon_animation     = weapon_animation
     @animation_offset     = animation_offset
@@ -23,83 +23,83 @@ class Player
     @weapons              = weapons
     @current_weapon       = 0
 
-    @machine              =  FSM::new_machine(self) do
-                               add_state(:idle) do
-                                 define_setup do 
-                                   @character_animation.set_clip  :idle
-                                   @weapon_animation.set_clip     :idle
-                                 end
+    @machine              = FSM::new_machine(self) do
+                              add_state(:idle) do
+                                define_setup do 
+                                  @character_animation.set_clip  :idle
+                                  @weapon_animation.set_clip     :idle
+                                end
 
-                                 add_event(next_state: :running) do |args|
-                                   args.key_held.right || args.key_held.left
-                                 end
+                                add_event(next_state: :running) do |args|
+                                  args.key_held.right || args.key_held.left
+                                end
 
-                                 add_event(next_state: :jumping_up) do |args|
-                                   args.key_down.space
-                                 end
+                                add_event(next_state: :jumping_up) do |args|
+                                  args.key_down.space
+                                end
 
-                                 add_event(next_state: :attack) do |args|
-                                   args.key_down.x
-                                 end
-                               end
+                                add_event(next_state: :attack) do |args|
+                                  args.key_down.x
+                                end
+                              end
 
-                               add_state(:running) do
-                                 define_setup do
-                                   @character_animation.set_clip  :run
-                                   @weapon_animation.set_clip     :run
-                                 end
+                              add_state(:running) do
+                                define_setup do
+                                  @character_animation.set_clip  :run
+                                  @weapon_animation.set_clip     :run
+                                end
 
-                                 add_event(next_state: :idle) do |args|
-                                   !args.key_held.right && !args.key_held.left
-                                 end
+                                add_event(next_state: :idle) do |args|
+                                  !args.key_held.right && !args.key_held.left
+                                end
 
-                                 add_event(next_state: :jumping_up) do |args|
-                                   args.key_down.space
-                                 end
+                                add_event(next_state: :jumping_up) do |args|
+                                  args.key_down.space
+                                end
 
-                                 add_event(next_state: :attack) do |args|
-                                   args.key_down.x
-                                 end
-                               end
+                                add_event(next_state: :attack) do |args|
+                                  args.key_down.x
+                                end
+                              end
 
-                               add_state(:jumping_up) do
-                                 define_setup do
-                                   @dy = JUMP_STRENGTH
-                                   @character_animation.set_clip  :jump_up
-                                   @weapon_animation.set_clip     :jump_up
-                                 end
+                              add_state(:jumping_up) do
+                                define_setup do
+                                  @dy = JUMP_STRENGTH
+                                  @character_animation.set_clip  :jump_up
+                                  @weapon_animation.set_clip     :jump_up
+                                end
 
-                                 add_event(next_state: :jumping_down) do |args|
-                                   @dy <= 0
-                                 end
-                               end
+                                add_event(next_state: :jumping_down) do |args|
+                                  @dy <= 0
+                                end
+                              end
 
-                               add_state(:jumping_down) do
-                                 define_setup do
-                                   @character_animation.set_clip  :jump_down
-                                   @weapon_animation.set_clip     :jump_down
-                                 end
+                              add_state(:jumping_down) do
+                                define_setup do
+                                  @character_animation.set_clip  :jump_down
+                                  @weapon_animation.set_clip     :jump_down
+                                end
 
-                                 add_event(next_state: :idle) do |args|
-                                   @dy == 0 && ( @y % 8 ) == 0
-                                 end
-                               end
+                                add_event(next_state: :idle) do |args|
+                                  @dy == 0 && ( @y % 8 ) == 0
+                                end
+                              end
 
-                               add_state(:attack) do
-                                 define_setup do
-                                   @character_animation.set_clip    @weapons[@current_weapon][:animation]
-                                   @character_animation.speed     = @weapons[@current_weapon][:speed]
-                                   @weapon_animation.set_clip       @weapons[@current_weapon][:animation]
-                                   @weapon_animation.speed        = @weapons[@current_weapon][:speed]
-                                 end
+                              add_state(:attack) do
+                                define_setup do
+                                  @character_animation.set_clip    @weapons[@current_weapon][:animation]
+                                  @character_animation.speed     = @weapons[@current_weapon][:speed]
+                                  @weapon_animation.set_clip       @weapons[@current_weapon][:animation]
+                                  @weapon_animation.speed        = @weapons[@current_weapon][:speed]
+                                end
 
-                                 add_event(next_state: :idle) do |args|
-                                   @character_animation.status == :finished
-                                 end
-                               end
+                                add_event(next_state: :idle) do |args|
+                                  @character_animation.status == :finished
+                                end
+                              end
 
-                               set_initial_state :jumping_down
-                             end
+                              set_initial_state :jumping_down
+                            end
   end
 
   def update(args)
@@ -161,11 +161,12 @@ class Player
 
     # --- Weapons collisions :
     if @weapons[@current_weapon][:animation] == :sword_attack && @machine.current_state == :attack then
-      collision_index = @weapon_animation.frame_index
-      unless @weapons[@current_weapon][:collisions][collision_index][0].nil? then
-        weapon_box_x    = @x + @animation_offset[@facing_right][0] + @weapons[@current_weapon][:collisions][collision_index][0] - ( @weapons[@current_weapon][:collisions][collision_index][2] >> 1 )
-        weapon_box_y    = @y + @weapons[@current_weapon][:collisions][collision_index][1] - ( @weapons[@current_weapon][:collisions][collision_index][2] >> 1 )
-        weapon_box_size = @weapons[@current_weapon][:collisions][collision_index][2]
+      collision_index   = @weapon_animation.frame_index
+      weapon_collision  = @weapons[@current_weapon][:collisions][collision_index]
+      unless weapon_collision[0].nil? then
+        weapon_box_x    = weapon_collision[0] - ( weapon_collision[2] >> 1 ) + @x + @animation_offset[@facing_right][0]
+        weapon_box_y    = weapon_collision[1] - ( weapon_collision[2] >> 1 ) + @y
+        weapon_box_size = weapon_collision[2]
         if args.state.debug_mode == 1
           Debug::draw_box [ weapon_box_x, weapon_box_y, weapon_box_size, weapon_box_size ], [ 255, 0, 0, 255 ]
         end
