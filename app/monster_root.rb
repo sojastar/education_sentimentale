@@ -1,29 +1,44 @@
 class Monster
-  def self.spawn_root_at(args,x)
+  def self.spawn_root_at(x)
     
     # Root Monster ANIMATION :
-    root_frames     = { idle: { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
-                                mode:               :loop,
-                                speed:              6,
-                                flip_horizontally:  false,
-                                flip_vertically:    false } }
+    frames    = { idle: { frames:             [ [0,0] ],
+                          mode:               :loop,
+                          speed:              6,
+                          flip_horizontally:  false,
+                          flip_vertically:    false } }
 
-    root_animation  = Animation.new 'sprites/racine_static.png',
-                                    48,
-                                    32,
-                                    player_frames,
-                                    :idle_right
+    animation = Animation.new 'sprites/racine_static.png',
+                              48,
+                              48,
+                              frames,
+                              :idle
 
 
-    # Root Monster FINIT STATE MACHINE :
-    fsm       = 
+    # Root Monster FINITE STATE MACHINE :
+    fsm       = FSM::new_machine(self) do
+                  add_state(:idle) do
+                    define_setup { @animation.set_clip :idle }
+                  end
+
+                  add_state(:jumping_down) do
+                    define_setup { @animation.set_clip :idle }
+
+                    add_event(next_state: :idle) { |args| @dy == 0 && ( @y % 8 ) == 0 }
+                  end
+
+                  set_initial_state :jumping_down
+                end
+
 
     # Spawning :
-    args.state.monters << Monster.new animation,
-                                      animation_offset,
-                                      x, 48,                #  start position x and y
-                                      18, 32,               # collision box width and height
-                                      fsm,
-                                      nil                   # children
+    Monster.new animation,
+                { true => [ -24, 0 ], false => [ -24, 0 ] },  # animation draw offset
+                x, 48,                                        # start position x and y
+                18, 32,                                       # collision box width and height
+                fsm,
+                nil,                                          # parent
+                nil                                           # children
+
   end
 end

@@ -3,8 +3,8 @@ require 'lib/fsm_state.rb'
 require 'lib/animation.rb'
 require 'app/background.rb'
 require 'app/player.rb'
-#require 'app/monster.rb'
-#require 'app/monster_root.rb'
+require 'app/monster.rb'
+require 'app/monster_root.rb'
 
 require 'app/debug.rb'
 
@@ -122,6 +122,11 @@ def setup(args)
                                             mode:               :once,
                                             speed:              5,
                                             flip_horizontally:  false,
+                                            flip_vertically:    false },
+                            hit:          { frames:             [ [0,6] ],
+                                            mode:               :once,
+                                            speed:              5,
+                                            flip_horizontally:  false,
                                             flip_vertically:    false } }
 
   character_animation   = Animation.new 'sprites/all_body.png',
@@ -160,7 +165,7 @@ def setup(args)
                                       weapons_list
 
   # --- MONSTERS : ---
-  args.state.monsters   =  []
+  args.state.monsters   =  [ Monster::spawn_root_at(120) ]
 
   # --- MISCELLANEOUS : ---
   args.state.debug_mode = 0
@@ -179,15 +184,23 @@ def tick(args)
 
   # 2. Actors Updates :
   args.state.player.update(args)
+
   args.state.backgrounds.each { |background| background.update(args.state.player.dx) }
   args.state.ground.update(args.state.player.dx)
+
+  args.state.monsters.each { |monster| monster.update(args) }
 
 
   # 3. Render :
   
   # 3.1 Render to the virtual 64x64 screen :
+  #args.outputs.labels << [ 20, 700, "monster: #{args.state.monsters[0].x} - #{args.state.monsters[0].y}", 255, 255, 255, 255 ]
+  #args.outputs.labels << [ 20, 680, "player: #{args.state.player.x} - #{args.state.player.y}", 255, 255, 255, 255 ]
   args.state.backgrounds.each { |background| args.render_target(:display).sprites << background.render }
   args.render_target(:display).sprites << args.state.ground.render
+
+  args.state.monsters.each { |monster| args.render_target(:display).sprites << monster.render(args) }
+
   args.render_target(:display).sprites << args.state.player.render
 
   # 3.2 Render debug visual aides if necessary :
@@ -196,6 +209,7 @@ def tick(args)
     Debug::draw_player_bounds [ 153, 229,  80, 255 ]
     Debug::draw_player_v      [  91, 110, 225, 255 ], [  95, 205, 228, 255 ]
     #Debug::draw_tiles_bounds  [ 217,  87,  99, 125 ]
+    Debug::draw_bounds args.state.monsters.first, args.state.ground.position, [229, 153, 80, 255]
   end
 
   # 3.3 Render to DragonRuby window :

@@ -6,6 +6,9 @@ class Player
 
   GROUND_COLLISION_WIDTH  = 1
 
+  RECOVERY_TIME           = 10
+  PUSH_BACK_SPEED         = 2
+
   attr_reader :x, :y, :dx, :dy
 
   def initialize(character_animation,weapon_animation,animation_offset,start_x,start_y,width,height,weapons)
@@ -23,6 +26,7 @@ class Player
     @weapons              = weapons
     @current_weapon       = 0
 
+    @hit                  = false
     @machine              = FSM::new_machine(self) do
                               add_state(:idle) do
                                 define_setup do 
@@ -31,15 +35,15 @@ class Player
                                 end
 
                                 add_event(next_state: :running) do |args|
-                                  args.key_held.right || args.key_held.left
+                                  args.inputs.keyboard.key_held.right || args.inputs.keyboard.key_held.left
                                 end
 
                                 add_event(next_state: :jumping_up) do |args|
-                                  args.key_down.space
+                                  args.inputs.keyboard.key_down.space
                                 end
 
                                 add_event(next_state: :attack) do |args|
-                                  args.key_down.x
+                                  args.inputs.keyboard.key_down.x
                                 end
                               end
 
@@ -50,15 +54,15 @@ class Player
                                 end
 
                                 add_event(next_state: :idle) do |args|
-                                  !args.key_held.right && !args.key_held.left
+                                  !args.inputs.keyboard.key_held.right && !args.inputs.keyboard.key_held.left
                                 end
 
                                 add_event(next_state: :jumping_up) do |args|
-                                  args.key_down.space
+                                  args.inputs.keyboard.key_down.space
                                 end
 
                                 add_event(next_state: :attack) do |args|
-                                  args.key_down.x
+                                  args.inputs.keyboard.key_down.x
                                 end
                               end
 
@@ -83,6 +87,10 @@ class Player
                                 add_event(next_state: :idle) do |args|
                                   @dy == 0 && ( @y % 8 ) == 0
                                 end
+
+                                #add_event(next_state: :hit) do |args|
+                                #  @hit == true
+                                #end
                               end
 
                               add_state(:attack) do
@@ -98,12 +106,23 @@ class Player
                                 end
                               end
 
+                              add_state(:hit) do
+                                define_setup do
+                                  @character_animation.set_clip :hit
+                                  @weapon_animation.set_clip    :hit
+                                end
+
+                                add_event(next_state: :idle) do |args|
+                                  @recovery_timer <= 0
+                                end
+                              end
+
                               set_initial_state :jumping_down
                             end
   end
 
   def update(args)
-    @machine.update(args.inputs.keyboard)
+    @machine.update(args)
     #puts @machine.current_state
     #puts "position: #{x};#{@y} - displacement: #{@dx};#{@dy}"
 
@@ -115,7 +134,8 @@ class Player
 
     # --- Horizontal movement :
     @dx = 0
-    if CAN_MOVE_STATES.include? @machine.current_state then
+    case @machine.current_state
+    when :walking, :running, :jumping_up, :jumping_down
       if args.inputs.keyboard.key_held.right then
         @facing_right   = true
         @dx             = 1
@@ -123,17 +143,41 @@ class Player
         @facing_right   = false
         @dx             = -1
       end
+    #end
+
+    when :hit
+      @recovery_timer -= 1
+      @dx              = @facing_right ? -PUSH_BACK_SPEED : PUSH_BACK_SPEED
+
     end
+
 
     # --- Vertical movement :
     @dy += GRAVITY
 
-    # Ground collisions :
-    collision_box             = [ @x - ( @width >> 1 ),
+    # --- Enemy collisions :
+    hit_box                   = [ @x - ( @width >> 1 ),
                                   @y,
                                   @width,
                                   @height ]
+    args.outputs.labels << [ 20, 700, "player: #{hit_box}", 255, 255, 255, 255 ]
 
+    args.state.monsters.each do |monster|
+      monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
+                          monster.y,
+                          monster.width,
+                          monster.height ]
+      args.outputs.labels << [ 20, 680, "monster: #{monster_hit_box}", 255, 255, 255, 255 ]
+
+      if hit_box.intersect_rect? monster_hit_box then
+        args.outputs.labels << [ 20, 660, "hit!!!!", 255, 255, 255, 255 ]
+        @machine.set_current_state :hit
+        @recovery_timer = RECOVERY_TIME
+        break
+      end
+    end
+
+    #--- Ground collisions :
     bottom_left_new_position  = [ @x - ( @width >> 1 ) + @dx, @y + @dy ]
     bottom_right_new_position = [ @x + ( @width >> 1 ) + @dx, @y + @dy ]
 

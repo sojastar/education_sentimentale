@@ -60,4 +60,13 @@ module Debug
                                                   player.x + ( width >> 1 ) + dx,
                                                   player.y + dy ] + color2
   end
+
+  def self.draw_bounds(entity,offset,color)
+    width   = entity.instance_variable_get :@width
+    height  = entity.instance_variable_get :@height
+    $gtk.args.render_target(:display).borders << [ entity.x - ( width >> 1 ) - offset,
+                                                   entity.y,
+                                                   width,
+                                                   height ] + color
+  end
 end
