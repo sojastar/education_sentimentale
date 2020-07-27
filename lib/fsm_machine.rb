@@ -26,6 +26,10 @@ module FSM
 
       set_current_state(new_state) if new_state != @current_state
     end
+
+    def set_parent(new_parent)
+      @parent = new_parent
+    end
   end
 
   def self.new_machine(parent,&configuration_block)

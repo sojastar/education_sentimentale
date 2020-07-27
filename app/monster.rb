@@ -8,9 +8,10 @@ class Monster
 
   attr_reader :x, :y,
               :width, :height,
-              :dx, :dy
+              :dx, :dy,
+              :health
 
-  def initialize(animation,animation_offset,start_x,start_y,width,height,fsm,parent,children)
+  def initialize(animation,animation_offset,start_x,start_y,width,height,health,fsm,parent,children)
     @x,  @y               = start_x, start_y
     @dx, @dy              = 0, 0
 
@@ -21,7 +22,12 @@ class Monster
     @animation            = animation
     @animation_offset     = animation_offset
 
+    @health               = health
+
+    @recovery_timer       = 0
+    @push_back_speed      = 0
     @machine              = fsm  
+    @machine.set_parent self
 
     @parent               = parent
     @children             = children
@@ -29,12 +35,25 @@ class Monster
 
   def update(args)
     @children.each { |child| child.update(args) } unless @children.nil?
-    @machine.update(args.inputs.keyboard)
+    @machine.update(args)
+    
+    # --- Check for death :
+    #if @health <= 0 then
+    if @machine.current_state == :dying then
+      @animation.update
+      return
+    end
 
     # --- Horizontal movement :
     @dx = 0
-    if CAN_MOVE_STATES.include? @machine.current_state then
+    case @machine.current_state
+    when :walking, :running, :jumping_up, :jumping_down
       # AI code that moves the monster, in relation to @machine
+
+    when :hit
+      @recovery_timer -= 1
+      @dx              = @facing_right ? -@push_back_speed : @push_back_speed
+
     end
 
     # --- Vertical movement :
@@ -72,6 +91,20 @@ class Monster
 
     @x += @dx
     @y += @dy
+
+    @animation.update
+  end
+
+  def current_state
+    @machine.current_state
+  end
+
+  def current_state=(next_state)
+    @machine.set_current_state next_state
+  end
+
+  def hit(damage)
+    @health -= damage
   end
 
   def point_in_rect(point,rect)

@@ -189,13 +189,12 @@ def tick(args)
   args.state.ground.update(args.state.player.dx)
 
   args.state.monsters.each { |monster| monster.update(args) }
+  args.state.monsters = remove_dead_monsters(args.state.monsters)
 
 
   # 3. Render :
   
   # 3.1 Render to the virtual 64x64 screen :
-  #args.outputs.labels << [ 20, 700, "monster: #{args.state.monsters[0].x} - #{args.state.monsters[0].y}", 255, 255, 255, 255 ]
-  #args.outputs.labels << [ 20, 680, "player: #{args.state.player.x} - #{args.state.player.y}", 255, 255, 255, 255 ]
   args.state.backgrounds.each { |background| args.render_target(:display).sprites << background.render }
   args.render_target(:display).sprites << args.state.ground.render
 
@@ -223,9 +222,8 @@ def tick(args)
                               tile_y: 720 - DISPLAY_BASE_SIZE,
                               tile_w: DISPLAY_BASE_SIZE,
                               tile_h: DISPLAY_BASE_SIZE }
+end
 
-  ### DEBUG DEBUG DEBUG :
-  #args.outputs.sprites << { x:200, y:200, w:1280, h:720, path: :procedural_background, tile_x:0, tile_y:0, tile_w:1280, tile_h:720 }
-  #args.outputs.sprites << [ 100, 100, 256, 192, :bitmap_background ]
-
+def remove_dead_monsters(monsters)
+  monsters.reject { |monster| monster.current_state == :dead }
 end

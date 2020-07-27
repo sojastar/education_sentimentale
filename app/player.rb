@@ -27,6 +27,7 @@ class Player
     @current_weapon       = 0
 
     @hit                  = false
+    @recovery_time        = 0
     @machine              = FSM::new_machine(self) do
                               add_state(:idle) do
                                 define_setup do 
@@ -143,7 +144,6 @@ class Player
         @facing_right   = false
         @dx             = -1
       end
-    #end
 
     when :hit
       @recovery_timer -= 1
@@ -160,20 +160,20 @@ class Player
                                   @y,
                                   @width,
                                   @height ]
-    args.outputs.labels << [ 20, 700, "player: #{hit_box}", 255, 255, 255, 255 ]
 
     args.state.monsters.each do |monster|
-      monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
-                          monster.y,
-                          monster.width,
-                          monster.height ]
-      args.outputs.labels << [ 20, 680, "monster: #{monster_hit_box}", 255, 255, 255, 255 ]
+      unless [ :dying, :dead ].include? monster.current_state then
+        monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
+                            monster.y,
+                            monster.width,
+                            monster.height ]
 
-      if hit_box.intersect_rect? monster_hit_box then
-        args.outputs.labels << [ 20, 660, "hit!!!!", 255, 255, 255, 255 ]
-        @machine.set_current_state :hit
-        @recovery_timer = RECOVERY_TIME
-        break
+        if hit_box.intersect_rect? monster_hit_box then
+          args.outputs.labels << [ 20, 660, "hit!!!!", 255, 255, 255, 255 ]
+          @machine.set_current_state :hit
+          @recovery_timer = RECOVERY_TIME
+          break
+        end
       end
     end
 
@@ -208,11 +208,22 @@ class Player
       collision_index   = @weapon_animation.frame_index
       weapon_collision  = @weapons[@current_weapon][:collisions][collision_index]
       unless weapon_collision[0].nil? then
-        weapon_box_x    = weapon_collision[0] - ( weapon_collision[2] >> 1 ) + @x + @animation_offset[@facing_right][0]
-        weapon_box_y    = weapon_collision[1] - ( weapon_collision[2] >> 1 ) + @y
-        weapon_box_size = weapon_collision[2]
-        if args.state.debug_mode == 1
-          Debug::draw_box [ weapon_box_x, weapon_box_y, weapon_box_size, weapon_box_size ], [ 255, 0, 0, 255 ]
+        weapon_hit_box_x    = weapon_collision[0] - ( weapon_collision[2] >> 1 ) + @x + @animation_offset[@facing_right][0]
+        weapon_hit_box_y    = weapon_collision[1] - ( weapon_collision[2] >> 1 ) + @y
+        weapon_hit_box_size = weapon_collision[2]
+        weapon_hit_box      = [ weapon_hit_box_x, weapon_hit_box_y, weapon_hit_box_size, weapon_hit_box_size ]
+        
+        Debug::draw_hit_box weapon_hit_box, [ 255, 0, 0, 255 ] if args.state.debug_mode == 1
+
+        args.state.monsters.each do |monster|
+          unless [:hit, :dying, :dead].include? monster.current_state then
+           monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
+                               monster.y,
+                               monster.width,
+                               monster.height ]
+           monster.current_state = :hit if weapon_hit_box.intersect_rect? monster_hit_box
+           monster.hit @weapons[@current_weapon][:damage]
+          end
         end
       end
     #else
