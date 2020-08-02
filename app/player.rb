@@ -29,24 +29,24 @@ class Player
     @hit                  = false
     @recovery_time        = 0
     @machine              = FSM::new_machine(self) do
-                              add_state(:idle) do
-                                define_setup do 
-                                  @character_animation.set_clip  :idle
-                                  @weapon_animation.set_clip     :idle
-                                end
+                              #add_state(:idle) do
+                              #  define_setup do 
+                              #    @character_animation.set_clip  :idle
+                              #    @weapon_animation.set_clip     :idle
+                              #  end
 
-                                add_event(next_state: :running) do |args|
-                                  args.inputs.keyboard.key_held.right || args.inputs.keyboard.key_held.left
-                                end
+                              #  add_event(next_state: :running) do |args|
+                              #    args.inputs.keyboard.key_held.right || args.inputs.keyboard.key_held.left
+                              #  end
 
-                                add_event(next_state: :jumping_up) do |args|
-                                  args.inputs.keyboard.key_down.space
-                                end
+                              #  add_event(next_state: :jumping_up) do |args|
+                              #    args.inputs.keyboard.key_down.space
+                              #  end
 
-                                add_event(next_state: :attack) do |args|
-                                  args.inputs.keyboard.key_down.x
-                                end
-                              end
+                              #  add_event(next_state: :attack) do |args|
+                              #    args.inputs.keyboard.key_down.x
+                              #  end
+                              #end
 
                               add_state(:running) do
                                 define_setup do
@@ -54,9 +54,9 @@ class Player
                                   @weapon_animation.set_clip     :run
                                 end
 
-                                add_event(next_state: :idle) do |args|
-                                  !args.inputs.keyboard.key_held.right && !args.inputs.keyboard.key_held.left
-                                end
+                                #add_event(next_state: :idle) do |args|
+                                #  !args.inputs.keyboard.key_held.right && !args.inputs.keyboard.key_held.left
+                                #end
 
                                 add_event(next_state: :jumping_up) do |args|
                                   args.inputs.keyboard.key_down.space
@@ -85,7 +85,8 @@ class Player
                                   @weapon_animation.set_clip     :jump_down
                                 end
 
-                                add_event(next_state: :idle) do |args|
+                                #add_event(next_state: :idle) do |args|
+                                add_event(next_state: :running) do |args|
                                   @dy == 0 && ( @y % 8 ) == 0
                                 end
 
@@ -102,7 +103,8 @@ class Player
                                   @weapon_animation.speed        = @weapons[@current_weapon][:speed]
                                 end
 
-                                add_event(next_state: :idle) do |args|
+                                #add_event(next_state: :idle) do |args|
+                                add_event(next_state: :running) do |args|
                                   @character_animation.status == :finished
                                 end
                               end
@@ -113,7 +115,8 @@ class Player
                                   @weapon_animation.set_clip    :hit
                                 end
 
-                                add_event(next_state: :idle) do |args|
+                                #add_event(next_state: :idle) do |args|
+                                add_event(next_state: :running) do |args|
                                   @recovery_timer <= 0
                                 end
                               end
@@ -134,20 +137,32 @@ class Player
     end
 
     # --- Horizontal movement :
-    @dx = 0
-    case @machine.current_state
-    when :walking, :running, :jumping_up, :jumping_down
-      if args.inputs.keyboard.key_held.right then
-        @facing_right   = true
-        @dx             = 1
-      elsif args.inputs.keyboard.key_held.left then
-        @facing_right   = false
-        @dx             = -1
-      end
+    #@dx = 0
+    #case @machine.current_state
+    #when :walking, :running, :jumping_up, :jumping_down
+    #  if args.inputs.keyboard.key_held.right then
+    #    @facing_right   = true
+    #    @dx             = 1
+    #  elsif args.inputs.keyboard.key_held.left then
+    #    @facing_right   = false
+    #    @dx             = -1
+    #  end
 
+    #when :hit
+    #  @recovery_timer -= 1
+    #  @dx              = @facing_right ? -PUSH_BACK_SPEED : PUSH_BACK_SPEED
+
+    #end
+    case @machine.current_state
     when :hit
       @recovery_timer -= 1
       @dx              = @facing_right ? -PUSH_BACK_SPEED : PUSH_BACK_SPEED
+
+    when :attack
+      @dx = @current_weapon == 2 ? -8 : 1
+
+    else
+      @dx = 1
 
     end
 
