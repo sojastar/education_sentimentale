@@ -6,6 +6,9 @@ class Player
 
   GROUND_COLLISION_WIDTH  = 1
 
+  RUNNING_SPEED           = 1
+  RECOIL                  = -8
+
   RECOVERY_TIME           = 10
   PUSH_BACK_SPEED         = 2
 
@@ -24,7 +27,8 @@ class Player
     @animation_offset     = animation_offset
 
     @weapons              = weapons
-    @current_weapon       = 0
+    @current_sword        = 0
+    @current_weapon       = @current_sword
 
     @hit                  = false
     @recovery_time        = 0
@@ -62,8 +66,13 @@ class Player
                                   args.inputs.keyboard.key_down.space
                                 end
 
-                                add_event(next_state: :attack) do |args|
+                                #add_event(next_state: :attack) do |args|
+                                add_event(next_state: :swing) do |args|
                                   args.inputs.keyboard.key_down.x
+                                end
+
+                                add_event(next_state: :shoot) do |args|
+                                  args.inputs.keyboard.key_down.c
                                 end
                               end
 
@@ -95,12 +104,29 @@ class Player
                                 #end
                               end
 
-                              add_state(:attack) do
+                              #add_state(:attack) do
+                              add_state(:swing) do
                                 define_setup do
-                                  @character_animation.set_clip    @weapons[@current_weapon][:animation]
-                                  @character_animation.speed     = @weapons[@current_weapon][:speed]
-                                  @weapon_animation.set_clip       @weapons[@current_weapon][:animation]
-                                  @weapon_animation.speed        = @weapons[@current_weapon][:speed]
+                                  @current_weapon               = @current_sword
+                                  @character_animation.set_clip   @weapons[@current_weapon][:animation]
+                                  @character_animation.speed    = @weapons[@current_weapon][:speed]
+                                  @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
+                                  @weapon_animation.speed       = @weapons[@current_weapon][:speed]
+                                end
+
+                                #add_event(next_state: :idle) do |args|
+                                add_event(next_state: :running) do |args|
+                                  @character_animation.status == :finished
+                                end
+                              end
+
+                              add_state(:shoot) do
+                                define_setup do
+                                  @current_weapon               = @weapons.length - 1     # the gun is always the last weapon
+                                  @character_animation.set_clip   @weapons[@current_weapon][:animation]
+                                  @character_animation.speed    = @weapons[@current_weapon][:speed]
+                                  @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
+                                  @weapon_animation.speed       = @weapons[@current_weapon][:speed]
                                 end
 
                                 #add_event(next_state: :idle) do |args|
@@ -132,7 +158,9 @@ class Player
 
     # --- Switching weapons :
     if args.inputs.keyboard.key_down.w then
-      @current_weapon         = ( @current_weapon + 1 ) % @weapons.length
+      #@current_weapon         = ( @current_weapon + 1 ) % @weapons.length
+      @current_sword          = ( @current_weapon + 1 ) % ( @weapons.length - 1 ) # last weapon is the gun
+      @current_weapon         = @current_sword
       @weapon_animation.path  =  @weapons[@current_weapon][:path]
     end
 
@@ -158,11 +186,11 @@ class Player
       @recovery_timer -= 1
       @dx              = @facing_right ? -PUSH_BACK_SPEED : PUSH_BACK_SPEED
 
-    when :attack
-      @dx = @current_weapon == 2 ? -8 : 1
+    when :shoot
+      @dx = RECOIL
 
     else
-      @dx = 1
+      @dx = RUNNING_SPEED
 
     end
 
@@ -219,7 +247,8 @@ class Player
     end
 
     # --- Weapons collisions :
-    if @weapons[@current_weapon][:animation] == :sword_attack && @machine.current_state == :attack then
+    #if @weapons[@current_weapon][:animation] == :sword_attack && @machine.current_state == :attack then
+    if @weapons[@current_weapon][:animation] == :sword_attack && @machine.current_state == :swing then
       collision_index   = @weapon_animation.frame_index
       weapon_collision  = @weapons[@current_weapon][:collisions][collision_index]
       unless weapon_collision[0].nil? then

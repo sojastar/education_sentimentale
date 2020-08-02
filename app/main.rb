@@ -222,6 +222,9 @@ def tick(args)
                               tile_y: 720 - DISPLAY_BASE_SIZE,
                               tile_w: DISPLAY_BASE_SIZE,
                               tile_h: DISPLAY_BASE_SIZE }
+
+  # 4. Other :
+  args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
 end
 
 def remove_dead_monsters(monsters)
