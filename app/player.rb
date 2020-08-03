@@ -55,7 +55,10 @@ class Player
                               add_state(:running) do
                                 define_setup do
                                   @character_animation.set_clip  :run
-                                  @weapon_animation.set_clip     :run
+
+                                  @current_weapon               = @current_sword
+                                  @weapon_animation.set_clip      :run
+                                  @weapon_animation.path        = @weapons[@current_weapon][:path]
                                 end
 
                                 #add_event(next_state: :idle) do |args|
@@ -112,6 +115,7 @@ class Player
                                   @character_animation.speed    = @weapons[@current_weapon][:speed]
                                   @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
                                   @weapon_animation.speed       = @weapons[@current_weapon][:speed]
+                                  @weapon_animation.path        = @weapons[@current_weapon][:path]
                                 end
 
                                 #add_event(next_state: :idle) do |args|
@@ -127,6 +131,7 @@ class Player
                                   @character_animation.speed    = @weapons[@current_weapon][:speed]
                                   @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
                                   @weapon_animation.speed       = @weapons[@current_weapon][:speed]
+                                  @weapon_animation.path        = @weapons[@current_weapon][:path]
                                 end
 
                                 #add_event(next_state: :idle) do |args|
@@ -185,6 +190,9 @@ class Player
     when :hit
       @recovery_timer -= 1
       @dx              = @facing_right ? -PUSH_BACK_SPEED : PUSH_BACK_SPEED
+
+    when :swing
+      @dx = 0
 
     when :shoot
       @dx = RECOIL

@@ -46,7 +46,7 @@ class Monster
                   add_state(:hit) do
                     define_setup do
                       @animation.set_clip :hit
-                      @recovery_timer   = 10 
+                      @recovery_timer   = 15
                       @push_back_speed  = 0
                     end
 
