@@ -1,5 +1,5 @@
 ---=== PRIORITE HAUTE : ===---
-- il arrive que les monstres meurent au premier coup d'épée 
+- il arrive que les monstres meurent au premier coup d'épée ( FIXED commit bdc3fca52ea598f66deb9204a8902efaf2fbcd17 )
 
 ---=== PRIORITE MOYENNE : ===---
 
