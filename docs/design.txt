@@ -1,0 +1,24 @@
+* niveaux générés aléatoirement
+* les niveaux bouclent sur eux-mêmes
+* à la fin du niveau, la sortie pour le prochain niveau
+
+* les ennemis apparaissent aléatoirement ( mais proprement, c'est à dire pas à un endroit où ils tuent ou blaissent automatiquement le joueur )
+* les ennemis sont générés aléatoirement
+* à mesure que le temps avance, des plus ne plus d'ennemis apparaissent et les ennemis sont de plus en plus puissants
+
+* le joueur court automatiquement vers l'avant
+* il a 3 armes : pistolet, épée, hache
+* pistolets:  - très rapide
+              - dégats légers sur les petits ennemis
+              - stun sur les gros ennemis
+              - le recul de l'arme est le seul moyen pour le joueur d'aller en arrière
+* épée :  - rapide
+          - dégats moyens
+* hache : - lente
+          - dégats importants
+* il a un bouclier pour bloquer certaines attaques ( ? )
+
+* le joueur doit tuer un certains nombres d'ennemis pour que la porte s'ouvre ( et s'il n'y arrive pas, il doit refaire un tour ) ?
+* la joueur gange-t-il des objets/bonus ? Cela conditionne-t-il l'ouverture de la porte ?
+* s'il gagne des objets/bonus les joueur peut-il être tenté de ne pas prendre la porte et de faire encore un tour au risque d'avoir des ennemis trop forts ?
+
