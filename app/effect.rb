@@ -14,8 +14,7 @@ class Effect
   end
 
   def render(args,flipped=false)
-    Debug::draw_cross( @x - @width - ( args.state.ground.position % 8 ), @y, [255, 0, 0, 255] )
-    @animation.frame_at( @x - @width - ( args.state.ground.position % 8 ), @y, flipped )
+    @animation.frame_at( @x - args.state.ground.position, @y, flipped )
   end
 
   def self.player_bullet_impact(x,y)
@@ -31,6 +30,6 @@ class Effect
                               frames,
                               :impact
 
-    Effect::new animation, x, y, 16, 16
+    Effect::new animation, x - 16, y, 16, 16
   end
 end

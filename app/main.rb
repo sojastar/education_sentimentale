@@ -166,8 +166,8 @@ def setup(args)
                                       weapons_list
 
   # --- MONSTERS : ---
-  #args.state.monsters   =  [ Monster::spawn_root_at(120) ]
-  args.state.monsters   =  []
+  args.state.monsters   =  [ Monster::spawn_root_at(120) ]
+  #args.state.monsters   =  []
 
   # --- EFFECTS : ---
   args.state.effects    = []

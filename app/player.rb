@@ -285,28 +285,32 @@ class Player
     elsif @machine.current_state == :shoot && @done_shooting == false then
       bullet_x = 2 
       while bullet_x <= 8 do
-        # Testing tiles :
-        tile_x  = args.state.ground.position.div(8) + bullet_x
-        tile_y  = args.state.ground.collision_tiles[tile_x % args.state.ground.collision_tiles.length]# + 1
+        # Testing monsters first... :
+        bullet_hit_box  = [ bullet_x * 8, @y + GUN_HEIGHT, 8, 2 ]
+        args.state.monsters.each do |monster|
+          monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
+                              monster.y,
+                              monster.width,
+                              monster.height ]
 
-        if @y == tile_y * 8 then
-          #Debug::draw_cross( bullet_x * 8 + TILE_SIZE, tile_y * 8, [0, 0, 255, 255] )
-          #args.state.effects << Effect::player_bullet_impact( bullet_x * 8 + 8 - ( args.state.ground.position % 8 ), tile_y * 8 )
-          args.state.effects << Effect::player_bullet_impact( bullet_x * 8, tile_y * 8 )
-          @done_shooting = true
-          break
+          if bullet_hit_box.intersect_rect? monster_hit_box then
+            monster.current_state = :hit
+            args.state.effects << Effect::player_bullet_impact( monster.x - ( monster.width >> 1 ), @y )
+            @done_shooting = true
+            break
+          end
         end
 
-        
+        break if @done_shooting
 
-        # Testing monsters :
-        args.state.monsters.each do |monster|
-          #monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
-          #                    monster.y,
-          #                    monster.width,
-          #                    monster.height ]
-          ##monster.current_state = :hit if weapon_hit_box.intersect_rect? monster_hit_box
-          #monster.current_state = :hit if  
+        # ... then testing tiles :
+        tile_x  = args.state.ground.position.div(8) + bullet_x
+        tile_y  = args.state.ground.collision_tiles[tile_x % args.state.ground.collision_tiles.length]
+
+        if @y == tile_y * 8 then
+          args.state.effects << Effect::player_bullet_impact( bullet_x * 8 + args.state.ground.position - ( args.state.ground.position % 8 ), tile_y * 8 )
+          @done_shooting = true
+          break
         end
 
         bullet_x += 1
