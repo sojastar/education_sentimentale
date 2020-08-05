@@ -255,8 +255,8 @@ class Player
     end
 
     # --- Weapons collisions :
-    #if @weapons[@current_weapon][:animation] == :sword_attack && @machine.current_state == :attack then
-    if @weapons[@current_weapon][:animation] == :sword_attack && @machine.current_state == :swing then
+    #if @weapons[@current_weapon][:animation] == :sword_attack && @machine.current_state == :swing then
+    if @machine.current_state == :swing then
       collision_index   = @weapon_animation.frame_index
       weapon_collision  = @weapons[@current_weapon][:collisions][collision_index]
       unless weapon_collision[0].nil? then
@@ -278,7 +278,7 @@ class Player
           end
         end
       end
-    #else
+    elsif @machine.current_state == :shoot then
 
     end
 

@@ -8,7 +8,12 @@ class Effect
     @width, @height = width, height
   end
 
-  def update(args)
+  def update
+    @animation.update
+  end
+
+  def render(args,flipped=false)
+    @animation.frame_at( @x - args.state.ground.position - @width, @y, flipped )
   end
 end
     
