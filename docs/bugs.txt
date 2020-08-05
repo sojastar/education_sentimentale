@@ -1,0 +1,1 @@
+- collisions avec le sol quand la dernière tuile du niveau est une montée ( seed 169 )
