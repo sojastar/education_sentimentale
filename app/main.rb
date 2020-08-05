@@ -2,8 +2,12 @@ require 'lib/fsm_machine.rb'
 require 'lib/fsm_state.rb'
 require 'lib/animation.rb'
 require 'app/background.rb'
+require 'app/background_layers.rb'
+require 'app/tiled_background.rb'
+require 'app/background_ground.rb'
 require 'app/effect.rb'
 require 'app/player.rb'
+#require 'app/player_running_left_right.rb'
 require 'app/player_always_running.rb'
 require 'app/monster.rb'
 require 'app/monster_root.rb'
@@ -34,74 +38,26 @@ DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 def setup(args)
 
   # --- Backgroound : ---
-  args.render_target(:bitmap_background).sprites << { x:        0,
-                                                      y:        0,
-                                                      w:        256,
-                                                      h:        192,
-                                                      path:     'sprites/background_bitmaps.png',
-                                                      source_x: 0,
-                                                      source_y: 720-192,
-                                                      source_w: 256,
-                                                      source_h: 192 }
-
-  args.state.backgrounds  = [ Background.new( 64,
-                                              64,
-                                              { path:     :bitmap_background,
-                                                y_offset: 128,
-                                                width:    256,
-                                                height:   64,
-                                                speed:    16 } ),
-                              Background.new( 64,
-                                              64,
-                                              { path:     :bitmap_background,
-                                                y_offset: 64,
-                                                width:    256,
-                                                height:   64,
-                                                speed:    8 } ),
-                              Background.new( 64,
-                                              64,
-                                              { path:     :bitmap_background,
-                                                y_offset: 0,
-                                                width:    256,
-                                                height:   64,
-                                                speed:    4 } ) ]
-  args.state.ground     = TileBackground.new( 64,
-                                              64,
-                                              { render_target_name: :ground,
-                                                width:              256,
-                                                height:             64,
-                                                speed:              2 },
-                                              { tiles:  { path:         'sprites/background_tiles.png',
-                                                          size:         8 },
-                                                groups: { horizontal:   { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },
-                                                          connection:   { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },
-                                                          bottom_right: { indices: [ 4 ],          offset: [ 0,  1 ] },
-                                                          bottom_left:  { indices: [ 5 ],          offset: [ 1,  0 ] },
-                                                          top_left:     { indices: [ 6 ],          offset: [ 1,  0 ] },
-                                                          top_right:    { indices: [ 7 ],          offset: [ 0, -1 ] },
-                                                          empty:        { indices: [ 8 ],          offset: [ 0,  0 ] } },
-                                                rules:  { horizontal:   { 0.5 => [ :horizontal ], 1.0 => [ :connection ] },
-                                                          connection:   { 0.7 => [ :connection ], 1.0 => [ :bottom_right, :top_right ] },
-                                                          bottom_right: { 1.0 => [ :top_left ] },
-                                                          top_left:     { 1.0 => [ :horizontal ] },
-                                                          top_right:    { 1.0 => [ :bottom_left ] },
-                                                          bottom_left:  { 1.0 => [ :horizontal ] } },
-                                                fill:   [ 0, 1, 2, 3, 4, 5 ] } )
+  args.state.backgrounds  = Background::layers
+  args.state.ground       = TiledBackground::ground
 
 
   # --- Player : ---
-  args.state.player     = Player::always_running
+  args.state.player       = Player::always_running
+
 
   # --- MONSTERS : ---
-  args.state.monsters   =  [ Monster::spawn_root_at(120) ]
+  args.state.monsters     =  [ Monster::spawn_root_at(120) ]
+
 
   # --- EFFECTS : ---
-  args.state.effects    = []
+  args.state.effects      = []
+
 
   # --- MISCELLANEOUS : ---
-  args.state.debug_mode = 0
+  args.state.debug_mode   = 0
 
-  args.state.setup_done = true
+  args.state.setup_done   = true
 end
 
 

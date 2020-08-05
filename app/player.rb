@@ -152,12 +152,15 @@ class Player
 
         args.state.monsters.each do |monster|
           unless [:hit, :dying, :dead].include? monster.current_state then
-           monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
-                               monster.y,
-                               monster.width,
-                               monster.height ]
-           monster.current_state = :hit if weapon_hit_box.intersect_rect? monster_hit_box
-           monster.hit @weapons[@current_weapon][:damage]
+            monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
+                                monster.y,
+                                monster.width,
+                                monster.height ]
+
+            if weapon_hit_box.intersect_rect? monster_hit_box then
+              monster.current_state = :hit 
+              monster.hit @weapons[@current_weapon][:damage]
+            end
           end
         end
       end
