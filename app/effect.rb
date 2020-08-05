@@ -1,6 +1,7 @@
 class Effect
   attr_reader :x, :y,
-              :width, :height
+              :width, :height,
+              :animation
 
   def initialize(animation,x,y,width,height)
     @animation      = animation
@@ -13,7 +14,23 @@ class Effect
   end
 
   def render(args,flipped=false)
-    @animation.frame_at( @x - args.state.ground.position - @width, @y, flipped )
+    Debug::draw_cross( @x - @width - ( args.state.ground.position % 8 ), @y, [255, 0, 0, 255] )
+    @animation.frame_at( @x - @width - ( args.state.ground.position % 8 ), @y, flipped )
+  end
+
+  def self.player_bullet_impact(x,y)
+    frames    = { impact: { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
+                            mode:               :once,
+                            speed:              4,
+                            flip_horizontally:  false,
+                            flip_vertically:    false } }
+
+    animation = Animation.new 'sprites/impact.png',
+                              16,
+                              16,
+                              frames,
+                              :impact
+
+    Effect::new animation, x, y, 16, 16
   end
 end
-    

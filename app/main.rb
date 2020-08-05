@@ -166,7 +166,11 @@ def setup(args)
                                       weapons_list
 
   # --- MONSTERS : ---
-  args.state.monsters   =  [ Monster::spawn_root_at(120) ]
+  #args.state.monsters   =  [ Monster::spawn_root_at(120) ]
+  args.state.monsters   =  []
+
+  # --- EFFECTS : ---
+  args.state.effects    = []
 
   # --- MISCELLANEOUS : ---
   args.state.debug_mode = 0
@@ -183,6 +187,7 @@ def tick(args)
   # 1. Setup :
   setup(args) unless args.state.setup_done
 
+
   # 2. Actors Updates :
   args.state.player.update(args)
 
@@ -191,6 +196,10 @@ def tick(args)
 
   args.state.monsters.each { |monster| monster.update(args) }
   args.state.monsters = remove_dead_monsters(args.state.monsters)
+
+  args.outputs.labels << [ 20, 600, args.state.effects.length.to_s, 255, 255, 255, 255 ]
+  args.state.effects.each { |effect| effect.update }
+  args.state.effects  = remove_finished_effects(args.state.effects)
 
 
   # 3. Render :
@@ -202,6 +211,8 @@ def tick(args)
   args.state.monsters.each { |monster| args.render_target(:display).sprites << monster.render(args) }
 
   args.render_target(:display).sprites << args.state.player.render
+
+  args.state.effects.each { |effect| args.render_target(:display).sprites << effect.render(args) }
 
   # 3.2 Render debug visual aides if necessary :
   args.state.debug_mode = ( args.state.debug_mode + 1 ) % MODE_COUNT if args.inputs.keyboard.key_down.tab
@@ -224,10 +235,15 @@ def tick(args)
                               tile_w: DISPLAY_BASE_SIZE,
                               tile_h: DISPLAY_BASE_SIZE }
 
+
   # 4. Other :
   args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
 end
 
 def remove_dead_monsters(monsters)
   monsters.reject { |monster| monster.current_state == :dead }
+end
+
+def remove_finished_effects(effects)
+  effects.reject { |effect| effect.animation.status == :finished }
 end

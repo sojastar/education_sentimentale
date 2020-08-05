@@ -12,6 +12,9 @@ class Player
   RECOVERY_TIME           = 10
   PUSH_BACK_SPEED         = 2
 
+  GUN_HEIGHT              = 8 # in pixels
+  TILE_SIZE               = 8 # in pixels
+
   attr_reader :x, :y, :dx, :dy
 
   def initialize(character_animation,weapon_animation,animation_offset,start_x,start_y,width,height,weapons)
@@ -278,7 +281,39 @@ class Player
           end
         end
       end
-    elsif @machine.current_state == :shoot then
+
+    elsif @machine.current_state == :shoot && @done_shooting == false then
+      bullet_x = 2 
+      while bullet_x <= 8 do
+        # Testing tiles :
+        tile_x  = args.state.ground.position.div(8) + bullet_x
+        tile_y  = args.state.ground.collision_tiles[tile_x % args.state.ground.collision_tiles.length]# + 1
+
+        if @y == tile_y * 8 then
+          #Debug::draw_cross( bullet_x * 8 + TILE_SIZE, tile_y * 8, [0, 0, 255, 255] )
+          #args.state.effects << Effect::player_bullet_impact( bullet_x * 8 + 8 - ( args.state.ground.position % 8 ), tile_y * 8 )
+          args.state.effects << Effect::player_bullet_impact( bullet_x * 8, tile_y * 8 )
+          @done_shooting = true
+          break
+        end
+
+        
+
+        # Testing monsters :
+        args.state.monsters.each do |monster|
+          #monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
+          #                    monster.y,
+          #                    monster.width,
+          #                    monster.height ]
+          ##monster.current_state = :hit if weapon_hit_box.intersect_rect? monster_hit_box
+          #monster.current_state = :hit if  
+        end
+
+        bullet_x += 1
+      end
+
+    else
+      @done_shooting = false if @machine.current_state != :shoot
 
     end
 
