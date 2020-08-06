@@ -40,8 +40,8 @@ def setup(args)
 
   # --- Backgroound : ---
   layers                  = Background::layers
-  args.state.back         = layers[0,2]
-  args.state.front        = layers[2,1]
+  args.state.back         = layers[0,3]
+  args.state.front        = layers[3,1]
   args.state.ground       = TiledBackground::ground
 
 
