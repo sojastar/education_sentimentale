@@ -82,8 +82,6 @@ class Monster
                 { true => [ -24, 0 ], false => [ -24, 0 ] },  # animation draw offset
                 x, 48,                                        # start position x and y
                 18, 32,                                       # collision box width and height
-                0,                                            # running speed
-                0,                                            # push back speed
                 3,                                            # health
                 fsm,                                          # finite state machine
                 nil,                                          # parent

@@ -11,6 +11,7 @@ require 'app/player.rb'
 require 'app/player_always_running.rb'
 require 'app/monster.rb'
 require 'app/monster_root.rb'
+require 'app/monster_rampant.rb'
 
 require 'app/debug.rb'
 
@@ -40,7 +41,7 @@ def setup(args)
   # --- Backgroound : ---
   layers                  = Background::layers
   args.state.back         = layers[0,2]
-  args.state.front        = layers[2,2]
+  args.state.front        = layers[2,1]
   args.state.ground       = TiledBackground::ground
 
 
@@ -49,7 +50,8 @@ def setup(args)
 
 
   # --- MONSTERS : ---
-  args.state.monsters     =  [ Monster::spawn_root_at(120) ]
+  #args.state.monsters     =  [ Monster::spawn_root_at(120) ]
+  args.state.monsters     =  [ Monster::spawn_rampant_at(120) ]
 
 
   # --- EFFECTS : ---

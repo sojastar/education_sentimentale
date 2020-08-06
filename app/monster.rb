@@ -11,7 +11,7 @@ class Monster
               :dx, :dy,
               :health
 
-  def initialize(animation,animation_offset,start_x,start_y,width,height,health,fsm,parent,children)
+  def initialize(animation,animation_offset,start_x,start_y,width,height,running_speed,push_back_speed,health,fsm,parent,children)
     @x,  @y               = start_x, start_y
     @dx, @dy              = 0, 0
 
@@ -22,10 +22,13 @@ class Monster
     @animation            = animation
     @animation_offset     = animation_offset
 
+    @running_speed        = running_speed
+    @tick                 = 0
+
     @health               = health
 
     @recovery_timer       = 0
-    @push_back_speed      = 0
+    @push_back_speed      = push_back_speed
     @machine              = fsm  
     @machine.set_parent self
 
@@ -34,6 +37,7 @@ class Monster
   end
 
   def update(args)
+    #$gtk.args.outputs.labels << [ 20, 600, "#{@x},#{y}", 255, 255, 255, 255 ]
     @children.each { |child| child.update(args) } unless @children.nil?
     @machine.update(args)
     
@@ -49,22 +53,39 @@ class Monster
     case @machine.current_state
     when :walking, :running, :jumping_up, :jumping_down
       # AI code that moves the monster, in relation to @machine
+      @tick            += 1
+      if @tick == @running_speed then
+        @dx   = @facing_right ? 1 : -1
+        @tick = 0
+      end
 
     when :hit
-      @recovery_timer -= 1
-      @dx              = @facing_right ? -@push_back_speed : @push_back_speed
+      @recovery_timer  -= 1
+      @dx               = @facing_right ? -@push_back_speed : @push_back_speed
 
     end
+
+    # Player collisions :
+    player                    = args.state.player
+    player_hit_box            = [ player.x - ( player.width >> 1 ),
+                                  player.y,
+                                  player.width,
+                                  player.height ]
+
+    monster_hit_box           = [ @x - ( @width >> 1 ),
+                                  @y,
+                                  @width,
+                                  @height ]
+
+    if monster_hit_box.intersect_rect? player_hit_box then
+      $gtk.args.outputs.labels << [ 20, 600, 'monster hit!!!', 255, 255, 255, 255 ]
+    end
+
 
     # --- Vertical movement :
     @dy += GRAVITY
 
     # Ground collisions :
-    collision_box             = [ @x - ( @width >> 1 ),
-                                  @y,
-                                  @width,
-                                  @height ]
-
     bottom_left_new_position  = [ @x - ( @width >> 1 ) + @dx, @y + @dy ]
     bottom_right_new_position = [ @x + ( @width >> 1 ) + @dx, @y + @dy ]
 

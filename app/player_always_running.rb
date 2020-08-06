@@ -74,7 +74,7 @@ class Player
 
 
     # ---=== FINITE STATE MACHINE : ===---
-    fsm                   = FSM::new_machine(nil) do
+    fsm                   = FSM::new_machine(nil) do    # nil, because the parent object is not created yet
                               add_state(:running) do
                                 define_setup do
                                   @character_animation.set_clip  :run

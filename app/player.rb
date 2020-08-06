@@ -15,7 +15,9 @@ class Player
   GUN_HEIGHT              = 8 # in pixels
   TILE_SIZE               = 8 # in pixels
 
-  attr_reader :x, :y, :dx, :dy
+  attr_reader :x, :y,
+              :width, :height,
+              :dx, :dy
 
   def initialize(character_animation,weapon_animation,animation_offset,start_x,start_y,width,height,weapons,fsm)
     @x,  @y               = start_x, start_y

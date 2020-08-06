@@ -15,7 +15,7 @@ class TiledBackground
                                     top_left:     { indices: [ 6 ],          offset: [ 1,  0 ] },
                                     top_right:    { indices: [ 7 ],          offset: [ 0, -1 ] },
                                     empty:        { indices: [ 8 ],          offset: [ 0,  0 ] } },
-                          rules:  { horizontal:   { 0.5 => [ :horizontal ], 1.0 => [ :connection ] },
+                          rules:  { horizontal:   { 0.75 => [ :horizontal ], 1.0 => [ :connection ] },
                                     connection:   { 0.7 => [ :connection ], 1.0 => [ :bottom_right, :top_right ] },
                                     bottom_right: { 1.0 => [ :top_left ] },
                                     top_left:     { 1.0 => [ :horizontal ] },
