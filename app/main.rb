@@ -38,7 +38,10 @@ DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 def setup(args)
 
   # --- Backgroound : ---
-  args.state.backgrounds  = Background::layers
+  layers                  = Background::layers
+  args.state.back         = layers[0,2]
+  args.state.front        = layers[2,2]
+  #args.state.backgrounds  = Background::layers
   args.state.ground       = TiledBackground::ground
 
 
@@ -73,7 +76,9 @@ def tick(args)
   # 2. Actors Updates :
   args.state.player.update(args)
 
-  args.state.backgrounds.each { |background| background.update(args.state.player.dx) }
+  #args.state.backgrounds.each { |background| background.update(args.state.player.dx) }
+  args.state.back.each { |layer| layer.update(args.state.player.dx) }
+  args.state.front.each { |layer| layer.update(args.state.player.dx) }
   args.state.ground.update(args.state.player.dx)
 
   args.state.monsters.each { |monster| monster.update(args) }
@@ -86,7 +91,8 @@ def tick(args)
   # 3. Render :
   
   # 3.1 Render to the virtual 64x64 screen :
-  args.state.backgrounds.each { |background| args.render_target(:display).sprites << background.render }
+  #args.state.backgrounds.each { |background| args.render_target(:display).sprites << background.render }
+  args.state.back.each { |layer| args.render_target(:display).sprites << layer.render }
   args.render_target(:display).sprites << args.state.ground.render
 
   args.state.monsters.each { |monster| args.render_target(:display).sprites << monster.render(args) }
@@ -94,6 +100,8 @@ def tick(args)
   args.render_target(:display).sprites << args.state.player.render
 
   args.state.effects.each { |effect| args.render_target(:display).sprites << effect.render(args) }
+
+  args.state.front.each { |layer| args.render_target(:display).sprites << layer.render }
 
   # 3.2 Render debug visual aides if necessary :
   args.state.debug_mode = ( args.state.debug_mode + 1 ) % MODE_COUNT if args.inputs.keyboard.key_down.tab

@@ -6,7 +6,7 @@ class TiledBackground
                           width:              256,
                           height:             64,
                           speed:              2 },
-                        { tiles:  { path:         'sprites/background_tiles.png',
+                        { tiles:  { path:         'sprites/temple_background_tiles.png',
                                     size:         8 },
                           groups: { horizontal:   { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },
                                     connection:   { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },
