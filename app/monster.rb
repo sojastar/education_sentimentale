@@ -72,13 +72,14 @@ class Monster
                                   player.width,
                                   player.height ]
 
-    monster_hit_box           = [ @x - ( @width >> 1 ),
+    monster_hit_box           = [ @x - ( @width >> 1 ) - args.state.ground.position,
                                   @y,
                                   @width,
                                   @height ]
 
     if monster_hit_box.intersect_rect? player_hit_box then
       $gtk.args.outputs.labels << [ 20, 600, 'monster hit!!!', 255, 255, 255, 255 ]
+      @machine.set_current_state :stun
     end
 
 

@@ -2,12 +2,12 @@ class Monster
   def self.spawn_rampant_at(x)
     
     # Rampant Monster ANIMATION :
-    frames    = { idle:     { frames:             [ [0,0] ],
+    frames    = { idle:     { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
                               mode:               :loop,
                               speed:              6,
                               flip_horizontally:  false,
                               flip_vertically:    false },
-                  running:  { frames:             [ [0,1], [1,1] ],  
+                  running:  { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],  
                               mode:               :loop,
                               speed:              4,
                               flip_horizontally:  false,
@@ -55,9 +55,20 @@ class Monster
                       @animation.set_clip :idle
                     end
 
-                    #add_event(next_state: :idle) do |args|
                     add_event(next_state: :running) do |args|
                       @dy == 0.0 && ( @y % 8 ) == 0.0
+                    end
+                  end
+
+                  add_state(:stun) do
+                    define_setup do
+                      @animation.set_clip :idle
+                      @recovery_timer   = 8
+                      @push_back_speed  = 0
+                    end
+
+                    add_event(next_state: :running) do |args|
+                      @recovery_timer <= 0
                     end
                   end
 
@@ -65,14 +76,13 @@ class Monster
                     define_setup do
                       @animation.set_clip :hit
                       @recovery_timer   = 15
-                      @push_back_speed  = 0
+                      @push_back_speed  = 2
                     end
 
                     add_event(next_state: :dying) do |args|
                       @health <= 0
                     end
 
-                    #add_event(next_state: :idle) do |args|
                     add_event(next_state: :running) do |args|
                       @recovery_timer <= 0
                     end
@@ -102,7 +112,7 @@ class Monster
                 x, 48,                                        # start position x and y
                 16, 32,                                       # collision box width and height
                 3,                                            # running speed
-                2,                                            # push back speed
+                1,                                            # push back speed
                 3,                                            # health
                 fsm,                                          # finite state machine
                 nil,                                          # parent

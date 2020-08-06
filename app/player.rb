@@ -105,7 +105,7 @@ class Player
                             monster.height ]
 
         if hit_box.intersect_rect? monster_hit_box then
-          args.outputs.labels << [ 20, 660, "hit!!!!", 255, 255, 255, 255 ]
+          #args.outputs.labels << [ 20, 660, "hit!!!!", 255, 255, 255, 255 ]
           @machine.set_current_state :hit
           @recovery_timer = RECOVERY_TIME
           break
