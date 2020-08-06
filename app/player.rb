@@ -19,7 +19,7 @@ class Player
               :width, :height,
               :dx, :dy
 
-  def initialize(character_animation,weapon_animation,animation_offset,start_x,start_y,width,height,weapons,fsm)
+  def initialize(character_animation,weapon_animation,animation_offset,start_x,start_y,width,height,health,weapons,fsm)
     @x,  @y               = start_x, start_y
     @dx, @dy              = 0, 0
 
@@ -35,6 +35,7 @@ class Player
     @current_sword        = 0
     @current_weapon       = @current_sword
 
+    @health               = health
     @hit                  = false
     @recovery_time        = 0
     @machine              = fsm
@@ -42,13 +43,13 @@ class Player
   end
 
   def update(args)
+    $gtk.args.outputs.labels << [20, 600, "health: #{@health}", 255, 255, 255, 255 ]
     @machine.update(args)
     #puts @machine.current_state
     #puts "position: #{x};#{@y} - displacement: #{@dx};#{@dy}"
 
     # --- Switching weapons :
     if args.inputs.keyboard.key_down.w then
-      #@current_weapon         = ( @current_weapon + 1 ) % @weapons.length
       @current_sword          = ( @current_weapon + 1 ) % ( @weapons.length - 1 ) # last weapon is the gun
       @current_weapon         = @current_sword
       @weapon_animation.path  =  @weapons[@current_weapon][:path]
@@ -105,7 +106,7 @@ class Player
                             monster.height ]
 
         if hit_box.intersect_rect? monster_hit_box then
-          #args.outputs.labels << [ 20, 660, "hit!!!!", 255, 255, 255, 255 ]
+          @health        -= 1 if monster.current_state != :stun
           @machine.set_current_state :hit
           @recovery_timer = RECOVERY_TIME
           break

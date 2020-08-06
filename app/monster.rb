@@ -59,7 +59,7 @@ class Monster
         @tick = 0
       end
 
-    when :hit
+    when :stun, :hit
       @recovery_timer  -= 1
       @dx               = @facing_right ? -@push_back_speed : @push_back_speed
 
@@ -77,10 +77,7 @@ class Monster
                                   @width,
                                   @height ]
 
-    if monster_hit_box.intersect_rect? player_hit_box then
-      $gtk.args.outputs.labels << [ 20, 600, 'monster hit!!!', 255, 255, 255, 255 ]
-      @machine.set_current_state :stun
-    end
+    @machine.set_current_state :stun if monster_hit_box.intersect_rect? player_hit_box
 
 
     # --- Vertical movement :

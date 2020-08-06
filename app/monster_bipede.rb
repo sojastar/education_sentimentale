@@ -1,33 +1,50 @@
 class Monster
-  def self.spawn_root_at(x)
+  def self.spawn_rampant_at(x)
     
-    # Root Monster ANIMATION :
-    frames    = { idle:   { frames:             [ [0,0] ],
-                            mode:               :loop,
-                            speed:              6,
-                            flip_horizontally:  false,
-                            flip_vertically:    false },
-                  hit:    { frames:             [ [0,3] ],
-                            mode:               :once,
-                            speed:              6,
-                            flip_horizontally:  false,
-                            flip_vertically:    false },
-                  death:  { frames:             [ [0,4], [1,4], [2,4] ],
-                            mode:               :once,
-                            speed:              4,
-                            flip_horizontally:  false,
-                            flip_vertically:    false } }
+    # Rampant Monster ANIMATION :
+    frames    = { idle:     { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
+                              mode:               :loop,
+                              speed:              6,
+                              flip_horizontally:  false,
+                              flip_vertically:    false },
+                  running:  { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],  
+                              mode:               :loop,
+                              speed:              4,
+                              flip_horizontally:  false,
+                              flip_vertically:    false },
+                  hit:      { frames:             [ [0,3] ],
+                              mode:               :once,
+                              speed:              6,
+                              flip_horizontally:  false,
+                              flip_vertically:    false },
+                  death:    { frames:             [ [0,4], [1,4], [2,4] ],
+                              mode:               :once,
+                              speed:              4,
+                              flip_horizontally:  false,
+                              flip_vertically:    false } }
 
-    animation = Animation.new 'sprites/root.png',
+    animation = Animation.new 'sprites/bipede.png',
                               48,
                               48,
                               frames,
                               :idle
 
 
-    # Root Monster FINITE STATE MACHINE :
+    # Rampant Monster FINITE STATE MACHINE :
     fsm       = FSM::new_machine(nil) do      # nil, because the parent object is not created yet
                   add_state(:idle) do
+                    define_setup do
+                      @animation.set_clip :idle
+                    end
+                  end
+
+                  add_state(:running) do
+                    define_setup do
+                      @animation.set_clip :running
+                    end
+                  end
+
+                  add_state(:jumping_up) do
                     define_setup do
                       @animation.set_clip :idle
                     end
@@ -38,8 +55,20 @@ class Monster
                       @animation.set_clip :idle
                     end
 
-                    add_event(next_state: :idle) do |args|
+                    add_event(next_state: :running) do |args|
                       @dy == 0.0 && ( @y % 8 ) == 0.0
+                    end
+                  end
+
+                  add_state(:stun) do
+                    define_setup do
+                      @animation.set_clip :idle
+                      @recovery_timer   = 8
+                      @push_back_speed  = 0
+                    end
+
+                    add_event(next_state: :running) do |args|
+                      @recovery_timer <= 0
                     end
                   end
 
@@ -47,14 +76,14 @@ class Monster
                     define_setup do
                       @animation.set_clip :hit
                       @recovery_timer   = 15
-                      @push_back_speed  = 0
+                      @push_back_speed  = 2
                     end
 
                     add_event(next_state: :dying) do |args|
                       @health <= 0
                     end
 
-                    add_event(next_state: :idle) do |args|
+                    add_event(next_state: :running) do |args|
                       @recovery_timer <= 0
                     end
                   end
@@ -81,8 +110,10 @@ class Monster
     Monster.new animation,
                 { true => [ -24, 0 ], false => [ -24, 0 ] },  # animation draw offset
                 x, 48,                                        # start position x and y
-                18, 32,                                       # collision box width and height
-                3,                                            # health
+                16, 32,                                       # collision box width and height
+                8,                                            # running speed
+                1,                                            # push back speed
+                5,                                            # health
                 fsm,                                          # finite state machine
                 nil,                                          # parent
                 nil                                           # children

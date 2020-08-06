@@ -63,7 +63,7 @@ class Monster
                   add_state(:stun) do
                     define_setup do
                       @animation.set_clip :idle
-                      @recovery_timer   = 8
+                      @recovery_timer   = 10
                       @push_back_speed  = 0
                     end
 
@@ -110,8 +110,8 @@ class Monster
     Monster.new animation,
                 { true => [ -24, 0 ], false => [ -24, 0 ] },  # animation draw offset
                 x, 48,                                        # start position x and y
-                16, 32,                                       # collision box width and height
-                3,                                            # running speed
+                24, 12,                                       # collision box width and height
+                4,                                            # running speed
                 1,                                            # push back speed
                 3,                                            # health
                 fsm,                                          # finite state machine

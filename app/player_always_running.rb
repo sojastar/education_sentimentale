@@ -174,8 +174,9 @@ class Player
                 { true => [ -16, 0 ], false => [ -32, 0 ] },  # animation draw offset
                 16,                                           # start x position
                 65,                                           # start y position
-                12,                                           # collision box width
-                14,                                           # collision box height
+                12,                                           # hit box width
+                14,                                           # hit box height
+                3,                                            # health
                 weapons_list,
                 fsm
   end
