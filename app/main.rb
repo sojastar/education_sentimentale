@@ -41,7 +41,6 @@ def setup(args)
   layers                  = Background::layers
   args.state.back         = layers[0,2]
   args.state.front        = layers[2,2]
-  #args.state.backgrounds  = Background::layers
   args.state.ground       = TiledBackground::ground
 
 
@@ -76,7 +75,6 @@ def tick(args)
   # 2. Actors Updates :
   args.state.player.update(args)
 
-  #args.state.backgrounds.each { |background| background.update(args.state.player.dx) }
   args.state.back.each { |layer| layer.update(args.state.player.dx) }
   args.state.front.each { |layer| layer.update(args.state.player.dx) }
   args.state.ground.update(args.state.player.dx)
@@ -91,7 +89,6 @@ def tick(args)
   # 3. Render :
   
   # 3.1 Render to the virtual 64x64 screen :
-  #args.state.backgrounds.each { |background| args.render_target(:display).sprites << background.render }
   args.state.back.each { |layer| args.render_target(:display).sprites << layer.render }
   args.render_target(:display).sprites << args.state.ground.render
 
