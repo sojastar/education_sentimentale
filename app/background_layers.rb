@@ -27,6 +27,6 @@ class Background
                         y_offset: 0,
                         width:    512,
                         height:   64,
-                        speed:    4 } ) ]
+                        speed:    1 } ) ]
   end
 end

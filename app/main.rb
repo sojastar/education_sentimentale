@@ -10,8 +10,11 @@ require 'app/player.rb'
 #require 'app/player_running_left_right.rb'
 require 'app/player_always_running.rb'
 require 'app/monster.rb'
+require 'app/monster_walking.rb'
 require 'app/monster_root.rb'
 require 'app/monster_rampant.rb'
+require 'app/monster_flying.rb'
+require 'app/monster_flying_eye.rb'
 
 require 'app/debug.rb'
 
