@@ -81,7 +81,8 @@ class Monster
     WalkingMonster.new  animation,
                         { true => [ -24, 0 ], false => [ -24, 0 ] },  # animation draw offset
                         x, 48,                                        # start position x and y
-                        18, 32,                                       # collision box width and height
+                        [ 18, 32 ],                                   # collision box size
+                        nil,                                          # no need for walking monsters
                         0,                                            # running speed
                         0,                                            # push back speed
                         3,                                            # health

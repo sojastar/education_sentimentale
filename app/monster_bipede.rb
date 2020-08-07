@@ -107,16 +107,17 @@ class Monster
 
 
     # Spawning :
-    Monster.new animation,
-                { true => [ -24, 0 ], false => [ -24, 0 ] },  # animation draw offset
-                x, 48,                                        # start position x and y
-                16, 32,                                       # collision box width and height
-                8,                                            # running speed
-                1,                                            # push back speed
-                5,                                            # health
-                fsm,                                          # finite state machine
-                nil,                                          # parent
-                nil                                           # children
+    WalkingMonster.new  animation,
+                        { true => [ -24, 0 ], false => [ -24, 0 ] },  # animation draw offset
+                        x, 48,                                        # start position x and y
+                        [ 16, 32 ],                                   # collision box width and height
+                        nil,                                          # no need for walking monsters
+                        8,                                            # running speed
+                        1,                                            # push back speed
+                        5,                                            # health
+                        fsm,                                          # finite state machine
+                        nil,                                          # parent
+                        nil                                           # children
 
   end
 end

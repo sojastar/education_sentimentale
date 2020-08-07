@@ -6,12 +6,12 @@ class Monster
 
 
   # ---=== INITIALIZATION : ===---
-  def initialize(animation,animation_offset,start_x,start_y,width,height,running_speed,push_back_speed,health,fsm,parent,children)
+  def initialize(animation,animation_offset,start_x,start_y,hit_box_size,hit_box_offset,running_speed,push_back_speed,health,fsm,parent,children)
     @x,  @y               = start_x, start_y
     @dx, @dy              = 0, 0
 
-    @width                = width
-    @height               = height
+    @width, @height       = hit_box_size
+    @hit_offset           = hit_box_offset
 
     @facing_right         = false  # monsters usually face left
     @animation            = animation

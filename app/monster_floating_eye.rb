@@ -88,7 +88,8 @@ class FlyingMonster
     FlyingMonster.new animation,
                       { true => [ -24, 0 ], false => [ -24, 0 ] },  # animation draw offset
                       x, y,                                         # start position x and y
-                      14, 9,                                        # collision box width and height
+                      [ 16, 16 ],                                   # collision box size
+                      [-14,  8 ],                                   # collision box offset
                       4,                                            # running speed
                       2,                                            # push back speed
                       1,                                            # health

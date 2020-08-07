@@ -54,8 +54,8 @@ def setup(args)
 
   # --- MONSTERS : ---
   #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120) ]
-  args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120) ]
-  #args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(120, 8 * ( 1 + rand(4) ) ) ] 
+  #args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120) ]
+  args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(4) ) ) ] 
 
 
   # --- EFFECTS : ---
