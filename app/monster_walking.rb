@@ -45,12 +45,7 @@ class WalkingMonster < Monster
                                   player.width,
                                   player.height ]
 
-    monster_hit_box           = [ @x - ( @width >> 1 ) - args.state.ground.position,
-                                  @y,
-                                  @width,
-                                  @height ]
-
-    @machine.set_current_state :stun if monster_hit_box.intersect_rect? player_hit_box
+    @machine.set_current_state :stun if hit_box(args.state.ground.position).intersect_rect? player_hit_box
 
 
     # --- Vertical movement :
@@ -85,5 +80,9 @@ class WalkingMonster < Monster
     @y += @dy
 
     @animation.update
+  end
+
+  def hit_box(offset)
+    [ @x - ( @width >> 1 ) - offset, @y, @width, @height ]
   end
 end

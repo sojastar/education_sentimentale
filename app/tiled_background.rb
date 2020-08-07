@@ -1,5 +1,5 @@
 class TileBackground < Background
-  attr_reader :collision_tiles
+  attr_reader :width, :collision_tiles
 
   def initialize(render_width,render_height,description,rules)
     @path             = description[:render_target_name]
@@ -27,7 +27,7 @@ class TileBackground < Background
     target              = description[:render_target_name]
 
     x, y                = 0, min_height
-    last_tile_group     = :horizontal
+    last_tile_group     = :horizontal1
     proposed_tile_group = last_tile_group
     tile                = rules[:groups][:horizontal][:indices].sample
     offset              = [ 0, 0 ]
@@ -56,11 +56,11 @@ class TileBackground < Background
     if last_tile_group == :top_right then
       place_tile_at target, rules, rules[:groups][:bottom_left][:indices].first, x, y
     else
-      place_tile_at target, rules, rules[:groups][:horizontal][:indices].sample, x, y
+      place_tile_at target, rules, rules[:groups][:horizontal1][:indices].sample, x, y
     end
     collision_tiles[x] = y
 
-    place_tile_at target, rules, rules[:groups][:horizontal][:indices].sample, x + 1, y
+    place_tile_at target, rules, rules[:groups][:horizontal1][:indices].sample, x + 1, y
     collision_tiles[x + 1] = y
 
     [ rules[:tiles][:size] * ( x + 1 ), collision_tiles ]

@@ -1,6 +1,4 @@
 class Player
-
-  # ---=== CONSTANTS : ===---
   CAN_MOVE_STATES         = [ :walking, :running, :jumping_up, :jumping_down ]
 
   GRAVITY                 = -0.4
@@ -17,14 +15,10 @@ class Player
   GUN_HEIGHT              = 8 # in pixels
   TILE_SIZE               = 8 # in pixels
 
-
-  # ---=== ACCESSORS : ===---
   attr_reader :x, :y,
               :width, :height,
               :dx, :dy
 
-
-  # ---=== INITIALIZATION : ===---
   def initialize(character_animation,weapon_animation,animation_offset,start_x,start_y,width,height,health,weapons,fsm)
     @x,  @y               = start_x, start_y
     @dx, @dy              = 0, 0
@@ -48,14 +42,11 @@ class Player
     @machine.set_parent self
   end
 
-
-  # ---=== UPDATE : ===---
   def update(args)
     $gtk.args.outputs.labels << [20, 600, "health: #{@health}", 255, 255, 255, 255 ]
     @machine.update(args)
     #puts @machine.current_state
     #puts "position: #{x};#{@y} - displacement: #{@dx};#{@dy}"
-
 
     # --- Switching weapons :
     if args.inputs.keyboard.key_down.w then
@@ -63,7 +54,6 @@ class Player
       @current_weapon         = @current_sword
       @weapon_animation.path  =  @weapons[@current_weapon][:path]
     end
-
 
     # --- Horizontal movement :
     #@dx = 0
@@ -102,13 +92,22 @@ class Player
     # --- Vertical movement :
     @dy += GRAVITY
 
-
     # --- Enemy collisions :
-    #Debug::draw_box hit_box, [ 153, 229,  80, 255 ] if args.state.debug_mode == 1
+    hit_box                   = [ @x - ( @width >> 1 ),
+                                  @y,
+                                  @width,
+                                  @height ]
+    
+    Debug::draw_box hit_box, [ 153, 229,  80, 255 ] if args.state.debug_state == 1
 
     args.state.monsters.each do |monster|
       unless [ :dying, :dead ].include? monster.current_state then
-        if hit_box.intersect_rect? monster.hit_box(args.state.ground.position) then
+        monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
+                            monster.y,
+                            monster.width,
+                            monster.height ]
+
+        if hit_box.intersect_rect? monster_hit_box then
           @health        -= 1 if monster.current_state != :stun
           @machine.set_current_state :hit
           @recovery_timer = RECOVERY_TIME
@@ -116,7 +115,6 @@ class Player
         end
       end
     end
-
 
     #--- Ground collisions :
     bottom_left_new_position  = [ @x - ( @width >> 1 ) + @dx, @y + @dy ]
@@ -144,7 +142,6 @@ class Player
       @dy = ground_box_y + 8 - @y                           if point_in_rect( [ @x + ( @width >> 1 ),       @y + @dy ], ground_box )
     end
 
-
     # --- Weapons collisions :
     if @machine.current_state == :swing then
       collision_index   = @weapon_animation.frame_index
@@ -159,7 +156,12 @@ class Player
 
         args.state.monsters.each do |monster|
           unless [:hit, :dying, :dead].include? monster.current_state then
-            if weapon_hit_box.intersect_rect? monster.hit_box(args.state.ground.position) then
+            monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
+                                monster.y,
+                                monster.width,
+                                monster.height ]
+
+            if weapon_hit_box.intersect_rect? monster_hit_box then
               monster.current_state = :hit 
               monster.hit @weapons[@current_weapon][:damage]
             end
@@ -173,7 +175,12 @@ class Player
         # Testing monsters first... :
         bullet_hit_box  = [ bullet_x * 8, @y + GUN_HEIGHT, 8, 2 ]
         args.state.monsters.each do |monster|
-          if bullet_hit_box.intersect_rect? monster.hit_box(args.state.ground.position) then
+          monster_hit_box = [ monster.x - ( monster.width >> 1 ) - args.state.ground.position,
+                              monster.y,
+                              monster.width,
+                              monster.height ]
+
+          if bullet_hit_box.intersect_rect? monster_hit_box then
             monster.current_state = :hit
             args.state.effects << Effect::player_bullet_impact( monster.x - ( monster.width >> 1 ), @y )
             @done_shooting = true
@@ -201,7 +208,6 @@ class Player
 
     end
 
-
     # --- Updates :
     @y  += @dy
     
@@ -209,15 +215,6 @@ class Player
     @weapon_animation.update
   end
 
-
-  # ---=== RENDERING : ===---
-  def render
-    [ @character_animation.frame_at( @x + @animation_offset[@facing_right][0], @y, !@facing_right ),
-      @weapon_animation.frame_at(    @x + @animation_offset[@facing_right][0], @y, !@facing_right ) ]
-  end
-
-
-  # ---=== UTILITIES : ===---
   def point_in_rect(point,rect)
     point[0] >= rect[0]           &&
     point[0] <= rect[0] + rect[2] &&
@@ -225,12 +222,11 @@ class Player
     point[1] <= rect[1] + rect[3]
   end
 
-  def hit_box
-    [ @x - ( @width >> 1 ), @y, @width, @height ]
+  def render
+    [ @character_animation.frame_at( @x + @animation_offset[@facing_right][0], @y, !@facing_right ),
+      @weapon_animation.frame_at(    @x + @animation_offset[@facing_right][0], @y, !@facing_right ) ]
   end
 
-
-  # ---=== SERIALIZATION : ===---
   def serialize
     {}
   end

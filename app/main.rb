@@ -14,7 +14,7 @@ require 'app/monster_walking.rb'
 require 'app/monster_root.rb'
 require 'app/monster_rampant.rb'
 require 'app/monster_flying.rb'
-require 'app/monster_flying_eye.rb'
+require 'app/monster_floating_eye.rb'
 
 require 'app/debug.rb'
 
@@ -53,8 +53,9 @@ def setup(args)
 
 
   # --- MONSTERS : ---
-  #args.state.monsters     =  [ Monster::spawn_root_at(120) ]
-  args.state.monsters     =  [ Monster::spawn_rampant_at(120) ]
+  #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120) ]
+  args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120) ]
+  #args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(120, 8 * ( 1 + rand(4) ) ) ] 
 
 
   # --- EFFECTS : ---
@@ -86,6 +87,8 @@ def tick(args)
 
   args.state.monsters.each { |monster| monster.update(args) }
   args.state.monsters = remove_dead_monsters(args.state.monsters)
+  args.state.monsters = remove_passed_monsters(args.state.monsters, args.state.ground.position)
+  #args.outputs.labels << [ 20, 680, "monsters: #{args.state.monsters.length}", 255, 255, 255, 255 ]
 
   args.state.effects.each { |effect| effect.update }
   args.state.effects  = remove_finished_effects(args.state.effects)
@@ -108,10 +111,10 @@ def tick(args)
   # 3.2 Render debug visual aides if necessary :
   args.state.debug_mode = ( args.state.debug_mode + 1 ) % MODE_COUNT if args.inputs.keyboard.key_down.tab
   if args.state.debug_mode == 1 then
-    Debug::draw_player_bounds [ 153, 229,  80, 255 ]
+    Debug::draw_box args.state.player.hit_box, [ 153, 229,  80, 255 ]
     Debug::draw_player_v      [  91, 110, 225, 255 ], [  95, 205, 228, 255 ]
     #Debug::draw_tiles_bounds  [ 217,  87,  99, 125 ]
-    Debug::draw_bounds args.state.monsters.first, args.state.ground.position, [229, 153, 80, 255]
+    args.state.monsters.each { |monster| Debug::draw_box monster.hit_box(args.state.ground.position), [229, 153, 80, 255] }
   end
 
   # 3.3 Render to DragonRuby window :
@@ -127,12 +130,26 @@ def tick(args)
                               tile_h: DISPLAY_BASE_SIZE }
 
 
-  # 4. Other :
+  # 4. Basic Spawning Algorithm :
+  #if args.state.monsters.empty? then
+  #  spawn_x = ( args.state.ground.position + 80 ) % args.state.ground.width
+  #  args.state.monsters <<  case rand(2)
+  #                          when 1 then WalkingMonster::spawn_rampant_at spawn_x  
+  #                          when 2 then FlyingMonster::spawn_floating_eye_at spawn_x, 8 * ( 1 + rand(4) )
+  #                          end
+  #end
+
+
+  # 5. Other :
   args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
 end
 
 def remove_dead_monsters(monsters)
   monsters.reject { |monster| monster.current_state == :dead }
+end
+
+def remove_passed_monsters(monsters,offset)
+  monsters.reject { |monster| monster.x - offset < -monster.width }
 end
 
 def remove_finished_effects(effects)

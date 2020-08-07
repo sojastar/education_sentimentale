@@ -1,4 +1,4 @@
-class FLyingMonster < Monster
+class FlyingMonster < Monster
   def update(args)
     @children.each { |child| child.update(args) } unless @children.nil?
     @machine.update(args)
@@ -34,10 +34,13 @@ class FLyingMonster < Monster
                                   player.width,
                                   player.height ]
 
-    monster_hit_box           = [ @x - ( @width >> 1 ) - args.state.ground.position,
-                                  @y,
+    #monster_hit_box           = [ @x - ( @width >> 1 ) - args.state.ground.position,
+    monster_hit_box           = [ @x - ( @width >> 1 ) - 8 - args.state.ground.position,
+                                  @y + 12,
                                   @width,
                                   @height ]
+
+    Debug::draw_box monster_hit_box, [229, 153, 80, 255] if args.state.debug_mode == 1
 
     @machine.set_current_state :stun if monster_hit_box.intersect_rect? player_hit_box
 
