@@ -56,6 +56,7 @@ def setup(args)
   #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120) ]
   #args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120) ]
   args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(4) ) ) ] 
+  args.state.spawned_monsters = 1
 
 
   # --- EFFECTS : ---
@@ -72,6 +73,7 @@ end
 
 
 
+# ---=== MAIN LOOP : ==---
 def tick(args)
   
   # 1. Setup :
@@ -131,19 +133,29 @@ def tick(args)
 
 
   # 4. Basic Spawning Algorithm :
-  #if args.state.monsters.empty? then
-  #  spawn_x = ( args.state.ground.position + 80 ) % args.state.ground.width
-  #  args.state.monsters <<  case rand(2)
-  #                          when 1 then WalkingMonster::spawn_rampant_at spawn_x  
-  #                          when 2 then FlyingMonster::spawn_floating_eye_at spawn_x, 8 * ( 1 + rand(4) )
-  #                          end
-  #end
+  if args.state.monsters.empty? then
+    args.state.spawned_monsters += 1
+    spawn_x = ( args.state.ground.position + 80 ) % args.state.ground.width
+    case rand(2)
+    when 0
+      puts "spawned rampant at #{spawn_x} (#{args.state.spawned_monsters})"
+      args.state.monsters << WalkingMonster::spawn_rampant_at( spawn_x ) 
+    when 1
+      puts "spawned floating eye at #{spawn_x} (#{args.state.spawned_monsters})"
+      args.state.monsters << FlyingMonster::spawn_floating_eye_at( spawn_x, 8 * ( 1 + rand(4) ) )
+    end
+  end
 
 
   # 5. Other :
   args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
 end
 
+
+
+
+
+# ---=== UTILITIES : ===---
 def remove_dead_monsters(monsters)
   monsters.reject { |monster| monster.current_state == :dead }
 end

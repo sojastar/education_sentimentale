@@ -82,6 +82,8 @@ class WalkingMonster < Monster
     @animation.update
   end
 
+
+  # ---=== UTILITIES : ===---
   def hit_box(offset)
     [ @x - ( @width >> 1 ) - offset, @y, @width, @height ]
   end

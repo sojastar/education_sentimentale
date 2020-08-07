@@ -3,7 +3,7 @@ class TiledBackground
     TileBackground.new( 64,
                         64,
                         { render_target_name: :ground,
-                          width:              256,
+                          width:              512,
                           height:             64,
                           speed:              2 },
                         { tiles:  { path:         'sprites/temple_background_tiles.png',
