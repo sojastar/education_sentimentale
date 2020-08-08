@@ -24,8 +24,10 @@ class Monster
 
     @recovery_timer       = 0
     @push_back_speed      = push_back_speed
+
     @machine              = fsm  
     @machine.set_parent self
+    @machine.start
 
     @parent               = parent
     @children             = children
