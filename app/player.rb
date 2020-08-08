@@ -21,7 +21,8 @@ class Player
   # ---=== ACCESSORS : ===---
   attr_reader :x, :y,
               :width, :height,
-              :dx, :dy
+              :dx, :dy,
+              :health
 
 
   # ---=== INITIALIZATION : ===---

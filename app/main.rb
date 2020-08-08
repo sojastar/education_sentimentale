@@ -63,6 +63,10 @@ def setup(args)
   args.state.effects      = []
 
 
+  # --- SCENE MANAGEMENT : ---
+  args.state.scene        = :game
+
+
   # --- MISCELLANEOUS : ---
   args.state.debug_mode   = 0
 
@@ -80,46 +84,87 @@ def tick(args)
   setup(args) unless args.state.setup_done
 
 
-  # 2. Actors Updates :
-  args.state.player.update(args)
+  case args.state.scene
+  when :start_screen
 
-  args.state.back.each { |layer| layer.update(args.state.player.dx) }
-  args.state.front.each { |layer| layer.update(args.state.player.dx) }
-  args.state.ground.update(args.state.player.dx)
+  when :game
 
-  args.state.monsters.each { |monster| monster.update(args) }
-  args.state.monsters = remove_dead_monsters(args.state.monsters)
-  args.state.monsters = remove_passed_monsters(args.state.monsters, args.state.ground.position)
-  #args.outputs.labels << [ 20, 680, "monsters: #{args.state.monsters.length}", 255, 255, 255, 255 ]
+    # 2. Actors Updates :
+    args.state.player.update(args)
 
-  args.state.effects.each { |effect| effect.update }
-  args.state.effects  = remove_finished_effects(args.state.effects)
+    args.state.back.each { |layer| layer.update(args.state.player.dx) }
+    args.state.front.each { |layer| layer.update(args.state.player.dx) }
+    args.state.ground.update(args.state.player.dx)
+
+    args.state.monsters.each { |monster| monster.update(args) }
+    args.state.monsters = remove_dead_monsters(args.state.monsters)
+    args.state.monsters = remove_passed_monsters(args.state.monsters, args.state.ground.position)
+    #args.outputs.labels << [ 20, 680, "monsters: #{args.state.monsters.length}", 255, 255, 255, 255 ]
+
+    args.state.effects.each { |effect| effect.update }
+    args.state.effects  = remove_finished_effects(args.state.effects)
+
+    args.state.scene = :game_over if args.state.player.health == 0
 
 
-  # 3. Render :
-  
-  # 3.1 Render to the virtual 64x64 screen :
-  args.state.back.each { |layer| args.render_target(:display).sprites << layer.render }
-  args.render_target(:display).sprites << args.state.ground.render
+    # 3. Render :
+    
+    # 3.1 Render to the virtual 64x64 screen :
+    args.state.back.each { |layer| args.render_target(:display).sprites << layer.render }
+    args.render_target(:display).sprites << args.state.ground.render
 
-  args.state.monsters.each { |monster| args.render_target(:display).sprites << monster.render(args) }
+    args.state.monsters.each { |monster| args.render_target(:display).sprites << monster.render(args) }
 
-  args.render_target(:display).sprites << args.state.player.render
+    args.render_target(:display).sprites << args.state.player.render
 
-  args.state.effects.each { |effect| args.render_target(:display).sprites << effect.render(args) }
+    args.state.effects.each { |effect| args.render_target(:display).sprites << effect.render(args) }
 
-  args.state.front.each { |layer| args.render_target(:display).sprites << layer.render }
+    args.state.front.each { |layer| args.render_target(:display).sprites << layer.render }
 
-  # 3.2 Render debug visual aides if necessary :
-  args.state.debug_mode = ( args.state.debug_mode + 1 ) % MODE_COUNT if args.inputs.keyboard.key_down.tab
-  if args.state.debug_mode == 1 then
-    Debug::draw_box args.state.player.hit_box, [ 153, 229,  80, 255 ]
-    Debug::draw_player_v      [  91, 110, 225, 255 ], [  95, 205, 228, 255 ]
-    #Debug::draw_tiles_bounds  [ 217,  87,  99, 125 ]
-    args.state.monsters.each { |monster| Debug::draw_box monster.hit_box(args.state.ground.position), [229, 153, 80, 255] }
+    args.state.player.health.times do |i|
+      args.render_target(:display).sprites << { x:    9 * i,
+                                                y:    54,
+                                                w:    8,
+                                                h:    8,
+                                                path: 'sprites/life_8px.png' }
+    end
+
+    # 3.2 Render debug visual aides if necessary :
+    args.state.debug_mode = ( args.state.debug_mode + 1 ) % MODE_COUNT if args.inputs.keyboard.key_down.tab
+    if args.state.debug_mode == 1 then
+      Debug::draw_box args.state.player.hit_box, [ 153, 229,  80, 255 ]
+      Debug::draw_player_v      [  91, 110, 225, 255 ], [  95, 205, 228, 255 ]
+      #Debug::draw_tiles_bounds  [ 217,  87,  99, 125 ]
+      args.state.monsters.each { |monster| Debug::draw_box monster.hit_box(args.state.ground.position), [229, 153, 80, 255] }
+    end
+
+
+    # 4. Basic Spawning Algorithm :
+    if args.state.monsters.empty? then
+      args.state.spawned_monsters += 1
+      spawn_x = ( args.state.ground.position + 80 ) % args.state.ground.width
+      case rand(2)
+      when 0
+        puts "spawned rampant at #{spawn_x} (#{args.state.spawned_monsters})"
+        args.state.monsters << WalkingMonster::spawn_rampant_at( spawn_x ) 
+      when 1
+        puts "spawned floating eye at #{spawn_x} (#{args.state.spawned_monsters})"
+        args.state.monsters << FlyingMonster::spawn_floating_eye_at( spawn_x, 8 * ( 1 + rand(4) ) )
+      end
+    end
+
+
+    # 5. Other :
+    args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
+
+  when :game_over
+    args.render_target(:display).labels << [ 2, 22, "Game Over", 255, 0, 0, 255 ]
+
+    args.state.scene = :start_screen if args.inputs.keyboard.key_down.space
+
   end
 
-  # 3.3 Render to DragonRuby window :
+  # Render to DragonRuby window :
   args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
   args.outputs.sprites  <<  { x:      DISPLAY_X,
                               y:      DISPLAY_Y,
@@ -130,25 +175,6 @@ def tick(args)
                               tile_y: 720 - DISPLAY_BASE_SIZE,
                               tile_w: DISPLAY_BASE_SIZE,
                               tile_h: DISPLAY_BASE_SIZE }
-
-
-  # 4. Basic Spawning Algorithm :
-  if args.state.monsters.empty? then
-    args.state.spawned_monsters += 1
-    spawn_x = ( args.state.ground.position + 80 ) % args.state.ground.width
-    case rand(2)
-    when 0
-      puts "spawned rampant at #{spawn_x} (#{args.state.spawned_monsters})"
-      args.state.monsters << WalkingMonster::spawn_rampant_at( spawn_x ) 
-    when 1
-      puts "spawned floating eye at #{spawn_x} (#{args.state.spawned_monsters})"
-      args.state.monsters << FlyingMonster::spawn_floating_eye_at( spawn_x, 8 * ( 1 + rand(4) ) )
-    end
-  end
-
-
-  # 5. Other :
-  args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
 end
 
 
