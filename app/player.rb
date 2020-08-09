@@ -12,7 +12,7 @@ class Player
   RECOIL                  = -8
 
   RECOVERY_TIME           = 10
-  PUSH_BACK_SPEED         = 2
+  PUSH_BACK_SPEED         = 6
 
   GUN_HEIGHT              = 8 # in pixels
   TILE_SIZE               = 8 # in pixels
@@ -45,8 +45,10 @@ class Player
     @health               = health
     @hit                  = false
     @recovery_time        = 0
+
     @machine              = fsm
     @machine.set_parent self
+    @machine.start
   end
 
 
@@ -110,7 +112,8 @@ class Player
     args.state.monsters.each do |monster|
       unless [ :dying, :dead ].include? monster.current_state then
         if hit_box.intersect_rect? monster.hit_box(args.state.ground.position) then
-          @health        -= 1 if monster.current_state != :stun
+          #@health        -= 1 if monster.current_state != :stun
+          @health        -= 1 if @machine.current_state != :hit
           @machine.set_current_state :hit
           @recovery_timer = RECOVERY_TIME
           break

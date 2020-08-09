@@ -145,10 +145,10 @@ def tick(args)
       spawn_x = ( args.state.ground.position + 80 ) % args.state.ground.width
       case rand(2)
       when 0
-        puts "spawned rampant at #{spawn_x} (#{args.state.spawned_monsters})"
+        puts "--- spawned rampant at #{spawn_x} (#{args.state.spawned_monsters}) !!!"
         args.state.monsters << WalkingMonster::spawn_rampant_at( spawn_x ) 
       when 1
-        puts "spawned floating eye at #{spawn_x} (#{args.state.spawned_monsters})"
+        puts "--- spawned floating eye at #{spawn_x} (#{args.state.spawned_monsters}) !!!"
         args.state.monsters << FlyingMonster::spawn_floating_eye_at( spawn_x, 8 * ( 1 + rand(4) ) )
       end
     end
@@ -158,13 +158,22 @@ def tick(args)
     args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
 
   when :game_over
-    args.render_target(:display).labels << [ 2, 22, "Game Over", 255, 0, 0, 255 ]
+    args.render_target(:display).labels << {  x: 2,
+                                              y: 22,
+                                              text: "Game Over",
+                                              size_enum:  -8,
+                                              r: 255,
+                                              g: 0,
+                                              b: 0,
+                                              a: 255,
+                                              font: "fonts/hotchili.ttf" }
 
     args.state.scene = :start_screen if args.inputs.keyboard.key_down.space
 
   end
 
-  # Render to DragonRuby window :
+
+  # 6. Render to DragonRuby window :
   args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
   args.outputs.sprites  <<  { x:      DISPLAY_X,
                               y:      DISPLAY_Y,

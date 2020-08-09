@@ -34,6 +34,7 @@ class FlyingMonster
     fsm       = FSM::new_machine(nil) do      # nil, because the parent object is not created yet
                   add_state(:flying) do
                     define_setup do
+                      puts 'setup flying'
                       @animation.set_clip :flying
                     end
                   end
