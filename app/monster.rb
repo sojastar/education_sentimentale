@@ -1,6 +1,7 @@
 class Monster
   attr_reader :x, :y,
               :width, :height,
+              :hit_offset,
               :dx, :dy,
               :health
 

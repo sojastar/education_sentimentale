@@ -14,6 +14,8 @@ class Player
   RECOVERY_TIME           = 10
   PUSH_BACK_SPEED         = 6
 
+  MAX_LIFE                = 5
+
   GUN_HEIGHT              = 8 # in pixels
   TILE_SIZE               = 8 # in pixels
 
@@ -106,18 +108,24 @@ class Player
     @dy += GRAVITY
 
 
-    # --- Enemy collisions :
-    #Debug::draw_box hit_box, [ 153, 229,  80, 255 ] if args.state.debug_mode == 1
-
+    # --- Enemies collisions :
     args.state.monsters.each do |monster|
       unless [ :dying, :dead ].include? monster.current_state then
         if hit_box.intersect_rect? monster.hit_box(args.state.ground.position) then
-          #@health        -= 1 if monster.current_state != :stun
           @health        -= 1 if @machine.current_state != :hit
           @machine.set_current_state :hit
           @recovery_timer = RECOVERY_TIME
           break
         end
+      end
+    end
+
+
+    # --- Props collisions :
+    args.state.props.each do |prop|
+      if hit_box.intersect_rect? prop.hit_box(args.state.ground.position) then
+        prop.use
+        instance_exec nil, &prop.action
       end
     end
 

@@ -34,7 +34,6 @@ class Monster
     fsm       = FSM::new_machine(nil) do      # nil, because the parent object is not created yet
                   add_state(:idle) do
                     define_setup do
-                      puts 'setup idle'
                       @animation.set_clip :idle
                     end
                   end
@@ -112,7 +111,7 @@ class Monster
                         { true => [ -24, 0 ], false => [ -24, 0 ] },  # animation draw offset
                         x, 48,                                        # start position x and y
                         [ 24, 12 ],                                   # collision box size
-                        nil,                                          # no need for walking monsters
+                        [  0,  0 ],                                   # no need for walking monsters, but used to spawn droped items
                         4,                                            # running speed
                         4,                                            # push back speed
                         3,                                            # health

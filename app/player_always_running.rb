@@ -41,6 +41,11 @@ class Player
                                               mode:               :once,
                                               speed:              5,
                                               flip_horizontally:  false,
+                                              flip_vertically:    false },
+                              death:        { frames:             [ [0,7], [1,7], [2,7] ],
+                                              mode:               :once,
+                                              speed:              6,
+                                              flip_horizontally:  false,
                                               flip_vertically:    false } }
 
     character_animation   = Animation.new 'sprites/all_body.png',
