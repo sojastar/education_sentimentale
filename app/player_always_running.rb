@@ -92,6 +92,8 @@ class Player
                                   #@current_weapon               = @current_sword
                                   @weapon_animation.set_clip      :run
                                   @weapon_animation.path        = @weapons[@current_weapon][:path]
+
+                                  @was_running                  = true    # related to the DIRTY HACK !!!
                                 end
 
                                 add_event(next_state: :jumping_up) do |args|

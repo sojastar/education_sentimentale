@@ -174,6 +174,26 @@ class Player
     end
 
 
+    #### DIRTY HACK !!! ###
+    if @machine.current_state == :running then
+      if @dx == 0 then
+        if @was_running == true
+          @character_animation.set_clip :idle
+          @weapon_animation.set_clip    :idle
+          @weapon_animation.path        = @weapons[@current_weapon][:path]
+          @was_running = false
+        end
+      else
+        if @was_running == false
+          @character_animation.set_clip :run
+          @weapon_animation.set_clip    :run
+          @weapon_animation.path        = @weapons[@current_weapon][:path]
+          @was_running = true
+        end
+      end
+    end
+
+
     # --- Weapons collisions :
     if @machine.current_state == :swing then
       collision_index   = @weapon_animation.frame_index
