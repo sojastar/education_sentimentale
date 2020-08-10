@@ -37,6 +37,8 @@ DISPLAY_SIZE      = DISPLAY_SCALE * DISPLAY_BASE_SIZE
 DISPLAY_X         = ( SCREEN_WIDTH  - DISPLAY_SIZE ) >> 1
 DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
+SPAWN_DISTANCE    = 80
+
 LEVELS            = [ { min_length:   200,
                         bitmaps:      'sprites/field_background_bitmaps.png',
                         tiles:        'sprites/field_background_tiles.png',
@@ -57,6 +59,7 @@ def setup(args)
 
   # --- SCENE MANAGEMENT : ---
   args.state.scene        = :start_screen
+  args.state.level        = 0
 
 
   # --- MISCELLANEOUS : ---
@@ -112,7 +115,7 @@ end
 
 # ---=== MAIN LOOP : ==---
 def tick(args)
-  
+  args.outputs.labels << [ 20, 580, "monsters: #{args.state.monsters.length}", 255, 255, 255, 255 ]  
   # 1. Setup :
   setup(args) unless args.state.setup_done
 
@@ -130,7 +133,7 @@ def tick(args)
                                               font: "fonts/hotchili.ttf" }
 
     if args.inputs.keyboard.key_down.space then
-      setup_level( args, LEVELS[0] )
+      setup_level( args, LEVELS[args.state.level] )
       args.state.scene = :game 
     end
 
@@ -195,15 +198,7 @@ def tick(args)
 
 
     # 4. Basic Spawning Algorithm :
-    if args.state.monsters.empty? then
-      spawn_x = ( args.state.ground.position + 80 ) % args.state.ground.width
-      case rand
-      when 0...0.75
-        args.state.monsters << FlyingMonster::spawn_floating_eye_at( spawn_x, 8 * ( 1 + rand(4) ) )
-      when 0.75..1.0
-        args.state.monsters << WalkingMonster::spawn_rampant_at( spawn_x ) 
-      end
-    end
+    args.state.monsters << spawn_monster(args) if args.state.monsters.empty?
 
 
     # 5. Other :
@@ -243,6 +238,21 @@ end
 
 
 # ---=== UTILITIES : ===---
+def spawn_monster(args)
+  spawn_x = ( args.state.ground.position + SPAWN_DISTANCE ) % args.state.ground.width
+  roll    = rand
+  LEVELS[args.state.level][:spawn_probs].each do |prob|
+    return spawn_type( prob[:monster], spawn_x ) if prob[:range] === roll
+  end
+end
+
+def spawn_type(type,x)
+  case type
+  when :floating_eye  then FlyingMonster::spawn_floating_eye_at( x, 8 * ( 1 + rand(4) ) )
+  when :rampant       then WalkingMonster::spawn_rampant_at( x )
+  end
+end
+
 def remove_dead_monsters(args)
   args.state.monsters.reject do |monster| 
     if monster.current_state == :dead then
