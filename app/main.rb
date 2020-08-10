@@ -44,6 +44,20 @@ DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 # ---===  SETUP ===---
 def setup(args)
 
+  # --- SCENE MANAGEMENT : ---
+  args.state.scene        = :start_screen
+
+
+  # --- MISCELLANEOUS : ---
+  args.state.debug_mode   = 0
+
+  args.state.setup_done   = true
+
+end
+
+
+def setup_level(args)
+
   # --- Backgroound : ---
   layers                  = Background::layers
   args.state.back         = layers[0,3]
@@ -59,7 +73,6 @@ def setup(args)
   #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120) ]
   #args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120) ]
   args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(4) ) ) ] 
-  args.state.spawned_monsters = 1
 
 
   # --- PROPS : ---
@@ -80,15 +93,6 @@ def setup(args)
   # --- EFFECTS : ---
   args.state.effects      = []
 
-
-  # --- SCENE MANAGEMENT : ---
-  args.state.scene        = :game
-
-
-  # --- MISCELLANEOUS : ---
-  args.state.debug_mode   = 0
-
-  args.state.setup_done   = true
 end
 
 
@@ -104,6 +108,20 @@ def tick(args)
 
   case args.state.scene
   when :start_screen
+    args.render_target(:display).labels << {  x: 2,
+                                              y: 22,
+                                              text: "Press Start",
+                                              size_enum:  -8,
+                                              r: 255,
+                                              g: 255,
+                                              b: 255,
+                                              a: 255,
+                                              font: "fonts/hotchili.ttf" }
+
+    if args.inputs.keyboard.key_down.space then
+      setup_level(args)
+      args.state.scene = :game 
+    end
 
   when :game
 
@@ -167,7 +185,6 @@ def tick(args)
 
     # 4. Basic Spawning Algorithm :
     if args.state.monsters.empty? then
-      args.state.spawned_monsters += 1
       spawn_x = ( args.state.ground.position + 80 ) % args.state.ground.width
       case rand
       when 0...0.75

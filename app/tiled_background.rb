@@ -29,7 +29,7 @@ class TileBackground < Background
     x, y                = 0, min_height
     last_tile_group     = :horizontal1
     proposed_tile_group = last_tile_group
-    tile                = rules[:groups][:horizontal][:indices].sample
+    tile                = rules[:groups][:horizontal1][:indices].sample
     offset              = [ 0, 0 ]
     place_tile_at target, rules, tile, x, y
     collision_tiles     = [y]   # at this point, x = 0, so the first collision tile is at (0;y)
@@ -52,6 +52,7 @@ class TileBackground < Background
       x  += offset[0]
       y  += offset[1] 
     end
+    puts '3'
 
     if last_tile_group == :top_right then
       place_tile_at target, rules, rules[:groups][:bottom_left][:indices].first, x, y
