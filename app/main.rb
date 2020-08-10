@@ -37,7 +37,7 @@ DISPLAY_SIZE      = DISPLAY_SCALE * DISPLAY_BASE_SIZE
 DISPLAY_X         = ( SCREEN_WIDTH  - DISPLAY_SIZE ) >> 1
 DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
-SPAWN_DISTANCE    = 80
+SPAWN_DISTANCE    = 100
 
 LEVELS            = [ { min_length:   200,
                         bitmaps:      'sprites/field_background_bitmaps.png',
@@ -158,8 +158,6 @@ def tick(args)
 
     args.state.effects.each { |effect| effect.update }
     args.state.effects  = remove_finished_effects(args.state.effects)
-
-    #args.state.scene = :game_over if args.state.player.health == 0
 
 
     # 2. Render :
@@ -297,8 +295,10 @@ end
 def remove_dead_monsters(args)
   args.state.monsters.reject do |monster| 
     if monster.current_state == :dead then
-      args.state.props << Prop.spawn_hotdog_at( monster.x + monster.hit_offset[0],
-                                                monster.y + monster.hit_offset[1] )
+      if rand > 0.8 then
+        args.state.props << Prop.spawn_hotdog_at( monster.x + monster.hit_offset[0],
+                                                  monster.y + monster.hit_offset[1] )
+      end
       true
     end
   end
