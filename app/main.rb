@@ -37,6 +37,17 @@ DISPLAY_SIZE      = DISPLAY_SCALE * DISPLAY_BASE_SIZE
 DISPLAY_X         = ( SCREEN_WIDTH  - DISPLAY_SIZE ) >> 1
 DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
+LEVELS            = [ { min_length:   200,
+                        bitmaps:      'sprites/field_background_bitmaps.png',
+                        tiles:        'sprites/field_background_tiles.png',
+                        spawn_probs:  [ { range: 0...0.85,  monster: :floating_eye },
+                                        { range: 0.85..1.0, monster: :rampant } ] },
+                      { min_length:   200,
+                        bitmaps:      'sprites/temple_background_bitmaps.png',
+                        tiles:        'sprites/temple_background_tiles.png',
+                        spawn_probs:  [ { range: 0...0.5,  monster: :floating_eye },
+                                        { range: 0.5..1.0, monster: :rampant } ] } ]
+
 
 
 
@@ -56,13 +67,13 @@ def setup(args)
 end
 
 
-def setup_level(args)
+def setup_level(args,level)
 
   # --- Backgroound : ---
-  layers                  = Background::layers
+  layers                  = Background::layers( level[:bitmaps] )
   args.state.back         = layers[0,3]
   args.state.front        = layers[3,1]
-  args.state.ground       = TiledBackground::ground 
+  args.state.ground       = TiledBackground::ground( level[:tiles], level[:min_length] )
 
 
   # --- Player : ---
@@ -119,7 +130,7 @@ def tick(args)
                                               font: "fonts/hotchili.ttf" }
 
     if args.inputs.keyboard.key_down.space then
-      setup_level(args)
+      setup_level( args, LEVELS[0] )
       args.state.scene = :game 
     end
 

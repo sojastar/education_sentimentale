@@ -52,7 +52,6 @@ class TileBackground < Background
       x  += offset[0]
       y  += offset[1] 
     end
-    puts '3'
 
     if last_tile_group == :top_right then
       place_tile_at target, rules, rules[:groups][:bottom_left][:indices].first, x, y

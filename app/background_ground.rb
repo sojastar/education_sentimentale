@@ -1,12 +1,12 @@
 class TiledBackground
-  def self.ground
+  def self.ground(tiles_path,min_width)
     TileBackground.new( 64,
                         64,
                         { render_target_name: :ground,
-                          width:              512,
+                          width:              min_width,#512,
                           height:             64,
                           speed:              2 },
-                        { tiles:  { path:         'sprites/temple_background_tiles.png',
+                        { tiles:  { path:         tiles_path,#'sprites/temple_background_tiles.png',
                                     size:         8 },
                           groups: { horizontal1:  { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },   
                                     horizontal2:  { indices: [ 0, 1, 2, 3 ], offset: [ 1,  0 ] },
