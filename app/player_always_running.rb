@@ -42,7 +42,12 @@ class Player
                                               speed:              5,
                                               flip_horizontally:  false,
                                               flip_vertically:    false },
-                              death:        { frames:             [ [0,7], [1,7], [2,7] ],
+                              shifting:     { frames:             [ [0,8], [1,8], [2,8], [3,8], [4,8], [5,8] ],
+                                              mode:               :once,
+                                              speed:              6,
+                                              flip_horizontally:  false,
+                                              flip_vertically:    false },
+                              dying:        { frames:             [ [0,7], [1,7], [2,7], [3,7] ],
                                               mode:               :once,
                                               speed:              6,
                                               flip_horizontally:  false,
@@ -84,7 +89,7 @@ class Player
                                 define_setup do
                                   @character_animation.set_clip  :run
 
-                                  @current_weapon               = @current_sword
+                                  #@current_weapon               = @current_sword
                                   @weapon_animation.set_clip      :run
                                   @weapon_animation.path        = @weapons[@current_weapon][:path]
                                 end
@@ -165,8 +170,26 @@ class Player
                                   @weapon_animation.set_clip    :hit
                                 end
 
+                                add_event(next_state: :dying) do |args|
+                                  @health == 0
+                                end
+
                                 add_event(next_state: :running) do |args|
                                   @recovery_timer <= 0
+                                end
+                              end
+
+                              add_state(:shifting) do
+                                define_setup do
+                                  @character_animation.set_clip :shifting
+                                  @weapon_animation.set_clip    :shifting
+                                end
+                              end
+
+                              add_state(:dying) do
+                                define_setup do
+                                  @character_animation.set_clip :dying
+                                  @weapon_animation.set_clip    :dying
                                 end
                               end
 

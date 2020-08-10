@@ -56,7 +56,8 @@ class Player
 
   # ---=== UPDATE : ===---
   def update(args)
-    $gtk.args.outputs.labels << [20, 600, "health: #{@health}", 255, 255, 255, 255 ]
+
+    # --- State Machine :
     @machine.update(args)
     #puts @machine.current_state
     #puts "position: #{x};#{@y} - displacement: #{@dx};#{@dy}"
@@ -95,6 +96,14 @@ class Player
     when :swing
       @dx = 0
 
+    when :shifting, :dying
+      @dx = 0
+
+      @character_animation.update
+      @weapon_animation.update
+
+      return
+
     when :shoot
       @dx = RECOIL
 
@@ -106,6 +115,14 @@ class Player
 
     # --- Vertical movement :
     @dy += GRAVITY
+
+
+    # --- Door collisions :
+    if hit_box.intersect_rect? args.state.door.hit_box(args.state.ground.position) then
+      if args.inputs.keyboard.key_held.up then
+        @machine.set_current_state :shifting
+      end
+    end
 
 
     # --- Enemies collisions :
@@ -183,7 +200,8 @@ class Player
       bullet_x = 2 
       while bullet_x <= 8 do
         # Testing monsters first... :
-        bullet_hit_box  = [ bullet_x * 8, @y + GUN_HEIGHT, 8, 2 ]
+        #bullet_hit_box  = [ bullet_x * 8, @y + GUN_HEIGHT, 8, 2 ]
+        bullet_hit_box  = [ bullet_x * 8, @y, 8, 8 ]
         args.state.monsters.each do |monster|
           if bullet_hit_box.intersect_rect? monster.hit_box(args.state.ground.position) then
             monster.current_state = :hit
@@ -226,6 +244,16 @@ class Player
   def render
     [ @character_animation.frame_at( @x + @animation_offset[@facing_right][0], @y, !@facing_right ),
       @weapon_animation.frame_at(    @x + @animation_offset[@facing_right][0], @y, !@facing_right ) ]
+  end
+
+
+  # ---=== STATE : ===---
+  def current_state
+    @machine.current_state
+  end
+
+  def animation_status
+    @character_animation.status
   end
 
 

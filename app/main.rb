@@ -115,8 +115,8 @@ end
 
 # ---=== MAIN LOOP : ==---
 def tick(args)
-  args.outputs.labels << [ 20, 580, "monsters: #{args.state.monsters.length}", 255, 255, 255, 255 ]  
-  # 1. Setup :
+
+  # --- Setup :
   setup(args) unless args.state.setup_done
 
 
@@ -139,7 +139,7 @@ def tick(args)
 
   when :game
 
-    # 2. Actors Updates :
+    # 1. Actors Updates :
     args.state.player.update(args)
 
     args.state.back.each { |layer| layer.update(args.state.player.dx) }
@@ -158,12 +158,12 @@ def tick(args)
     args.state.effects.each { |effect| effect.update }
     args.state.effects  = remove_finished_effects(args.state.effects)
 
-    args.state.scene = :game_over if args.state.player.health == 0
+    #args.state.scene = :game_over if args.state.player.health == 0
 
 
-    # 3. Render :
+    # 2. Render :
     
-    # 3.1 Render to the virtual 64x64 screen :
+    # 2.1 Render to the virtual 64x64 screen :
     args.state.back.each { |layer| args.render_target(:display).sprites << layer.render }
     args.render_target(:display).sprites << args.state.ground.render
 
@@ -187,7 +187,7 @@ def tick(args)
                                                 path: 'sprites/life_8px.png' }
     end
 
-    # 3.2 Render debug visual aides if necessary :
+    # 2.2 Render debug visual aides if necessary :
     args.state.debug_mode = ( args.state.debug_mode + 1 ) % MODE_COUNT if args.inputs.keyboard.key_down.tab
     if args.state.debug_mode == 1 then
       Debug::draw_box args.state.player.hit_box, [ 153, 229,  80, 255 ]
@@ -197,17 +197,57 @@ def tick(args)
     end
 
 
-    # 4. Basic Spawning Algorithm :
+    # 3. Spawning :
     args.state.monsters << spawn_monster(args) if args.state.monsters.empty?
+
+
+    # 4. Death or Next Level :
+    if  args.state.player.current_state     == :dying     &&
+        args.state.player.animation_status  == :finished  then
+      args.state.scene  = :game_over
+    end
+
+    if  args.state.player.current_state     == :shifting  &&
+        args.state.player.animation_status  == :finished  then
+      args.state.scene  = :next_level
+    end
 
 
     # 5. Other :
     args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
 
+
+  when :next_level
+    args.state.level += 1
+
+    if args.state.level < LEVELS.length then
+      setup_level( args, LEVELS[args.state.level] )
+      args.state.scene  = :game 
+
+    else
+      args.state.scene  = :victory
+
+    end
+
+
+  when :victory
+    args.render_target(:display).labels << {  x: 2,
+                                              y: 22,
+                                              text: "THE END!!!",
+                                              size_enum:  -8,
+                                              r: 255,
+                                              g: 0,
+                                              b: 0,
+                                              a: 255,
+                                              font: "fonts/hotchili.ttf" }
+
+    args.state.scene = :start_screen if args.inputs.keyboard.key_down.space
+
+
   when :game_over
     args.render_target(:display).labels << {  x: 2,
                                               y: 22,
-                                              text: "Game Over",
+                                              text: "GAME OVER",
                                               size_enum:  -8,
                                               r: 255,
                                               g: 0,
@@ -220,7 +260,7 @@ def tick(args)
   end
 
 
-  # 6. Render to DragonRuby window :
+  # --- Render to DragonRuby window :
   args.outputs.solids   <<  [ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255 ]
   args.outputs.sprites  <<  { x:      DISPLAY_X,
                               y:      DISPLAY_Y,
