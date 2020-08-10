@@ -59,7 +59,6 @@ def setup(args)
 
   # --- SCENE MANAGEMENT : ---
   args.state.scene        = :start_screen
-  args.state.level        = 0
 
 
   # --- MISCELLANEOUS : ---
@@ -132,9 +131,11 @@ def tick(args)
                                               a: 255,
                                               font: "fonts/hotchili.ttf" }
 
+
     if args.inputs.keyboard.key_down.space then
+      args.state.level  = 0
       setup_level( args, LEVELS[args.state.level] )
-      args.state.scene = :game 
+      args.state.scene  = :game 
     end
 
   when :game
