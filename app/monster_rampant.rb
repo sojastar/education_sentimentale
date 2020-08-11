@@ -40,12 +40,14 @@ class WalkingMonster
                   add_state(:idle) do
                     define_setup do
                       @animation.set_clip :idle
+                      limbs_are :attack
                     end
                   end
 
                   add_state(:running) do
                     define_setup do
                       @animation.set_clip :running
+                      limbs_are :attack
                     end
                   end
 
@@ -68,6 +70,7 @@ class WalkingMonster
                   add_state(:stun) do
                     define_setup do
                       @animation.set_clip :idle
+                      limbs_are :stun
                       @recovery_timer   = 10
                       @push_back_speed  = 0
                     end
@@ -80,6 +83,7 @@ class WalkingMonster
                   add_state(:hit) do
                     define_setup do
                       @animation.set_clip :hit
+                      limbs_are :hit
                       @recovery_timer   = 15
                       @push_back_speed  = 2
                     end
@@ -96,7 +100,7 @@ class WalkingMonster
                   add_state(:dying) do
                     define_setup do
                       @animation.set_clip :dying
-                      kill_limbs
+                      limbs_are :dying
                     end
 
                     add_event(next_state: :dead) do |args|
