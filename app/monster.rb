@@ -7,7 +7,7 @@ class Monster
 
 
   # ---=== INITIALIZATION : ===---
-  def initialize(animation,animation_offset,start_x,start_y,hit_box_size,hit_box_offset,running_speed,push_back_speed,health,fsm,parent,children)
+  def initialize(animation,animation_offset,start_x,start_y,hit_box_size,hit_box_offset,running_speed,push_back_speed,health,fsm,limbs)
     @x,  @y               = start_x, start_y
     @dx, @dy              = 0, 0
 
@@ -30,23 +30,18 @@ class Monster
     @machine.set_parent self
     @machine.start
 
-    @parent               = parent
-    @children             = children
+    @limbs                = limbs
   end
 
 
-  # ---=== UPDATE : ===---
-  def update(args)
-    # virtual function ( is it called that in Ruby ? )
-  end
-
-
-  # ---=== RENDERING : ===---
+  # ---=== RENDER : ===---
   def render(args)
-    if @children.nil? then
+    if @limbs.nil? then
       @animation.frame_at( @x + @animation_offset[@facing_right][0] - args.state.ground.position, @y, @facing_right )
     else
-      [ @animation.frame_at( @x + @animation_offset[@facing_right][0] - args.state.ground.position, @y, @facing_right ) ] + @children.map { |child| child.render }
+      #puts "parent x: #{@x + @animation_offset[@facing_right][0] - args.state.ground.position}, y: #{@y}"
+      render_x  = @x + @animation_offset[@facing_right][0] - args.state.ground.position
+      [ @animation.frame_at( render_x, @y, @facing_right ) ] + @limbs.map { |limb| limb.render( args, render_x, @y ) }
     end
   end
 

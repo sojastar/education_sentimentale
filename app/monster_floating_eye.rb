@@ -94,7 +94,6 @@ class FlyingMonster
                       2,                                            # push back speed
                       1,                                            # health
                       fsm,                                          # finite state machine
-                      nil,                                          # parent
                       nil                                           # children
   end
 end

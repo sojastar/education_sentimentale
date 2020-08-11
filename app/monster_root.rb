@@ -87,7 +87,6 @@ class Monster
                         0,                                            # push back speed
                         3,                                            # health
                         fsm,                                          # finite state machine
-                        nil,                                          # parent
                         nil                                           # children
 
   end

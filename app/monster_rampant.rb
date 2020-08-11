@@ -1,4 +1,9 @@
 class Monster
+  RAMPANT_SPAWN_ZONE_X  = 18
+  RAMPANT_SPAWN_ZONE_Y  = 6
+  RAMPANT_SPAWN_ZONE_W  = 15
+  RAMPANT_SPAWN_ZONE_H  = 5
+
   def self.spawn_rampant_at(x)
     
     # Rampant Monster ANIMATION :
@@ -106,8 +111,17 @@ class Monster
                 end
 
 
+    # Spawning Children :
+    limb_count  = 3
+    limbs       = limb_count.times.map do |i|
+                    child_x = RAMPANT_SPAWN_ZONE_X + ( rand * RAMPANT_SPAWN_ZONE_W ).to_i
+                    child_y = RAMPANT_SPAWN_ZONE_Y + ( rand * RAMPANT_SPAWN_ZONE_H ).to_i
+                    Limb::spawn_scorpion_tail_at( child_x, child_y )
+                  end 
+
+
     # Spawning :
-    WalkingMonster.new  animation,
+    WalkingMonster.new(  animation,
                         { true => [ -24, 0 ], false => [ -24, 0 ] },  # animation draw offset
                         x, 48,                                        # start position x and y
                         [ 24, 12 ],                                   # collision box size
@@ -116,8 +130,7 @@ class Monster
                         4,                                            # push back speed
                         3,                                            # health
                         fsm,                                          # finite state machine
-                        nil,                                          # parent
-                        nil                                           # children
+                        limbs )                                       # limbs
 
   end
 end

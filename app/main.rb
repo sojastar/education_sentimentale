@@ -15,6 +15,8 @@ require 'app/monster_root.rb'
 require 'app/monster_rampant.rb'
 require 'app/monster_flying.rb'
 require 'app/monster_floating_eye.rb'
+require 'app/limb.rb'
+require 'app/limb_scorpio.rb'
 require 'app/prop.rb'
 require 'app/prop_hotdog.rb'
 require 'app/prop_door.rb'
@@ -39,12 +41,12 @@ DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
 SPAWN_DISTANCE    = 100
 
-LEVELS            = [ { min_length:   200,
+LEVELS            = [ { min_length:   400,
                         bitmaps:      'sprites/field_background_bitmaps.png',
                         tiles:        'sprites/field_background_tiles.png',
-                        spawn_probs:  [ { range: 0...0.85,  monster: :floating_eye },
-                                        { range: 0.85..1.0, monster: :rampant } ] },
-                      { min_length:   200,
+                        spawn_probs:  [ { range: 0...0.45,  monster: :floating_eye },
+                                        { range: 0.45..1.0, monster: :rampant } ] },
+                      { min_length:   400,
                         bitmaps:      'sprites/temple_background_bitmaps.png',
                         tiles:        'sprites/temple_background_tiles.png',
                         spawn_probs:  [ { range: 0...0.5,  monster: :floating_eye },
@@ -85,7 +87,7 @@ def setup_level(args,level)
   # --- MONSTERS : ---
   #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120) ]
   #args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120) ]
-  args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(4) ) ) ] 
+  args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(3) ) ) ] 
 
 
   # --- PROPS : ---
@@ -198,6 +200,11 @@ def tick(args)
 
     # 3. Spawning :
     args.state.monsters << spawn_monster(args) if args.state.monsters.empty?
+    #if args.state.monsters.empty? then
+    #  new_monster = spawn_monster(args)
+    #  #puts new_monster
+    #  args.state.monsters << new_monster
+    #end
 
 
     # 4. Death or Next Level :
@@ -214,6 +221,10 @@ def tick(args)
 
     # 5. Other :
     args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
+    args.outputs.labels << [ 20, 600, "monsters: #{args.state.monsters.length}", 255, 255, 255, 255 ]
+    if args.state.monsters.length > 0 then
+      args.outputs.labels << [ 20, 580, "monster x: #{args.state.monsters.first.x - args.state.ground.position + args.state.monsters.first.width}", 255, 255, 255, 255 ]
+    end
 
 
   when :next_level
@@ -287,15 +298,15 @@ end
 
 def spawn_type(type,x)
   case type
-  when :floating_eye  then FlyingMonster::spawn_floating_eye_at( x, 8 * ( 1 + rand(4) ) )
-  when :rampant       then WalkingMonster::spawn_rampant_at( x )
+  when :floating_eye  then return FlyingMonster::spawn_floating_eye_at( x, 8 * ( 1 + rand(4) ) )
+  when :rampant       then return WalkingMonster::spawn_rampant_at( x )
   end
 end
 
 def remove_dead_monsters(args)
   args.state.monsters.reject do |monster| 
     if monster.current_state == :dead then
-      if rand > 0.8 then
+      if rand > 0.7 then
         args.state.props << Prop.spawn_hotdog_at( monster.x + monster.hit_offset[0],
                                                   monster.y + monster.hit_offset[1] )
       end

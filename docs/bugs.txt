@@ -3,6 +3,7 @@
 - le pistolet en marche pas toujours avec les enemis qui ne sont pas au même niveau que le joueur alors qu'il le devrait
 
 ---=== PRIORITE MOYENNE : ===---
+- limiter le longueur des niveau ( si le niveau générer est trop long, relancer la génération )
 
 ---=== PRIORITE BASSE : ===---
 - collisions avec le sol quand la dernière tuile du niveau est une montée ( seed 169 )

@@ -62,6 +62,14 @@ class Animation
     @status                     = :running
   end
 
+  #def set_current_frame(frame_index)
+  #  @frame_index  = frame_index % @max_frames
+  #end
+
+  def random_start_frame
+    @frame_index  = rand(@max_frames)
+  end
+
   def update
     @tick = ( @tick + 1 ) % @current_clip[:speed]
 
@@ -103,7 +111,7 @@ class Animation
     @frame
   end
 
-  def scaled_frame_at(x,y,scale)
+  def scaled_frame_at(x,y,flip,scale)
     @frame[:x]                  = x
     @frame[:y]                  = y
     @frame[:w]                  = scale * @width

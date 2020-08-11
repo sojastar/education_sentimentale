@@ -12,7 +12,7 @@ class WalkingMonster < Monster
   # ---=== UPDATE : ===---
   def update(args)
     #$gtk.args.outputs.labels << [ 20, 600, "#{@x},#{y}", 255, 255, 255, 255 ]
-    @children.each { |child| child.update(args) } unless @children.nil?
+    @limbs.each { |limb| limb.update(args) } unless @limbs.nil?
     @machine.update(args)
     
     # --- Check for death :
@@ -45,7 +45,11 @@ class WalkingMonster < Monster
                                   player.width,
                                   player.height ]
 
-    @machine.set_current_state :stun if hit_box(args.state.ground.position).intersect_rect? player_hit_box
+    unless [ :dying, :dead ].include? @machine.current_state then
+      if hit_box(args.state.ground.position).intersect_rect? player_hit_box then
+        @machine.set_current_state :stun 
+      end
+    end
 
 
     # --- Vertical movement :
