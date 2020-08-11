@@ -62,9 +62,9 @@ class Animation
     @status                     = :running
   end
 
-  #def set_current_frame(frame_index)
-  #  @frame_index  = frame_index % @max_frames
-  #end
+  def set_current_frame(frame_index)
+    @frame_index  = frame_index % @max_frames
+  end
 
   def random_start_frame
     @frame_index  = rand(@max_frames)

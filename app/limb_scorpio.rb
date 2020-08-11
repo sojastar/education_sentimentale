@@ -13,7 +13,7 @@ class Limb
                             flip_horizontally:  false,
                             flip_vertically:    false } }
 
-    animation = Animation.new 'sprites/scorpio.png',
+    animation = Animation.new 'sprites/scorpio_' + ( 1 + rand(6) ).to_s + '.png',
                               48,
                               48,
                               frames,
@@ -40,10 +40,11 @@ class Limb
     # Other parameters :
     offset_x    = 32
     offset_y    = 2
-    scale       = 1.0 + 0.15 * rand
-    color_shift = [ 150 + ( 105 * rand ).to_i,
-                    150 + ( 105 * rand ).to_i,
-                    150 + ( 105 * rand ).to_i ]
+    scale       = 0.8 + 0.4 * rand
+    #scale       = 0.5 + rand
+    color_shift = [ 255,#150 + ( 105 * rand ).to_i,
+                    255,#150 + ( 105 * rand ).to_i,
+                    255 ]#150 + ( 105 * rand ).to_i ]
 
     # Spawning :
     Limb.new( x, y,
