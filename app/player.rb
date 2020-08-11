@@ -56,7 +56,6 @@ class Player
 
   # ---=== UPDATE : ===---
   def update(args)
-
     # --- State Machine :
     @machine.update(args)
     #puts @machine.current_state

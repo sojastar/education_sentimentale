@@ -39,18 +39,22 @@ DISPLAY_SIZE      = DISPLAY_SCALE * DISPLAY_BASE_SIZE
 DISPLAY_X         = ( SCREEN_WIDTH  - DISPLAY_SIZE ) >> 1
 DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
-SPAWN_DISTANCE    = 100
+#SPAWN_DISTANCE    = 100
 
-LEVELS            = [ { min_length:   400,
-                        bitmaps:      'sprites/field_background_bitmaps.png',
-                        tiles:        'sprites/field_background_tiles.png',
-                        spawn_probs:  [ { range: 0...0.45,  monster: :floating_eye },
-                                        { range: 0.45..1.0, monster: :rampant } ] },
-                      { min_length:   400,
-                        bitmaps:      'sprites/temple_background_bitmaps.png',
-                        tiles:        'sprites/temple_background_tiles.png',
-                        spawn_probs:  [ { range: 0...0.5,  monster: :floating_eye },
-                                        { range: 0.5..1.0, monster: :rampant } ] } ]
+LEVELS            = [ { min_length:     400,
+                        bitmaps:        'sprites/field_background_bitmaps.png',
+                        tiles:          'sprites/field_background_tiles.png',
+                        difficulty:     1,
+                        spawn_probs:    [ { range: 0...0.45,  monster: :floating_eye },
+                                          { range: 0.45..1.0, monster: :rampant } ],
+                        spawn_distance: 100 },
+                      { min_length:     400,
+                        bitmaps:        'sprites/temple_background_bitmaps.png',
+                        tiles:          'sprites/temple_background_tiles.png',
+                        difficulty:     1,
+                        spawn_probs:    [ { range: 0...0.5,  monster: :floating_eye },
+                                          { range: 0.5..1.0, monster: :rampant } ],
+                        spawn_distance: 100 } ]
 
 
 
@@ -85,8 +89,8 @@ def setup_level(args,level)
 
 
   # --- MONSTERS : ---
-  #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120) ]
-  args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120) ]
+  args.state.monsters     =  [ WalkingMonster::spawn_root_at(120, 2) ]
+  #args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120, 2) ]
   #args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(3) ) ) ] 
 
 
@@ -141,7 +145,6 @@ def tick(args)
     end
 
   when :game
-
     # 1. Actors Updates :
     args.state.player.update(args)
 
@@ -166,7 +169,7 @@ def tick(args)
     
     # 2.1 Render to the virtual 64x64 screen :
     args.state.back.each { |layer| args.render_target(:display).sprites << layer.render }
-    args.render_target(:display).sprites << args.state.ground.render
+    #args.render_target(:display).sprites << args.state.ground.render
 
     args.render_target(:display).sprites << args.state.door.render(args)
 
@@ -175,6 +178,8 @@ def tick(args)
     args.state.props.each { |prop| args.render_target(:display).sprites << prop.render(args) }
 
     args.render_target(:display).sprites << args.state.player.render
+
+    args.render_target(:display).sprites << args.state.ground.render
 
     args.state.effects.each { |effect| args.render_target(:display).sprites << effect.render(args) }
 
@@ -289,17 +294,18 @@ end
 
 # ---=== UTILITIES : ===---
 def spawn_monster(args)
-  spawn_x = ( args.state.ground.position + SPAWN_DISTANCE ) % args.state.ground.width
+  #spawn_x = ( args.state.ground.position + SPAWN_DISTANCE ) % args.state.ground.width
+  spawn_x = ( args.state.ground.position + LEVELS[args.state.level][:spawn_distance] ) % args.state.ground.width
   roll    = rand
   LEVELS[args.state.level][:spawn_probs].each do |prob|
-    return spawn_type( prob[:monster], spawn_x ) if prob[:range] === roll
+    return spawn_type( args, prob[:monster], spawn_x ) if prob[:range] === roll
   end
 end
 
-def spawn_type(type,x)
+def spawn_type(args,type,x)
   case type
   when :floating_eye  then return FlyingMonster::spawn_floating_eye_at( x, 8 * ( 1 + rand(4) ) )
-  when :rampant       then return WalkingMonster::spawn_rampant_at( x )
+  when :rampant       then return WalkingMonster::spawn_rampant_at( x, LEVELS[args.state.level][:difficulty] )
   end
 end
 

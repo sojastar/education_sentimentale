@@ -22,8 +22,14 @@ module FSM
     end
 
     def set_current_state(state_name)
-      @parent.instance_eval &@states[state_name].setup
-      @current_state  = state_name
+      if @states.keys.include? state_name then
+        @parent.instance_eval &@states[state_name].setup
+        @current_state  = state_name
+
+      else
+        raise "!!! state :#{state_name} does not exist for object #{@parent}"
+
+      end
     end
 
     def set_parent(new_parent)
@@ -37,7 +43,16 @@ module FSM
     def update(args)
       new_state       = @states[@current_state].update parent, args
 
-      set_current_state(new_state) if new_state != @current_state
+      #set_current_state(new_state) if new_state != @current_state
+      if new_state != @current_state then
+        if @states.keys.include? new_state then
+          set_current_state new_state
+
+        else
+          raise "state :#{new_state} does not exist for object #{@parent}"
+
+        end
+      end
     end
   end
 

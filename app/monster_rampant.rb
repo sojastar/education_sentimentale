@@ -1,10 +1,10 @@
-class Monster
-  RAMPANT_SPAWN_ZONE_X  = 18
-  RAMPANT_SPAWN_ZONE_Y  = 6
-  RAMPANT_SPAWN_ZONE_W  = 15
-  RAMPANT_SPAWN_ZONE_H  = 5
+class WalkingMonster
+  RAMPANT_SPAWN_ZONE_X  = 15
+  RAMPANT_SPAWN_ZONE_Y  = 2
+  RAMPANT_SPAWN_ZONE_W  = 14
+  RAMPANT_SPAWN_ZONE_H  = 3
 
-  def self.spawn_rampant_at(x)
+  def self.spawn_rampant_at(x,difficulty)
     
     # Rampant Monster ANIMATION :
     frames    = { idle:     { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
@@ -112,9 +112,8 @@ class Monster
                 end
 
 
-    # Spawning Children :
-    limb_count  = 3
-    limbs       = limb_count.times.map do |i|
+    # Spawning Limbs :
+    limbs       = difficulty.times.map do |i|
                     child_x = RAMPANT_SPAWN_ZONE_X + ( rand * RAMPANT_SPAWN_ZONE_W ).to_i
                     child_y = RAMPANT_SPAWN_ZONE_Y + ( rand * RAMPANT_SPAWN_ZONE_H ).to_i
                     Limb::spawn_scorpion_tail_at( child_x, child_y )
