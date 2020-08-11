@@ -97,15 +97,15 @@ class Player
                                 end
 
                                 add_event(next_state: :jumping_up) do |args|
-                                  args.inputs.keyboard.key_down.space
+                                  args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.a
                                 end
 
                                 add_event(next_state: :swing) do |args|
-                                  args.inputs.keyboard.key_down.x
+                                  args.inputs.keyboard.key_down.x || args.inputs.controller_one.key_down.x
                                 end
 
                                 add_event(next_state: :shoot) do |args|
-                                  args.inputs.keyboard.key_down.c
+                                  args.inputs.keyboard.key_down.c || args.inputs.controller_one.key_down.l1
                                 end
                               end
 

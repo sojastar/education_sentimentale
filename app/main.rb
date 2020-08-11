@@ -125,6 +125,7 @@ def tick(args)
   setup(args) unless args.state.setup_done
 
 
+  # --- Main Loop :
   case args.state.scene
   when :start_screen
     args.render_target(:display).labels << {  x: 2,
@@ -138,7 +139,7 @@ def tick(args)
                                               font: "fonts/hotchili.ttf" }
 
 
-    if args.inputs.keyboard.key_down.space then
+    if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start then
       args.state.level  = 0
       setup_level( args, LEVELS[args.state.level] )
       args.state.scene  = :game 
@@ -256,7 +257,7 @@ def tick(args)
                                               a: 255,
                                               font: "fonts/hotchili.ttf" }
 
-    args.state.scene = :start_screen if args.inputs.keyboard.key_down.space
+    args.state.scene = :start_screen if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start
 
 
   when :game_over
@@ -270,7 +271,7 @@ def tick(args)
                                               a: 255,
                                               font: "fonts/hotchili.ttf" }
 
-    args.state.scene = :start_screen if args.inputs.keyboard.key_down.space
+    args.state.scene = :start_screen if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start
 
   end
 

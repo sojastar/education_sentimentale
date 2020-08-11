@@ -63,7 +63,7 @@ class Player
 
 
     # --- Switching weapons :
-    if args.inputs.keyboard.key_down.w then
+    if args.inputs.keyboard.key_down.w || args.inputs.controller_one.key_down.r1 then
       @current_sword          = ( @current_weapon + 1 ) % ( @weapons.length - 1 ) # last weapon is the gun
       @current_weapon         = @current_sword
       @weapon_animation.path  =  @weapons[@current_weapon][:path]
@@ -118,7 +118,7 @@ class Player
 
     # --- Door collisions :
     if hit_box.intersect_rect? args.state.door.hit_box(args.state.ground.position) then
-      if args.inputs.keyboard.key_held.up then
+      if args.inputs.keyboard.key_held.up || args.inputs.controller_one.key_held.up then
         @machine.set_current_state :shifting
       end
     end
