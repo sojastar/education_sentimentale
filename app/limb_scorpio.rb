@@ -40,7 +40,7 @@ class Limb
     # Other parameters :
     offset_x    = 32
     offset_y    = 2
-    scale       = 0.5 + 0.75 * rand
+    scale       = 1.0 + 0.15 * rand
     color_shift = [ 150 + ( 105 * rand ).to_i,
                     150 + ( 105 * rand ).to_i,
                     150 + ( 105 * rand ).to_i ]

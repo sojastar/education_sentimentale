@@ -86,8 +86,8 @@ def setup_level(args,level)
 
   # --- MONSTERS : ---
   #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120) ]
-  #args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120) ]
-  args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(3) ) ) ] 
+  args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120) ]
+  #args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(3) ) ) ] 
 
 
   # --- PROPS : ---
