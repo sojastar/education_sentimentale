@@ -29,6 +29,10 @@ class Limb
     frame
   end
 
+  def set_clip(clip)
+    @animation.set_clip clip
+  end
+
   def hit_box
     @hit_boxes[@hit_boxes_index]
   end

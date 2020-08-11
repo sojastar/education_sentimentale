@@ -22,7 +22,7 @@ class Monster
                               speed:              6,
                               flip_horizontally:  false,
                               flip_vertically:    false },
-                  death:    { frames:             [ [0,4], [1,4], [2,4] ],
+                  dying:    { frames:             [ [0,4], [1,4], [2,4] ],
                               mode:               :once,
                               speed:              4,
                               flip_horizontally:  false,
@@ -95,7 +95,8 @@ class Monster
 
                   add_state(:dying) do
                     define_setup do
-                      @animation.set_clip :death
+                      @animation.set_clip :dying
+                      kill_limbs
                     end
 
                     add_event(next_state: :dead) do |args|

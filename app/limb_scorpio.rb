@@ -7,7 +7,7 @@ class Limb
                             speed:              8,
                             flip_horizontally:  false,
                             flip_vertically:    false },
-                  death:  { frames:             [ [0,2], [1,2], [2,2] ],
+                  dying:  { frames:             [ [0,2], [1,2], [2,2] ],
                             mode:               :once,
                             speed:              6,
                             flip_horizontally:  false,
@@ -40,7 +40,7 @@ class Limb
     # Other parameters :
     offset_x    = 32
     offset_y    = 2
-    scale       = 0.75 + 0.5 * rand
+    scale       = 0.5 + 0.75 * rand
     color_shift = [ 150 + ( 105 * rand ).to_i,
                     150 + ( 105 * rand ).to_i,
                     150 + ( 105 * rand ).to_i ]

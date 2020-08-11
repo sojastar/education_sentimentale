@@ -59,6 +59,10 @@ class Monster
     @health -= damage
   end
 
+  def kill_limbs
+    @limbs.each { |limb| limb.set_clip :dying }
+  end
+
   def point_in_rect?(point,rect)
     point[0] >= rect[0]           &&
     point[0] <= rect[0] + rect[2] &&
