@@ -12,7 +12,7 @@ class WalkingMonster < Monster
   # ---=== UPDATE : ===---
   def update(args)
     #$gtk.args.outputs.labels << [ 20, 600, "#{@x},#{y}", 255, 255, 255, 255 ]
-    @limbs.each { |limb| limb.update(args) } unless @limbs.nil?
+    @limbs.each { |limb| limb.update(args) }
     @machine.update(args)
 
 

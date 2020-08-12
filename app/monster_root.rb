@@ -117,7 +117,7 @@ class WalkingMonster
                         0,                                            # push back speed
                         3,                                            # health
                         fsm,                                          # finite state machine
-                        limbs )                                       # children
+                        limbs )                                       # limbs
 
   end
 end

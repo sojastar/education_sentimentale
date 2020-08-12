@@ -40,8 +40,6 @@ DISPLAY_SIZE      = DISPLAY_SCALE * DISPLAY_BASE_SIZE
 DISPLAY_X         = ( SCREEN_WIDTH  - DISPLAY_SIZE ) >> 1
 DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
-#SPAWN_DISTANCE    = 100
-
 LEVELS            = [ { min_length:     400,
                         bitmaps:        'sprites/field_background_bitmaps.png',
                         tiles:          'sprites/field_background_tiles.png',
@@ -90,9 +88,9 @@ def setup_level(args,level)
 
 
   # --- MONSTERS : ---
-  args.state.monsters     =  [ WalkingMonster::spawn_root_at(120, 2) ]
+  #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120, 2) ]
   #args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120, 2) ]
-  #args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(3) ) ) ] 
+  args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(3) ) ) ] 
 
 
   # --- PROPS : ---
@@ -203,10 +201,8 @@ def tick(args)
       #Debug::draw_tiles_bounds  [ 217,  87,  99, 125 ]
       args.state.monsters.each do |monster|
         Debug::draw_box( monster.hit_box(args.state.ground.position), [229, 153, 80, 255] )
-        if monster.limbs != nil then
-          monster.limbs.each do |limb|
-            Debug::draw_box( limb.hit_box(monster,args.state.ground.position), [ 210, 80, 234, 255 ] )
-          end
+        monster.limbs.each do |limb|
+          Debug::draw_box( limb.hit_box(monster,args.state.ground.position), [ 210, 80, 234, 255 ] )
         end
       end
     end
@@ -214,11 +210,6 @@ def tick(args)
 
     # 3. Spawning :
     args.state.monsters << spawn_monster(args) if args.state.monsters.empty?
-    #if args.state.monsters.empty? then
-    #  new_monster = spawn_monster(args)
-    #  #puts new_monster
-    #  args.state.monsters << new_monster
-    #end
 
 
     # 4. Death or Next Level :
@@ -235,10 +226,10 @@ def tick(args)
 
     # 5. Other :
     args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
-    args.outputs.labels << [ 20, 600, "monsters: #{args.state.monsters.length}", 255, 255, 255, 255 ]
-    if args.state.monsters.length > 0 then
-      args.outputs.labels << [ 20, 580, "monster x: #{args.state.monsters.first.x - args.state.ground.position + args.state.monsters.first.width}", 255, 255, 255, 255 ]
-    end
+    #args.outputs.labels << [ 20, 600, "monsters: #{args.state.monsters.length}", 255, 255, 255, 255 ]
+    #if args.state.monsters.length > 0 then
+    #  args.outputs.labels << [ 20, 580, "monster x: #{args.state.monsters.first.x - args.state.ground.position + args.state.monsters.first.width}", 255, 255, 255, 255 ]
+    #end
 
 
   when :next_level

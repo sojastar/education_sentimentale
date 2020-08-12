@@ -63,11 +63,11 @@ class Player
 
 
     # --- Switching weapons :
-    if args.inputs.keyboard.key_down.w || args.inputs.controller_one.key_down.r1 then
-      @current_sword          = ( @current_weapon + 1 ) % ( @weapons.length - 1 ) # last weapon is the gun
-      @current_weapon         = @current_sword
-      @weapon_animation.path  =  @weapons[@current_weapon][:path]
-    end
+    #if args.inputs.keyboard.key_down.w || args.inputs.controller_one.key_down.r1 then
+    #  @current_sword          = ( @current_weapon + 1 ) % ( @weapons.length - 1 ) # last weapon is the gun
+    #  @current_weapon         = @current_sword
+    #  @weapon_animation.path  =  @weapons[@current_weapon][:path]
+    #end
 
 
     # --- Horizontal movement :
@@ -92,7 +92,7 @@ class Player
       @recovery_timer -= 1
       @dx              = @facing_right ? -PUSH_BACK_SPEED : PUSH_BACK_SPEED
 
-    when :swing
+    when :swing_sword, :swing_axe
       @dx = 0
 
     when :shifting, :dying
@@ -202,7 +202,7 @@ class Player
 
 
     # --- Weapons collisions :
-    if @machine.current_state == :swing then
+    if [ :swing_sword, :swing_axe ].include? @machine.current_state then
       collision_index   = @weapon_animation.frame_index
       weapon_collision  = @weapons[@current_weapon][:collisions][collision_index]
       unless weapon_collision[0].nil? then

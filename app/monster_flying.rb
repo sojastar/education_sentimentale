@@ -2,7 +2,7 @@ class FlyingMonster < Monster
 
   # ---=== UPDATE : ===---
   def update(args)
-    @children.each { |child| child.update(args) } unless @children.nil?
+    @limbs.each { |limb| limb.update(args) }
     @machine.update(args)
     
     # --- Check for death :

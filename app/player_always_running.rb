@@ -100,12 +100,19 @@ class Player
                                   args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.a
                                 end
 
-                                add_event(next_state: :swing) do |args|
-                                  args.inputs.keyboard.key_down.x || args.inputs.controller_one.key_down.x
+                                #add_event(next_state: :swing) do |args|
+                                #  args.inputs.keyboard.key_down.x || args.inputs.controller_one.key_down.x
+                                #end
+
+                                add_event(next_state: :swing_sword) do |args|
+                                  args.inputs.keyboard.key_down.x || args.inputs.controller_one.key_down.l1
+                                end
+                                add_event(next_state: :swing_axe) do |args|
+                                  args.inputs.keyboard.key_down.w || args.inputs.controller_one.key_down.r1
                                 end
 
                                 add_event(next_state: :shoot) do |args|
-                                  args.inputs.keyboard.key_down.c || args.inputs.controller_one.key_down.l1
+                                  args.inputs.keyboard.key_down.c || args.inputs.controller_one.key_down.x
                                 end
                               end
 
@@ -136,9 +143,39 @@ class Player
                                 #end
                               end
 
-                              add_state(:swing) do
+                              #add_state(:swing) do
+                              #  define_setup do
+                              #    @current_weapon               = @current_sword
+                              #    @character_animation.set_clip   @weapons[@current_weapon][:animation]
+                              #    @character_animation.speed    = @weapons[@current_weapon][:speed]
+                              #    @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
+                              #    @weapon_animation.speed       = @weapons[@current_weapon][:speed]
+                              #    @weapon_animation.path        = @weapons[@current_weapon][:path]
+                              #  end
+
+                              #  add_event(next_state: :running) do |args|
+                              #    @character_animation.status == :finished
+                              #  end
+                              #end
+
+                              add_state(:swing_sword) do
                                 define_setup do
-                                  @current_weapon               = @current_sword
+                                  @current_weapon               = 0
+                                  @character_animation.set_clip   @weapons[@current_weapon][:animation]
+                                  @character_animation.speed    = @weapons[@current_weapon][:speed]
+                                  @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
+                                  @weapon_animation.speed       = @weapons[@current_weapon][:speed]
+                                  @weapon_animation.path        = @weapons[@current_weapon][:path]
+                                end
+
+                                add_event(next_state: :running) do |args|
+                                  @character_animation.status == :finished
+                                end
+                              end
+
+                              add_state(:swing_axe) do
+                                define_setup do
+                                  @current_weapon               = 1
                                   @character_animation.set_clip   @weapons[@current_weapon][:animation]
                                   @character_animation.speed    = @weapons[@current_weapon][:speed]
                                   @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
