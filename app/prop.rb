@@ -3,6 +3,7 @@ class Prop
   # ---=== ACCESSORS : ===---
   attr_accessor :x, :y,
                 :width, :height,
+                :type,
                 :action
 
 

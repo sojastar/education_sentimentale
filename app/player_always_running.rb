@@ -121,6 +121,8 @@ class Player
                                   @dy = JUMP_STRENGTH
                                   @character_animation.set_clip  :jump_up
                                   @weapon_animation.set_clip     :jump_up
+
+                                  $gtk.args.outputs.sounds << 'sounds/jump.wav'
                                 end
 
                                 add_event(next_state: :jumping_down) do |args|
@@ -143,21 +145,6 @@ class Player
                                 #end
                               end
 
-                              #add_state(:swing) do
-                              #  define_setup do
-                              #    @current_weapon               = @current_sword
-                              #    @character_animation.set_clip   @weapons[@current_weapon][:animation]
-                              #    @character_animation.speed    = @weapons[@current_weapon][:speed]
-                              #    @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
-                              #    @weapon_animation.speed       = @weapons[@current_weapon][:speed]
-                              #    @weapon_animation.path        = @weapons[@current_weapon][:path]
-                              #  end
-
-                              #  add_event(next_state: :running) do |args|
-                              #    @character_animation.status == :finished
-                              #  end
-                              #end
-
                               add_state(:swing_sword) do
                                 define_setup do
                                   @current_weapon               = 0
@@ -166,6 +153,8 @@ class Player
                                   @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
                                   @weapon_animation.speed       = @weapons[@current_weapon][:speed]
                                   @weapon_animation.path        = @weapons[@current_weapon][:path]
+
+                                  $gtk.args.outputs.sounds << 'sounds/sword.wav'
                                 end
 
                                 add_event(next_state: :running) do |args|
@@ -181,6 +170,8 @@ class Player
                                   @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
                                   @weapon_animation.speed       = @weapons[@current_weapon][:speed]
                                   @weapon_animation.path        = @weapons[@current_weapon][:path]
+
+                                  $gtk.args.outputs.sounds << 'sounds/axe.wav'
                                 end
 
                                 add_event(next_state: :running) do |args|
@@ -196,6 +187,8 @@ class Player
                                   @weapon_animation.set_clip      @weapons[@current_weapon][:animation]
                                   @weapon_animation.speed       = @weapons[@current_weapon][:speed]
                                   @weapon_animation.path        = @weapons[@current_weapon][:path]
+
+                                  $gtk.args.outputs.sounds << 'sounds/gun.wav'
                                 end
 
                                 add_event(next_state: :running) do |args|
@@ -207,6 +200,8 @@ class Player
                                 define_setup do
                                   @character_animation.set_clip :hit
                                   @weapon_animation.set_clip    :hit
+
+                                  $gtk.args.outputs.sounds << 'sounds/player_hit.wav'
                                 end
 
                                 add_event(next_state: :dying) do |args|
@@ -222,6 +217,8 @@ class Player
                                 define_setup do
                                   @character_animation.set_clip :shifting
                                   @weapon_animation.set_clip    :shifting
+
+                                  $gtk.args.outputs.sounds << 'sounds/shifting.wav'
                                 end
                               end
 
@@ -229,6 +226,8 @@ class Player
                                 define_setup do
                                   @character_animation.set_clip :dying
                                   @weapon_animation.set_clip    :dying
+
+                                  $gtk.args.outputs.sounds << 'sounds/dying.wav'
                                 end
                               end
 
