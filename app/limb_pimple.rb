@@ -3,7 +3,6 @@ class Limb
 
     # Pimple Limb ANIMATION :
     frames    = { attack: { frames:             [ [0,0], [1,0], [2,0], [3,0],
-                                                  [0,0], [1,0], [2,0], [3,0],
                                                   [0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [8,1], [9,1], [10,1], [11,1] ],
                             mode:               :loop,
                             speed:              8,
@@ -26,8 +25,8 @@ class Limb
                             flip_vertically:    false } }
 
     animation = Animation.new 'sprites/pimple.png',
-                              48,
-                              48,
+                              32,
+                              32,
                               frames,
                               :attack
 
@@ -50,13 +49,13 @@ class Limb
 
 
     # Other parameters :
-    offset_x    = 32
-    offset_y    = 2
+    offset_x    = 25 
+    offset_y    = 16
     scale       = 0.8 + 0.4 * rand
     #scale       = 0.5 + rand
-    color_shift = [ 255,#150 + ( 105 * rand ).to_i,
-                    255,#150 + ( 105 * rand ).to_i,
-                    255 ]#150 + ( 105 * rand ).to_i ]
+    color_shift = [ 150 + ( 105 * rand ).to_i,
+                    150 + ( 105 * rand ).to_i,
+                    150 + ( 105 * rand ).to_i ]
 
     # Spawning :
     Limb.new( x, y,

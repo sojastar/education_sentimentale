@@ -17,6 +17,7 @@ require 'app/monster_flying.rb'
 require 'app/monster_floating_eye.rb'
 require 'app/limb.rb'
 require 'app/limb_scorpio.rb'
+require 'app/limb_pimple.rb'
 require 'app/prop.rb'
 require 'app/prop_hotdog.rb'
 require 'app/prop_door.rb'
@@ -170,7 +171,7 @@ def tick(args)
     
     # 2.1 Render to the virtual 64x64 screen :
     args.state.back.each { |layer| args.render_target(:display).sprites << layer.render }
-    #args.render_target(:display).sprites << args.state.ground.render
+    args.render_target(:display).sprites << args.state.ground.render
 
     args.render_target(:display).sprites << args.state.door.render(args)
 
@@ -180,7 +181,7 @@ def tick(args)
 
     args.render_target(:display).sprites << args.state.player.render
 
-    args.render_target(:display).sprites << args.state.ground.render
+    #args.render_target(:display).sprites << args.state.ground.render
 
     args.state.effects.each { |effect| args.render_target(:display).sprites << effect.render(args) }
 

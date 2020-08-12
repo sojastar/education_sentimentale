@@ -102,7 +102,8 @@ class WalkingMonster
     limbs       = difficulty.times.map do |i|
                     child_x = ROOT_SPAWN_ZONE_X + ( rand * ROOT_SPAWN_ZONE_W ).to_i
                     child_y = ROOT_SPAWN_ZONE_Y + ( rand * ROOT_SPAWN_ZONE_H ).to_i
-                    Limb::spawn_scorpion_tail_at( child_x, child_y )
+                    #Limb::spawn_scorpion_tail_at( child_x, child_y )
+                    Limb::spawn_pimple_at( child_x, child_y )
                   end 
 
 
