@@ -17,7 +17,6 @@ class Limb
 
   def update(args)
     @animation.update
-    @hit_boxes_index = ( @hit_boxes_index + 1 ) % @hit_boxes.length
   end
 
   def render(args,parent_x,parent_y)
@@ -33,8 +32,13 @@ class Limb
     @animation.set_clip clip
   end
 
-  def hit_box
-    @hit_boxes[@hit_boxes_index]
+  def hit_box(parent,offset)
+    x = @hit_boxes[@animation.frame_index][0] + @x + parent.x + parent.animation_offset[parent.facing_right][0] - @offset_x - offset
+    y = @hit_boxes[@animation.frame_index][1] + @y + parent.y - @offset_y
+    w = @hit_boxes[@animation.frame_index][2]
+    h = @hit_boxes[@animation.frame_index][3]
+
+    [ x, y, w, h ]
   end
 
   def serialize

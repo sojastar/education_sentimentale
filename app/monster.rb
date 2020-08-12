@@ -1,9 +1,12 @@
 class Monster
   attr_reader :x, :y,
               :width, :height,
+              :animation_offset,
+              :facing_right,
               :hit_offset,
               :dx, :dy,
-              :health
+              :health,
+              :limbs
 
 
   # ---=== INITIALIZATION : ===---
@@ -39,7 +42,6 @@ class Monster
     if @limbs.nil? then
       @animation.frame_at( @x + @animation_offset[@facing_right][0] - args.state.ground.position, @y, @facing_right )
     else
-      #puts "parent x: #{@x + @animation_offset[@facing_right][0] - args.state.ground.position}, y: #{@y}"
       render_x  = @x + @animation_offset[@facing_right][0] - args.state.ground.position
       [ @animation.frame_at( render_x, @y, @facing_right ) ] + @limbs.map { |limb| limb.render( args, render_x, @y ) }
     end

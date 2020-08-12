@@ -125,15 +125,23 @@ class Player
 
 
     # --- Enemies collisions :
+    was_hit = false
     args.state.monsters.each do |monster|
       unless [ :dying, :dead ].include? monster.current_state then
-        if hit_box.intersect_rect? monster.hit_box(args.state.ground.position) then
-          @health        -= 1 if @machine.current_state != :hit
-          @machine.set_current_state :hit
-          @recovery_timer = RECOVERY_TIME
-          break
+        was_hit = true if hit_box.intersect_rect? monster.hit_box(args.state.ground.position)
+
+        monster.limbs.each do |limb|
+          was_hit = true if hit_box.intersect_rect? limb.hit_box(monster,args.state.ground.position)
         end
       end
+
+      break if was_hit
+    end
+
+    if was_hit then
+      @health        -= 1 if @machine.current_state != :hit
+      @machine.set_current_state :hit
+      @recovery_timer = RECOVERY_TIME
     end
 
 

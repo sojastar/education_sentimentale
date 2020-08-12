@@ -201,7 +201,14 @@ def tick(args)
       Debug::draw_box args.state.player.hit_box, [ 153, 229,  80, 255 ]
       Debug::draw_player_v      [  91, 110, 225, 255 ], [  95, 205, 228, 255 ]
       #Debug::draw_tiles_bounds  [ 217,  87,  99, 125 ]
-      args.state.monsters.each { |monster| Debug::draw_box monster.hit_box(args.state.ground.position), [229, 153, 80, 255] }
+      args.state.monsters.each do |monster|
+        Debug::draw_box( monster.hit_box(args.state.ground.position), [229, 153, 80, 255] )
+        if monster.limbs != nil then
+          monster.limbs.each do |limb|
+            Debug::draw_box( limb.hit_box(monster,args.state.ground.position), [ 210, 80, 234, 255 ] )
+          end
+        end
+      end
     end
 
 

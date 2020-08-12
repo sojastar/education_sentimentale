@@ -52,7 +52,7 @@ class WalkingMonster
                   add_state(:stun) do
                     define_setup do
                       @animation.set_clip :idle
-                      limbs_are :stun
+                      limbs_are :attack#stun
                       @recovery_timer   = 10
                       @push_back_speed  = 0
                     end
