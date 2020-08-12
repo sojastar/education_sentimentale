@@ -231,7 +231,7 @@ class Player
         bullet_hit_box  = [ bullet_x * 8, @y, 8, 8 ]
         args.state.monsters.each do |monster|
           if bullet_hit_box.intersect_rect? monster.hit_box(args.state.ground.position) then
-            monster.current_state = :hit
+            monster.current_state = :stun
             args.state.effects << Effect::player_bullet_impact( monster.x - ( monster.width >> 1 ), @y )
             @done_shooting = true
             break
