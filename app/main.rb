@@ -41,12 +41,14 @@ DISPLAY_SIZE      = DISPLAY_SCALE * DISPLAY_BASE_SIZE
 DISPLAY_X         = ( SCREEN_WIDTH  - DISPLAY_SIZE ) >> 1
 DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
+START_DELAY       = 60
+
 LEVELS            = [ { min_length:     400,
                         bitmaps:        'sprites/field_background_bitmaps.png',
                         tiles:          'sprites/field_background_tiles.png',
                         difficulty:     1,
-                        spawn_probs:    [ { range: 0...0.45,  monster: :floating_eye },
-                                          { range: 0.45..1.0, monster: :rampant } ],
+                        spawn_probs:    [ { range: 0...0.65,  monster: :floating_eye },
+                                          { range: 0.65..1.0, monster: :rampant } ],
                         spawn_distance: 100 },
                       { min_length:     400,
                         bitmaps:        'sprites/temple_background_bitmaps.png',
@@ -147,9 +149,9 @@ def tick(args)
       end
 
     else
-      args.render_target(:display).sprites << {  x: 4, y: 12, w: 56, h:  5, path: 'sprites/press_start.png' }
+      args.render_target(:display).sprites << {  x: 4, y: 12, w: 56, h:  5, path: 'sprites/press_start.png' } if ( ( args.state.tick_count >> 2 ) % 2 == 0 )
 
-      if args.state.tick_count - args.state.start_time > 60 then
+      if args.state.tick_count - args.state.start_time > START_DELAY then
         args.state.level  = 0
         setup_level( args, LEVELS[args.state.level] )
         args.state.scene  = :game 
