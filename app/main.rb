@@ -65,6 +65,7 @@ def setup(args)
 
   # --- SCENE MANAGEMENT : ---
   args.state.scene        = :start_screen
+  args.state.start_pushed = false
 
 
   # --- MISCELLANEOUS : ---
@@ -129,17 +130,30 @@ def tick(args)
   # --- Main Loop :
   case args.state.scene
   when :start_screen
-    args.render_target(:display).sprites << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 192, source_w: 64, source_h: 64 }
-    args.render_target(:display).sprites << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 128, source_w: 64, source_h: 64 }
-    args.render_target(:display).sprites << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:  64, source_w: 64, source_h: 64 }
-    args.render_target(:display).sprites << {  x: 0, y: 0, w: 64, h:  8, path: 'sprites/field_start_tiles.png' }
-    args.render_target(:display).sprites << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:   0, source_w: 64, source_h: 64 }
-    args.render_target(:display).labels  << {  x: 3, y: 35, text: "Press Start", size_enum: -8, r: 100, g: 50, b: 255, a: 255, font: "fonts/hotchili.ttf" }
+    args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 192, source_w: 64, source_h: 64 }
+    args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 128, source_w: 64, source_h: 64 }
+    args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:  64, source_w: 64, source_h: 64 }
+    args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h:  8, path: 'sprites/field_start_tiles.png' }
+    args.render_target(:display).sprites << {  x: 4, y: 41, w: 56, h: 15, path: 'sprites/title.png', source_x: ( ( args.state.tick_count >> 3 ) % 32 ) * 56, source_y: 0, source_w: 56, source_h: 15 }
+    args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:   0, source_w: 64, source_h: 64 }
 
-    if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start then
-      args.state.level  = 0
-      setup_level( args, LEVELS[args.state.level] )
-      args.state.scene  = :game 
+    if args.state.start_pushed == false then
+      args.render_target(:display).sprites << {  x: 4, y: 12, w: 56, h:  5, path: 'sprites/press_start.png' } if ( ( args.state.tick_count >> 5 ) % 2 == 0 )
+
+      if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start
+        args.state.start_pushed = true 
+        args.state.start_time   = args.state.tick_count
+        args.outputs.sounds << 'sounds/start.wav'
+      end
+
+    else
+      args.render_target(:display).sprites << {  x: 4, y: 12, w: 56, h:  5, path: 'sprites/press_start.png' }
+
+      if args.state.tick_count - args.state.start_time > 60 then
+        args.state.level  = 0
+        setup_level( args, LEVELS[args.state.level] )
+        args.state.scene  = :game 
+      end
     end
 
 
@@ -255,7 +269,10 @@ def tick(args)
                                               a: 255,
                                               font: "fonts/hotchili.ttf" }
 
-    args.state.scene = :start_screen if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start
+    if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start then
+      args.state.scene = :start_screen 
+      args.state.start_pushed = false
+    end
 
 
   when :game_over
@@ -269,7 +286,10 @@ def tick(args)
                                               a: 255,
                                               font: "fonts/hotchili.ttf" }
 
-    args.state.scene = :start_screen if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start
+    if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start then
+      args.state.scene = :start_screen 
+      args.state.start_pushed = false
+    end
 
   end
 
