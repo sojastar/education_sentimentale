@@ -26,13 +26,19 @@ class TileBackground < Background
 
     target              = description[:render_target_name]
 
-    x, y                = 0, min_height
+    # Steming the first 8 blocks :
+    stem                = [ min_height ] * 8
+    stem.each.with_index { |y,i| place_tile_at target, rules, i % 4, i, y }
+
+    #x, y                = 0, min_height
+    x, y                = 8, min_height
     last_tile_group     = :horizontal1
     proposed_tile_group = last_tile_group
     tile                = rules[:groups][:horizontal1][:indices].sample
     offset              = [ 0, 0 ]
     place_tile_at target, rules, tile, x, y
-    collision_tiles     = [y]   # at this point, x = 0, so the first collision tile is at (0;y)
+    #collision_tiles     = [y]   # at this point, x = 0, so the first collision tile is at (0;y)
+    collision_tiles     = stem + [ y ]   # at this point, x = 0, so the first collision tile is at (0;y)
     until x > width_in_tiles && y == 0
       loop do
         proposed_tile_group, tile, offset = next_tile( last_tile_group, rules )
@@ -90,14 +96,14 @@ class TileBackground < Background
     path  = rules[:tiles][:path]
 
     $gtk.args.render_target(target).sprites << {  x:      x * size,
-                                                                  y:      y * size,
-                                                                  w:      size,
-                                                                  h:      size,
-                                                                  path:   path,
-                                                                  tile_x: tile_index * size,
-                                                                  tile_y: 0,
-                                                                  tile_w: size,
-                                                                  tile_h: size }
+                                                  y:      y * size,
+                                                  w:      size,
+                                                  h:      size,
+                                                  path:   path,
+                                                  tile_x: tile_index * size,
+                                                  tile_y: 0,
+                                                  tile_w: size,
+                                                  tile_h: size }
   end
 end
 

@@ -129,20 +129,12 @@ def tick(args)
   # --- Main Loop :
   case args.state.scene
   when :start_screen
-    args.render_target(:display).primitives << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 192, source_w: 64, source_h: 64 }.sprite
-    args.render_target(:display).primitives << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 128, source_w: 64, source_h: 64 }.sprite
-    args.render_target(:display).primitives << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:  64, source_w: 64, source_h: 64 }.sprite
-    args.render_target(:display).primitives << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:   0, source_w: 64, source_h: 64 }.sprite
-    args.render_target(:display).primitives << {  x: 0, y: 0, w: 64, h:  8, r: 0, g: 0, b: 0, a: 255 }.solid
-    args.render_target(:display).primitives << {  x: 3,
-                                                  y: 6,
-                                                  text: "Press Start",
-                                                  size_enum:  -8,
-                                                  r: 255,
-                                                  g: 255,
-                                                  b: 255,
-                                                  a: 255,
-                                                  font: "fonts/hotchili.ttf" }.label
+    args.render_target(:display).sprites << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 192, source_w: 64, source_h: 64 }
+    args.render_target(:display).sprites << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 128, source_w: 64, source_h: 64 }
+    args.render_target(:display).sprites << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:  64, source_w: 64, source_h: 64 }
+    args.render_target(:display).sprites << {  x: 0, y: 0, w: 64, h:  8, path: 'sprites/field_start_tiles.png' }
+    args.render_target(:display).sprites << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:   0, source_w: 64, source_h: 64 }
+    args.render_target(:display).labels  << {  x: 3, y: 35, text: "Press Start", size_enum: -8, r: 100, g: 50, b: 255, a: 255, font: "fonts/hotchili.ttf" }
 
     if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start then
       args.state.level  = 0
