@@ -118,7 +118,7 @@ class Player
 
                               add_state(:jumping_up) do
                                 define_setup do
-                                  @dy = JUMP_STRENGTH
+                                  @dy = Player::JUMP_STRENGTH
                                   @character_animation.set_clip  :jump_up
                                   @weapon_animation.set_clip     :jump_up
 

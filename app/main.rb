@@ -13,6 +13,7 @@ require 'app/monster.rb'
 require 'app/monster_walking.rb'
 require 'app/monster_root.rb'
 require 'app/monster_rampant.rb'
+require 'app/monster_mushroom.rb'
 require 'app/monster_flying.rb'
 require 'app/monster_floating_eye.rb'
 require 'app/limb.rb'
@@ -91,6 +92,7 @@ def setup_level(args,level)
   #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120, 2) ]
   #args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120, 2) ]
   args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(3) ) ) ] 
+  args.state.monsters     = [ WalkingMonster::spawn_mushroom_at(120) ]
 
 
   # --- PROPS : ---
@@ -127,16 +129,20 @@ def tick(args)
   # --- Main Loop :
   case args.state.scene
   when :start_screen
-    args.render_target(:display).labels << {  x: 2,
-                                              y: 22,
-                                              text: "Press Start",
-                                              size_enum:  -8,
-                                              r: 255,
-                                              g: 255,
-                                              b: 255,
-                                              a: 255,
-                                              font: "fonts/hotchili.ttf" }
-
+    args.render_target(:display).primitives << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 192, source_w: 64, source_h: 64 }.sprite
+    args.render_target(:display).primitives << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 128, source_w: 64, source_h: 64 }.sprite
+    args.render_target(:display).primitives << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:  64, source_w: 64, source_h: 64 }.sprite
+    args.render_target(:display).primitives << {  x: 0, y: 0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:   0, source_w: 64, source_h: 64 }.sprite
+    args.render_target(:display).primitives << {  x: 0, y: 0, w: 64, h:  8, r: 0, g: 0, b: 0, a: 255 }.solid
+    args.render_target(:display).primitives << {  x: 3,
+                                                  y: 6,
+                                                  text: "Press Start",
+                                                  size_enum:  -8,
+                                                  r: 255,
+                                                  g: 255,
+                                                  b: 255,
+                                                  a: 255,
+                                                  font: "fonts/hotchili.ttf" }.label
 
     if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start then
       args.state.level  = 0
