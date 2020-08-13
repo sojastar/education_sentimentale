@@ -17,9 +17,12 @@ class FlyingMonster < Monster
     case @machine.current_state
     when :flying
       # AI code that moves the monster, in relation to @machine
+
+      args.outputs.labels << [ 20, 600, "sin: #{ (1.5 + 1.5 * Math::sin(args.state.tick_count / 15.0 )).round}", 255, 255, 255, 255 ]
       @tick            += 1
-      if @tick == @running_speed then
-        @dx   = @facing_right ? 1 : -1
+      if @tick == 1#@running_speed then
+        #@dx   = @facing_right ? 1 : -1
+        @dx   = -( 0.3 + 0.3 * Math::sin(args.state.tick_count / 5.0 ) ).round
         @tick = 0
       end
 
