@@ -40,7 +40,7 @@ class WalkingMonster
                   add_state(:idle) do
                     define_setup do
                       @animation.set_clip :idle
-                      limbs_are :attack
+                      limbs_are :attack unless @last_state == :stun
                     end
                   end
 
@@ -70,7 +70,7 @@ class WalkingMonster
                   add_state(:stun) do
                     define_setup do
                       @animation.set_clip :idle
-                      limbs_are :attack
+                      limbs_are :attack unless @last_state == :running
                       @recovery_timer   = 10
                       @push_back_speed  = 0
                     end

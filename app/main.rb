@@ -45,19 +45,37 @@ COMMANDS_DELAY    = 3     # in seconds
 START_DELAY       = 60    # in frames
 
 LEVELS            = [ { min_length:     400,
-                        bitmaps:        'sprites/hell_background_bitmaps.png',
-                        tiles:          'sprites/hell_background_tiles.png',
-                        difficulty:     1,
-                        spawn_probs:    [ { range: 0...0.65,  monster: :floating_eye },
-                                          { range: 0.65..1.0, monster: :rampant } ],
+                        bitmaps:        'sprites/field_background_bitmaps.png',
+                        tiles:          'sprites/field_background_tiles.png',
+                        difficulty:     0,
+                        spawn_probs:    [ { range: 0.0...0.4, monsters: [ "FlyingMonster::spawn_floating_eye_at(x, 8 * ( 1 + rand(3) ))"  ] },
+                                          { range: 0.4...0.8, monsters: [ "WalkingMonster::spawn_mushroom_at(x)"                          ] },
+                                          { range: 0.8..1.0,  monsters: [ "WalkingMonster::spawn_rampant_at(x,0)"                         ] } ],
                         spawn_distance: 100 },
-                      { min_length:     400,
+                      { min_length:     600,
                         bitmaps:        'sprites/temple_background_bitmaps.png',
                         tiles:          'sprites/temple_background_tiles.png',
                         difficulty:     1,
-                        spawn_probs:    [ { range: 0...0.5,  monster: :floating_eye },
-                                          { range: 0.5..1.0, monster: :rampant } ],
-                        spawn_distance: 100 } ]
+                        spawn_probs:    [ { range: 0.0...0.2, monsters: [ "FlyingMonster::spawn_floating_eye_at(x, 8 * ( 1 + rand(3) ))"  ] },
+                                          { range: 0.2...0.4, monsters: [ "WalkingMonster::spawn_mushroom_at(x)"                          ] },
+                                          { range: 0.4...0.6, monsters: [ "WalkingMonster::spawn_rampant_at(x,2)"                         ] },
+                                          { range: 0.6..1.0,  monsters: [ "WalkingMonster::spawn_rampant_at(x,1)",
+                                                                          "FlyingMonster::spawn_floating_eye_at(x, 8 * ( 1 + rand(3) ))"  ] } ],
+                        spawn_distance: 90 },
+                      { min_length:     900,
+                        bitmaps:        'sprites/hell_background_bitmaps.png',
+                        tiles:          'sprites/hell_background_tiles.png',
+                        difficulty:     1,
+                        spawn_probs:    [ { range: 0.0...0.15,  monsters: [ "FlyingMonster::spawn_floating_eye_at(x, 8 * ( 1 + rand(3) ))"  ] },
+                                          { range: 0.15...0.25, monsters: [ "WalkingMonster::spawn_mushroom_at(x)"                          ] },
+                                          { range: 0.25...0.4,  monsters: [ "WalkingMonster::spawn_rampant_at(x,2)"                         ] },
+                                          { range: 0.4...0.55,  monsters: [ "WalkingMonster::spawn_rampant_at(x,3)"                         ] },
+                                          { range: 0.55...0.7,  monsters: [ "WalkingMonster::spawn_root_at(x,3)"                            ] },
+                                          { range: 0.7...85,    monsters: [ "WalkingMonster::spawn_rampant_at(x,1)",
+                                                                            "FlyingMonster::spawn_floating_eye_at(x, 8 * ( 1 + rand(3) ))"  ] },
+                                          { range: 0.85..1.0,   monsters: [ "WalkingMonster::spawn_root_at(x,2)",
+                                                                            "FlyingMonster::spawn_floating_eye_at(x, 8 * ( 1 + rand(3) ))"  ] } ],
+                        spawn_distance: 70 } ]
 
 
 
@@ -67,8 +85,8 @@ LEVELS            = [ { min_length:     400,
 def setup(args)
 
   # --- SCENE MANAGEMENT : ---
-  args.state.scene        = :commands
-  #args.state.scene        = :start_screen
+  #args.state.scene        = :commands
+  args.state.scene        = :start_screen
   args.state.start_pushed = false
 
 
@@ -96,8 +114,10 @@ def setup_level(args,level)
   # --- MONSTERS : ---
   #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120, 2) ]
   #args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120, 2) ]
-  args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(3) ) ) ] 
+  #args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(3) ) ) ] 
   #args.state.monsters     = [ WalkingMonster::spawn_mushroom_at(120) ]
+  args.state.monsters     = []
+  #args.state.monsters     = spawn_monsters(args)
 
 
   # --- PROPS : ---
@@ -173,7 +193,7 @@ def tick(args)
       args.render_target(:display).sprites << {  x: 4, y: 12, w: 56, h:  5, path: 'sprites/press_start.png' } if ( ( args.state.tick_count >> 2 ) % 2 == 0 )
 
       if args.state.tick_count - args.state.start_time > START_DELAY then
-        args.state.level  = 0
+        args.state.level  = 2#0
         setup_level( args, LEVELS[args.state.level] )
         args.state.scene  = :game 
       end
@@ -245,7 +265,7 @@ def tick(args)
 
 
     # 3. Spawning :
-    args.state.monsters << spawn_monster(args) if args.state.monsters.empty?
+    args.state.monsters += spawn_monsters(args) if args.state.monsters.empty?
 
 
     # 4. Death or Next Level :
@@ -261,7 +281,7 @@ def tick(args)
 
 
     # 5. Other :
-    args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
+    #args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
     #args.outputs.labels << [ 20, 600, "monsters: #{args.state.monsters.length}", 255, 255, 255, 255 ]
     #if args.state.monsters.length > 0 then
     #  args.outputs.labels << [ 20, 580, "monster x: #{args.state.monsters.first.x - args.state.ground.position + args.state.monsters.first.width}", 255, 255, 255, 255 ]
@@ -335,24 +355,18 @@ end
 
 
 # ---=== UTILITIES : ===---
-def spawn_monster(args)
-  #spawn_x = ( args.state.ground.position + SPAWN_DISTANCE ) % args.state.ground.width
+def spawn_monsters(args)
   spawn_x = ( args.state.ground.position + LEVELS[args.state.level][:spawn_distance] ) % args.state.ground.width
   roll    = rand
   LEVELS[args.state.level][:spawn_probs].each do |prob|
-    return spawn_type( args, prob[:monster], spawn_x ) if prob[:range] === roll
-  end
-end
-
-def spawn_type(args,type,x)
-  case type
-  when :floating_eye  then return FlyingMonster::spawn_floating_eye_at( x, 8 * ( 1 + rand(4) ) )
-  when :rampant       then return WalkingMonster::spawn_rampant_at( x, LEVELS[args.state.level][:difficulty] )
+    if prob[:range] === roll then
+      return prob[:monsters].map.with_index { |monster,i| eval( monster.gsub 'x', ( spawn_x + 20 * i ).to_s ) } 
+    end
   end
 end
 
 def remove_dead_monsters(args)
-  args.state.monsters.reject do |monster| 
+  args.state.monsters.reject do |monster|
     if monster.current_state == :dead then
       if rand > 0.7 then
         args.state.props << Prop.spawn_hotdog_at( monster.x + monster.hit_offset[0],

@@ -11,8 +11,9 @@ class WalkingMonster < Monster
 
   # ---=== UPDATE : ===---
   def update(args)
-    #$gtk.args.outputs.labels << [ 20, 600, "#{@x},#{y}", 255, 255, 255, 255 ]
     @limbs.each { |limb| limb.update(args) }
+
+    @last_state = @machine.current_state
     @machine.update(args)
 
 
@@ -43,7 +44,6 @@ class WalkingMonster < Monster
 
     # --- Player collisions :
     unless [ :dying, :dead ].include? @machine.current_state then
-      #if hit_box(args.state.ground.position).intersect_rect? player_hit_box then
       if hit_box(args.state.ground.position).intersect_rect? args.state.player.hit_box then
         @machine.set_current_state :stun 
       end
