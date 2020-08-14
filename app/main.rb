@@ -85,8 +85,8 @@ LEVELS            = [ { min_length:     400,
 def setup(args)
 
   # --- SCENE MANAGEMENT : ---
-  #args.state.scene        = :commands
-  args.state.scene        = :start_screen
+  args.state.scene        = :commands
+  #args.state.scene        = :start_screen
   args.state.start_pushed = false
 
 
@@ -177,7 +177,7 @@ def tick(args)
     args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 128, source_w: 64, source_h: 64 }
     args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:  64, source_w: 64, source_h: 64 }
     args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h:  8, path: 'sprites/field_start_tiles.png' }
-    args.render_target(:display).sprites << {  x: 4, y: 41, w: 56, h: 15, path: 'sprites/title.png', source_x: ( ( args.state.tick_count >> 3 ) % 32 ) * 56, source_y: 0, source_w: 56, source_h: 15 }
+    args.render_target(:display).sprites << {  x: 4, y: 41, w: 56, h: 16, path: 'sprites/title.png', source_x: ( ( args.state.tick_count >> 3 ) % 32 ) * 56, source_y: 0, source_w: 56, source_h: 16 }
     args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:   0, source_w: 64, source_h: 64 }
 
     if args.state.start_pushed == false then
@@ -193,7 +193,7 @@ def tick(args)
       args.render_target(:display).sprites << {  x: 4, y: 12, w: 56, h:  5, path: 'sprites/press_start.png' } if ( ( args.state.tick_count >> 2 ) % 2 == 0 )
 
       if args.state.tick_count - args.state.start_time > START_DELAY then
-        args.state.level  = 2#0
+        args.state.level  = 0
         setup_level( args, LEVELS[args.state.level] )
         args.state.scene  = :game 
       end
