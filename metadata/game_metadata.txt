@@ -1,0 +1,6 @@
+devid=jujule
+devtitle=Jujule LittleBOxes RiceCooker
+gameid=sentimental-wake
+gametitle=Sentimental Wake
+version=0.1
+icon=metadata/icon.png
