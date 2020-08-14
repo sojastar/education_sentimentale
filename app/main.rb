@@ -41,11 +41,12 @@ DISPLAY_SIZE      = DISPLAY_SCALE * DISPLAY_BASE_SIZE
 DISPLAY_X         = ( SCREEN_WIDTH  - DISPLAY_SIZE ) >> 1
 DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
-START_DELAY       = 60
+COMMANDS_DELAY    = 3     # in seconds
+START_DELAY       = 60    # in frames
 
 LEVELS            = [ { min_length:     400,
-                        bitmaps:        'sprites/field_background_bitmaps.png',
-                        tiles:          'sprites/field_background_tiles.png',
+                        bitmaps:        'sprites/hell_background_bitmaps.png',
+                        tiles:          'sprites/hell_background_tiles.png',
                         difficulty:     1,
                         spawn_probs:    [ { range: 0...0.65,  monster: :floating_eye },
                                           { range: 0.65..1.0, monster: :rampant } ],
@@ -66,7 +67,8 @@ LEVELS            = [ { min_length:     400,
 def setup(args)
 
   # --- SCENE MANAGEMENT : ---
-  args.state.scene        = :start_screen
+  args.state.scene        = :commands
+  #args.state.scene        = :start_screen
   args.state.start_pushed = false
 
 
@@ -131,6 +133,25 @@ def tick(args)
 
   # --- Main Loop :
   case args.state.scene
+  when :commands
+    args.render_target(:display).solids  << { x: 0, y: 0, w: 64, h: 64, r:0, g:0, b:0, a:255 }
+
+    case args.state.tick_count
+    when 0..63
+      args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: 'sprites/commands.png', r: 255, g: 255, b: 255, a: 4 * args.state.tick_count }
+
+    when 64...(64 + COMMANDS_DELAY * 60)
+      args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: 'sprites/commands.png' }
+
+    when (64 + COMMANDS_DELAY * 60)..(127 + COMMANDS_DELAY * 60)
+      args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: 'sprites/commands.png', r: 255, g: 255, b: 255, a: 255 - 4 * ( args.state.tick_count - 64 - COMMANDS_DELAY * 60 ) }
+
+    else
+      args.state.scene = :start_screen
+
+    end
+
+
   when :start_screen
     args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 192, source_w: 64, source_h: 64 }
     args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 128, source_w: 64, source_h: 64 }
