@@ -3,10 +3,16 @@ class TileBackground < Background
 
   def initialize(render_width,render_height,description,rules)
     @path             = description[:render_target_name]
-    
-    @width,
-    @collision_tiles  = generate_background description, rules
-    @height           = description[:height]
+
+    #@width            = 0
+    loop do    
+      @width,
+      @collision_tiles  = generate_background description, rules
+      @height           = description[:height]
+
+      break if @width < $gtk.args.grid.right
+      $gtk.args.render_target(@path).clear
+    end
 
     @render_width     = render_width
     @render_height    = render_height
@@ -30,14 +36,12 @@ class TileBackground < Background
     stem                = [ min_height ] * 8
     stem.each.with_index { |y,i| place_tile_at target, rules, i % 4, i, y }
 
-    #x, y                = 0, min_height
     x, y                = 8, min_height
     last_tile_group     = :horizontal1
     proposed_tile_group = last_tile_group
     tile                = rules[:groups][:horizontal1][:indices].sample
     offset              = [ 0, 0 ]
     place_tile_at target, rules, tile, x, y
-    #collision_tiles     = [y]   # at this point, x = 0, so the first collision tile is at (0;y)
     collision_tiles     = stem + [ y ]   # at this point, x = 0, so the first collision tile is at (0;y)
     until x > width_in_tiles && y == 0
       loop do
