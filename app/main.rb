@@ -271,12 +271,13 @@ def tick(args)
     # 4. Death or Next Level :
     if  args.state.player.current_state     == :dying     &&
         args.state.player.animation_status  == :finished  then
-      args.state.scene  = :game_over
+      args.state.scene          = :game_over
+      args.state.game_over_time = args.state.tick_count
     end
 
     if  args.state.player.current_state     == :shifting  &&
         args.state.player.animation_status  == :finished  then
-      args.state.scene  = :next_level
+      args.state.scene          = :next_level
     end
 
 
@@ -319,15 +320,9 @@ def tick(args)
 
 
   when :game_over
-    args.render_target(:display).labels << {  x: 2,
-                                              y: 22,
-                                              text: "GAME OVER",
-                                              size_enum:  -8,
-                                              r: 255,
-                                              g: 0,
-                                              b: 0,
-                                              a: 255,
-                                              font: "fonts/hotchili.ttf" }
+    x_index = ( args.state.tick_count - args.state.game_over_time >> 2 ) % 23
+    y_index = ( args.state.tick_count - args.state.game_over_time >> 2 ) < 23 ? 1 : 0
+    args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: "sprites/game_over.png", source_x: x_index * 64, source_y: y_index * 64, source_w: 64, source_h: 64 }
 
     if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start then
       args.state.scene = :start_screen 
