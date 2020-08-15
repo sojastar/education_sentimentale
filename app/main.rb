@@ -292,8 +292,7 @@ def tick(args)
   when :next_level
     args.state.level += 1
 
-    #if args.state.level < LEVELS.length then
-    if args.state.level < 1 then
+    if args.state.level < LEVELS.length then
       setup_level( args, LEVELS[args.state.level] )
       args.state.scene          = :game 
 
@@ -311,8 +310,6 @@ def tick(args)
       y_offset  = END_SCROLL_HEIGHT - 64 - ( ( args.state.tick_count - args.state.end_start_time - END_SCROLL_DELAY * 60 ) >> 4 )
     end
     args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: 'sprites/end.png', source_x: 0, source_y: y_offset, source_w: 64, source_h: 64 }
-
-    #args.state.scene = :start_screen if y_offset == 0
 
     if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start || y_offset == 0 then
       args.state.scene        = :start_screen 

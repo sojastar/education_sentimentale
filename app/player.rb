@@ -14,7 +14,7 @@ class Player
   RECOVERY_TIME           = 10
   PUSH_BACK_SPEED         = 6
 
-  MAX_LIFE                = 5
+  MAX_LIFE                = 6
 
   GUN_HEIGHT              = 8 # in pixels
   TILE_SIZE               = 8 # in pixels
