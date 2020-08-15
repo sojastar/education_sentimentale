@@ -39,7 +39,6 @@ class Monster
 
   # ---=== RENDER : ===---
   def render(args)
-    #if @limbs.nil? then
     if @limbs.empty? then
       @animation.frame_at( @x + @animation_offset[@facing_right][0] - args.state.ground.position, @y, @facing_right )
     else
@@ -64,6 +63,10 @@ class Monster
 
   def limbs_are(status)
     @limbs.each { |limb| limb.set_clip status }
+  end
+
+  def randomize_limbs_animations
+    @limbs.each { |limb| limb.randomize_animation_frame }
   end
 
   def point_in_rect?(point,rect)

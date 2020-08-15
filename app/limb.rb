@@ -32,6 +32,10 @@ class Limb
     @animation.set_clip clip
   end
 
+  def randomize_animation_frame
+    @animation.random_start_frame
+  end
+
   def hit_box(parent,offset)
     x = @hit_boxes[@animation.frame_index][0] + @x + parent.x + parent.animation_offset[parent.facing_right][0] - @offset_x - offset
     y = @hit_boxes[@animation.frame_index][1] + @y + parent.y - @offset_y

@@ -46,6 +46,8 @@ START_DELAY       = 60    # in frames
 END_SCROLL_DELAY  = 3     # in second
 END_SCROLL_HEIGHT = 261   # in pixels
 
+INITIAL_HEALTH    = 3
+
 LEVELS            = [ { min_length:     400,
                         bitmaps:        'sprites/field_background_bitmaps.png',
                         tiles:          'sprites/field_background_tiles.png',
@@ -87,8 +89,8 @@ LEVELS            = [ { min_length:     400,
 def setup(args)
 
   # --- SCENE MANAGEMENT : ---
-  args.state.scene        = :commands
-  #args.state.scene        = :start_screen
+  #args.state.scene        = :commands
+  args.state.scene        = :start_screen
   args.state.start_pushed = false
 
 
@@ -100,7 +102,7 @@ def setup(args)
 end
 
 
-def setup_level(args,level)
+def setup_level(args,level,health)
 
   # --- Backgroound : ---
   layers                  = Background::layers( level[:bitmaps] )
@@ -110,7 +112,7 @@ def setup_level(args,level)
 
 
   # --- Player : ---
-  args.state.player       = Player::always_running
+  args.state.player       = Player::always_running(health)
 
 
   # --- MONSTERS : ---
@@ -196,7 +198,7 @@ def tick(args)
 
       if args.state.tick_count - args.state.start_time > START_DELAY then
         args.state.level  = 0
-        setup_level( args, LEVELS[args.state.level] )
+        setup_level( args, LEVELS[args.state.level], INITIAL_HEALTH )
         args.state.scene  = :game 
       end
     end
@@ -293,7 +295,8 @@ def tick(args)
     args.state.level += 1
 
     if args.state.level < LEVELS.length then
-      setup_level( args, LEVELS[args.state.level] )
+      next_health               = args.state.player.health < 3 ? 3 : args.state.player.health
+      setup_level( args, LEVELS[args.state.level], next_health )
       args.state.scene          = :game 
 
     else

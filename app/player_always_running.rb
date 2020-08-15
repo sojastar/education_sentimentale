@@ -1,5 +1,5 @@
 class Player
-  def self.always_running
+  def self.always_running(health)
 
     # ---=== ANIMATIONS : ===---
     player_frames         = { idle:         { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
@@ -122,7 +122,7 @@ class Player
                                   @character_animation.set_clip  :jump_up
                                   @weapon_animation.set_clip     :jump_up
 
-                                  $gtk.args.outputs.sounds << 'sounds/jump.wav'
+                                  $gtk.args.outputs.sounds << 'sounds/jump1.wav'
                                 end
 
                                 add_event(next_state: :jumping_down) do |args|
@@ -154,7 +154,7 @@ class Player
                                   @weapon_animation.speed       = @weapons[@current_weapon][:speed]
                                   @weapon_animation.path        = @weapons[@current_weapon][:path]
 
-                                  $gtk.args.outputs.sounds << 'sounds/sword.wav'
+                                  $gtk.args.outputs.sounds << 'sounds/sword1_shorter.wav'
                                 end
 
                                 add_event(next_state: :running) do |args|
@@ -171,7 +171,7 @@ class Player
                                   @weapon_animation.speed       = @weapons[@current_weapon][:speed]
                                   @weapon_animation.path        = @weapons[@current_weapon][:path]
 
-                                  $gtk.args.outputs.sounds << 'sounds/axe.wav'
+                                  $gtk.args.outputs.sounds << 'sounds/axe4.wav'
                                 end
 
                                 add_event(next_state: :running) do |args|
@@ -188,7 +188,7 @@ class Player
                                   @weapon_animation.speed       = @weapons[@current_weapon][:speed]
                                   @weapon_animation.path        = @weapons[@current_weapon][:path]
 
-                                  $gtk.args.outputs.sounds << 'sounds/gun.wav'
+                                  $gtk.args.outputs.sounds << 'sounds/gun2_shorter.wav'
                                 end
 
                                 add_event(next_state: :running) do |args|
@@ -201,7 +201,7 @@ class Player
                                   @character_animation.set_clip :hit
                                   @weapon_animation.set_clip    :hit
 
-                                  $gtk.args.outputs.sounds << 'sounds/player_hit.wav'
+                                  $gtk.args.outputs.sounds << 'sounds/player_hit2_shorter.wav'
                                 end
 
                                 add_event(next_state: :dying) do |args|
@@ -218,7 +218,7 @@ class Player
                                   @character_animation.set_clip :shifting
                                   @weapon_animation.set_clip    :shifting
 
-                                  $gtk.args.outputs.sounds << 'sounds/shifting.wav'
+                                  $gtk.args.outputs.sounds << 'sounds/shifting_shorter.wav'
                                 end
                               end
 
@@ -227,12 +227,13 @@ class Player
                                   @character_animation.set_clip :dying
                                   @weapon_animation.set_clip    :dying
 
-                                  $gtk.args.outputs.sounds << 'sounds/dying.wav'
+                                  $gtk.args.outputs.sounds << 'sounds/dying1.wav'
                                 end
                               end
 
                               set_initial_state :jumping_down
                             end
+
 
     # ---=== INSTANTIATION : ===---
     Player.new  character_animation,                          # animation...
@@ -242,7 +243,7 @@ class Player
                 65,                                           # start y position
                 12,                                           # hit box width
                 14,                                           # hit box height
-                3,                                            # health
+                health,                                       # health
                 weapons_list,
                 fsm
   end

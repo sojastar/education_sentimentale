@@ -151,7 +151,7 @@ class Player
         prop.use
         instance_exec nil, &prop.action
 
-        args.outputs.sounds << 'sounds/hot_dog.wav' if prop.type == :hotdog
+        args.outputs.sounds << 'sounds/hotdog2.wav' if prop.type == :hotdog
       end
     end
 
@@ -220,7 +220,7 @@ class Player
             if weapon_hit_box.intersect_rect? monster.hit_box(args.state.ground.position) then
               monster.current_state = :hit 
               monster.hit @weapons[@current_weapon][:damage]
-              args.outputs.sounds << 'sounds/monster_hit.wav'
+              args.outputs.sounds << 'sounds/monster_hit3_shorter.wav'
             end
           end
         end
