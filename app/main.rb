@@ -43,6 +43,8 @@ DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
 COMMANDS_DELAY    = 3     # in seconds
 START_DELAY       = 60    # in frames
+END_SCROLL_DELAY  = 3     # in second
+END_SCROLL_HEIGHT = 261   # in pixels
 
 LEVELS            = [ { min_length:     400,
                         bitmaps:        'sprites/field_background_bitmaps.png',
@@ -235,8 +237,6 @@ def tick(args)
 
     args.render_target(:display).sprites << args.state.player.render
 
-    #args.render_target(:display).sprites << args.state.ground.render
-
     args.state.effects.each { |effect| args.render_target(:display).sprites << effect.render(args) }
 
     args.state.front.each { |layer| args.render_target(:display).sprites << layer.render }
@@ -292,29 +292,30 @@ def tick(args)
   when :next_level
     args.state.level += 1
 
-    if args.state.level < LEVELS.length then
+    #if args.state.level < LEVELS.length then
+    if args.state.level < 1 then
       setup_level( args, LEVELS[args.state.level] )
-      args.state.scene  = :game 
+      args.state.scene          = :game 
 
     else
-      args.state.scene  = :victory
+      args.state.scene          = :end
+      args.state.end_start_time = args.state.tick_count
 
     end
 
 
-  when :victory
-    args.render_target(:display).labels << {  x: 2,
-                                              y: 22,
-                                              text: "THE END!!!",
-                                              size_enum:  -8,
-                                              r: 255,
-                                              g: 0,
-                                              b: 0,
-                                              a: 255,
-                                              font: "fonts/hotchili.ttf" }
+  when :end
+    if args.state.tick_count - args.state.end_start_time < END_SCROLL_DELAY * 60 then
+      y_offset  = END_SCROLL_HEIGHT - 64
+    else
+      y_offset  = END_SCROLL_HEIGHT - 64 - ( ( args.state.tick_count - args.state.end_start_time - END_SCROLL_DELAY * 60 ) >> 4 )
+    end
+    args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: 'sprites/end.png', source_x: 0, source_y: y_offset, source_w: 64, source_h: 64 }
 
-    if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start then
-      args.state.scene = :start_screen 
+    #args.state.scene = :start_screen if y_offset == 0
+
+    if args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.start || y_offset == 0 then
+      args.state.scene        = :start_screen 
       args.state.start_pushed = false
     end
 
