@@ -42,6 +42,7 @@ DISPLAY_X         = ( SCREEN_WIDTH  - DISPLAY_SIZE ) >> 1
 DISPLAY_Y         = ( SCREEN_HEIGHT - DISPLAY_SIZE ) >> 1
 
 COMMANDS_DELAY    = 3     # in seconds
+HINTS_DELAY       = 3     # in seconds
 START_DELAY       = 60    # in frames
 END_SCROLL_DELAY  = 3     # in second
 END_SCROLL_HEIGHT = 261   # in pixels
@@ -65,8 +66,8 @@ LEVELS            = [ { min_length:     400,
                                           { range: 0.4...0.6, monsters: [ "WalkingMonster::spawn_rampant_at(x,2)"                         ] },
                                           { range: 0.6..1.0,  monsters: [ "WalkingMonster::spawn_rampant_at(x,1)",
                                                                           "FlyingMonster::spawn_floating_eye_at(x, 8 * ( 1 + rand(3) ))"  ] } ],
-                        spawn_distance: 90 },
-                      { min_length:     900,
+                        spawn_distance: 120 },
+                      { min_length:     800,
                         bitmaps:        'sprites/hell_background_bitmaps.png',
                         tiles:          'sprites/hell_background_tiles.png',
                         difficulty:     1,
@@ -79,7 +80,7 @@ LEVELS            = [ { min_length:     400,
                                                                             "FlyingMonster::spawn_floating_eye_at(x, 8 * ( 1 + rand(3) ))"  ] },
                                           { range: 0.85..1.0,   monsters: [ "WalkingMonster::spawn_root_at(x,2)",
                                                                             "FlyingMonster::spawn_floating_eye_at(x, 8 * ( 1 + rand(3) ))"  ] } ],
-                        spawn_distance: 70 } ]
+                        spawn_distance: 120 } ]
 
 
 
@@ -89,8 +90,8 @@ LEVELS            = [ { min_length:     400,
 def setup(args)
 
   # --- SCENE MANAGEMENT : ---
-  #args.state.scene        = :commands
-  args.state.scene        = :start_screen
+  args.state.scene        = :commands
+  #args.state.scene        = :start_screen
   args.state.start_pushed = false
 
 
@@ -116,12 +117,7 @@ def setup_level(args,level,health)
 
 
   # --- MONSTERS : ---
-  #args.state.monsters     =  [ WalkingMonster::spawn_root_at(120, 2) ]
-  #args.state.monsters     =  [ WalkingMonster::spawn_rampant_at(120, 2) ]
-  #args.state.monsters     = [ FlyingMonster::spawn_floating_eye_at(160, 8 * ( 1 + rand(3) ) ) ] 
-  #args.state.monsters     = [ WalkingMonster::spawn_mushroom_at(120) ]
   args.state.monsters     = []
-  #args.state.monsters     = spawn_monsters(args)
 
 
   # --- PROPS : ---
@@ -169,6 +165,25 @@ def tick(args)
 
     when (64 + COMMANDS_DELAY * 60)..(127 + COMMANDS_DELAY * 60)
       args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: 'sprites/commands.png', r: 255, g: 255, b: 255, a: 255 - 4 * ( args.state.tick_count - 64 - COMMANDS_DELAY * 60 ) }
+
+    else
+      args.state.scene = :hints
+
+    end
+
+
+  when :hints
+    args.render_target(:display).solids  << { x: 0, y: 0, w: 64, h: 64, r:0, g:0, b:0, a:255 }
+
+    case args.state.tick_count
+    when (127 + COMMANDS_DELAY * 60)..(127 + 63 + COMMANDS_DELAY * 60)
+      args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: 'sprites/hints.png', r: 255, g: 255, b: 255, a: 4 * ( args.state.tick_count - (127 + COMMANDS_DELAY * 60) ) }
+
+    when (127 + 64 + COMMANDS_DELAY * 60)...(127 + 64 + ( COMMANDS_DELAY + HINTS_DELAY ) * 60)
+      args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: 'sprites/hints.png' }
+
+    when (127 + 64 + ( COMMANDS_DELAY + HINTS_DELAY ) * 60)..(127 + 127 + ( COMMANDS_DELAY + HINTS_DELAY ) * 60)
+      args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: 'sprites/hints.png', r: 255, g: 255, b: 255, a: 255 - 4 * ( args.state.tick_count - (127 + 64 + ( COMMANDS_DELAY + HINTS_DELAY ) * 60) ) }
 
     else
       args.state.scene = :start_screen
@@ -252,18 +267,17 @@ def tick(args)
     end
 
     # 2.2 Render debug visual aides if necessary :
-    args.state.debug_mode = ( args.state.debug_mode + 1 ) % MODE_COUNT if args.inputs.keyboard.key_down.tab
-    if args.state.debug_mode == 1 then
-      Debug::draw_box args.state.player.hit_box, [ 153, 229,  80, 255 ]
-      Debug::draw_player_v      [  91, 110, 225, 255 ], [  95, 205, 228, 255 ]
-      #Debug::draw_tiles_bounds  [ 217,  87,  99, 125 ]
-      args.state.monsters.each do |monster|
-        Debug::draw_box( monster.hit_box(args.state.ground.position), [229, 153, 80, 255] )
-        monster.limbs.each do |limb|
-          Debug::draw_box( limb.hit_box(monster,args.state.ground.position), [ 210, 80, 234, 255 ] )
-        end
-      end
-    end
+    #args.state.debug_mode = ( args.state.debug_mode + 1 ) % MODE_COUNT if args.inputs.keyboard.key_down.tab
+    #if args.state.debug_mode == 1 then
+    #  Debug::draw_box args.state.player.hit_box, [ 153, 229,  80, 255 ]
+    #  Debug::draw_player_v      [  91, 110, 225, 255 ], [  95, 205, 228, 255 ]
+    #  args.state.monsters.each do |monster|
+    #    Debug::draw_box( monster.hit_box(args.state.ground.position), [229, 153, 80, 255] )
+    #    monster.limbs.each do |limb|
+    #      Debug::draw_box( limb.hit_box(monster,args.state.ground.position), [ 210, 80, 234, 255 ] )
+    #    end
+    #  end
+    #end
 
 
     # 3. Spawning :
@@ -281,14 +295,6 @@ def tick(args)
         args.state.player.animation_status  == :finished  then
       args.state.scene          = :next_level
     end
-
-
-    # 5. Other :
-    #args.outputs.labels << [ 20, 700, "space: jump - c: shoot gun - x: swing sword - w: switch sword", 255, 255, 255, 255 ]
-    #args.outputs.labels << [ 20, 600, "monsters: #{args.state.monsters.length}", 255, 255, 255, 255 ]
-    #if args.state.monsters.length > 0 then
-    #  args.outputs.labels << [ 20, 580, "monster x: #{args.state.monsters.first.x - args.state.ground.position + args.state.monsters.first.width}", 255, 255, 255, 255 ]
-    #end
 
 
   when :next_level
