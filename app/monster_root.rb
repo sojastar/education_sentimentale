@@ -53,7 +53,7 @@ class WalkingMonster
                     define_setup do
                       @animation.set_clip :idle
                       limbs_are :attack
-                      @recovery_timer   = 10
+                      @recovery_timer   = 60
                       @push_back_speed  = 0
                     end
 

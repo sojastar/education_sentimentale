@@ -12,6 +12,11 @@ class WalkingMonster
                               speed:              6,
                               flip_horizontally:  false,
                               flip_vertically:    false },
+                  stun:     { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],
+                              mode:               :loop,
+                              speed:              1,
+                              flip_horizontally:  false,
+                              flip_vertically:    false },
                   running:  { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0] ],  
                               mode:               :loop,
                               speed:              4,
@@ -70,7 +75,8 @@ class WalkingMonster
 
                   add_state(:stun) do
                     define_setup do
-                      @animation.set_clip :idle
+                      #@animation.set_clip :idle
+                      @animation.set_clip :stun
                       #limbs_are :attack unless @last_state == :running
                       limbs_are :stun
                       randomize_limbs_animations
