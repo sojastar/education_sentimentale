@@ -46,7 +46,8 @@ class WalkingMonster
                   add_state(:running) do
                     define_setup do
                       @animation.set_clip :running
-                      limbs_are :attack unless @last_state == :stun
+                      #limbs_are :attack unless @last_state == :stun
+                      limbs_are :attack
                       randomize_limbs_animations
                     end
                   end
@@ -70,9 +71,10 @@ class WalkingMonster
                   add_state(:stun) do
                     define_setup do
                       @animation.set_clip :idle
-                      limbs_are :attack unless @last_state == :running
+                      #limbs_are :attack unless @last_state == :running
+                      limbs_are :stun
                       randomize_limbs_animations
-                      @recovery_timer   = 20
+                      @recovery_timer   = 90
                       @push_back_speed  = 0
                     end
 

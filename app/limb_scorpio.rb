@@ -9,7 +9,7 @@ class Limb
                             flip_vertically:    false },
                   stun:   { frames:             [ [0,0], [1,0], [2,0], [3,0], [4,0], [5,0], [6,0], [7,0] ],
                             mode:               :once,
-                            speed:              6,
+                            speed:              2,
                             flip_horizontally:  false,
                             flip_vertically:    false },
                   hit:    { frames:             [ [0,3] ],

@@ -57,17 +57,10 @@ class Player
   # ---=== UPDATE : ===---
   def update(args)
     # --- State Machine :
+    #@last_state = @machine.update(args)
     @machine.update(args)
     #puts @machine.current_state
     #puts "position: #{x};#{@y} - displacement: #{@dx};#{@dy}"
-
-
-    # --- Switching weapons :
-    #if args.inputs.keyboard.key_down.w || args.inputs.controller_one.key_down.r1 then
-    #  @current_sword          = ( @current_weapon + 1 ) % ( @weapons.length - 1 ) # last weapon is the gun
-    #  @current_weapon         = @current_sword
-    #  @weapon_animation.path  =  @weapons[@current_weapon][:path]
-    #end
 
 
     # --- Horizontal movement :
