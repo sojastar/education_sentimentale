@@ -77,11 +77,11 @@ class Player
                                 collisions: [ [nil,nil,14], [nil,nil,14], [31,18,14], [40, 4,14] ],
                                 speed:      8,
                                 animation:  :sword_attack,
-                                damage:     2 },
+                                damage:     4 },
                               { path:       'sprites/all_gun.png',
                                 speed:      3,
                                 animation:  :gun_attack,
-                                damage:     3 } ]
+                                damage:     0 } ]
 
 
     # ---=== FINITE STATE MACHINE : ===---
