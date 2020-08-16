@@ -191,6 +191,7 @@ def tick(args)
 
 
   when :start_screen
+    $gtk.stop_music
     args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 192, source_w: 64, source_h: 64 }
     args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y: 128, source_w: 64, source_h: 64 }
     args.render_target(:display).sprites << {  x: 0, y:  0, w: 64, h: 64, path: 'sprites/field_background_bitmaps.png', source_x: 0, source_y:  64, source_w: 64, source_h: 64 }
@@ -214,6 +215,7 @@ def tick(args)
       if args.state.tick_count - args.state.start_time > START_DELAY then
         args.state.level  = 0
         setup_level( args, LEVELS[args.state.level], INITIAL_HEALTH )
+        args.outputs.sounds << 'sounds/win_soft.ogg'
         args.state.scene  = :game 
       end
     end
@@ -327,6 +329,7 @@ def tick(args)
 
 
   when :game_over
+    $gtk.stop_music
     x_index = ( args.state.tick_count - args.state.game_over_time >> 2 ) % 23
     y_index = ( args.state.tick_count - args.state.game_over_time >> 2 ) < 23 ? 1 : 0
     args.render_target(:display).sprites << { x: 0, y: 0, w: 64, h: 64, path: "sprites/game_over.png", source_x: x_index * 64, source_y: y_index * 64, source_w: 64, source_h: 64 }
