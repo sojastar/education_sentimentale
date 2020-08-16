@@ -59,8 +59,6 @@ class Player
     # --- State Machine :
     #@last_state = @machine.update(args)
     @machine.update(args)
-    #puts @machine.current_state
-    #puts "position: #{x};#{@y} - displacement: #{@dx};#{@dy}"
 
 
     # --- Horizontal movement :
@@ -223,7 +221,6 @@ class Player
       bullet_x = 2 
       while bullet_x <= 8 do
         # Testing monsters first... :
-        #bullet_hit_box  = [ bullet_x * 8, @y + GUN_HEIGHT, 8, 2 ]
         bullet_hit_box  = [ bullet_x * 8, @y, 8, 12 ]
         args.state.monsters.each do |monster|
           if bullet_hit_box.intersect_rect? monster.hit_box(args.state.ground.position) then

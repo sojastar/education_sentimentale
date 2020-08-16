@@ -73,9 +73,7 @@ class Player
                                 animation:  :sword_attack,
                                 damage:     1 },
                               { path:       'sprites/all_axe.png',
-                              #{ path:       'sprites/all_axe2.png',
                                 collisions: [ [nil,nil,14], [nil,nil,14], [27,18,14], [30, 4,14] ],
-                                #collisions: [ [nil,nil,14], [nil,nil,14], [31,18,14], [40, 4,14] ],
                                 speed:      10,
                                 animation:  :sword_attack,
                                 damage:     4 },
@@ -102,15 +100,11 @@ class Player
                                   args.inputs.keyboard.key_down.space || args.inputs.controller_one.key_down.a
                                 end
 
-                                #add_event(next_state: :swing) do |args|
-                                #  args.inputs.keyboard.key_down.x || args.inputs.controller_one.key_down.x
-                                #end
-
                                 add_event(next_state: :swing_sword) do |args|
                                   args.inputs.keyboard.key_down.x || args.inputs.controller_one.key_down.l1
                                 end
                                 add_event(next_state: :swing_axe) do |args|
-                                  args.inputs.keyboard.key_down.w || args.inputs.controller_one.key_down.r1
+                                  args.inputs.keyboard.key_down.w || args.inputs.keyboard.key_down.z || args.inputs.controller_one.key_down.r1
                                 end
 
                                 add_event(next_state: :shoot) do |args|
