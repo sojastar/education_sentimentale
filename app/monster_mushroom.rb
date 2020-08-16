@@ -130,7 +130,7 @@ class WalkingMonster
                         [ 0,  0 ],                                    # no need for walking monsters
                         4,                                            # running speed
                         2,                                            # push back speed
-                        1,                                            # health
+                        2,                                            # health
                         fsm,                                          # finite state machine
                         [] )                                          # limbs
 
