@@ -57,11 +57,11 @@ class WalkingMonster
                     end
                   end
 
-                  add_state(:jumping_up) do
-                    define_setup do
-                      @animation.set_clip :idle
-                    end
-                  end
+                  #add_state(:jumping_up) do
+                  #  define_setup do
+                  #    @animation.set_clip :idle
+                  #  end
+                  #end
 
                   add_state(:jumping_down) do
                     define_setup do
@@ -142,7 +142,7 @@ class WalkingMonster
                         [  0,  0 ],                                   # no need for walking monsters, but used to spawn droped items
                         4,                                            # running speed
                         4,                                            # push back speed
-                        3,                                            # health
+                        6,                                            # health
                         fsm,                                          # finite state machine
                         limbs )                                       # limbs
 

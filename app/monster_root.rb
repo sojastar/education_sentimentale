@@ -53,7 +53,7 @@ class WalkingMonster
                     define_setup do
                       @animation.set_clip :idle
                       limbs_are :attack
-                      @recovery_timer   = 60
+                      @recovery_timer   = 90
                       @push_back_speed  = 0
                     end
 
@@ -102,7 +102,6 @@ class WalkingMonster
     limbs       = difficulty.times.map do |i|
                     child_x = ROOT_SPAWN_ZONE_X + ( rand * ROOT_SPAWN_ZONE_W ).to_i
                     child_y = ROOT_SPAWN_ZONE_Y + ( rand * ROOT_SPAWN_ZONE_H ).to_i
-                    #Limb::spawn_scorpion_tail_at( child_x, child_y )
                     Limb::spawn_pimple_at( child_x, child_y )
                   end 
 
@@ -115,7 +114,7 @@ class WalkingMonster
                         [  0,  0 ],                                   # no need for walking monsters
                         0,                                            # running speed
                         0,                                            # push back speed
-                        5,                                            # health
+                        10,                                           # health
                         fsm,                                          # finite state machine
                         limbs )                                       # limbs
 
