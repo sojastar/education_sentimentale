@@ -5,7 +5,7 @@ class WalkingMonster
     # Root Monster ANIMATION :
     frames    = { stun:         { frames:             [ [ 0,0], [ 1,0], [ 2,0], [ 1,0] ],
                                   mode:               :loop,
-                                  speed:              3,
+                                  speed:              1,
                                   flip_horizontally:  false,
                                   flip_vertically:    false },
                   jumping_up:   { frames:             [ [ 6,0], [ 7,0], [ 8,0], [ 9,0], [10,0], [11,0] ],
@@ -78,7 +78,7 @@ class WalkingMonster
                   add_state(:stun) do
                     define_setup do
                       @animation.set_clip :stun
-                      @recovery_timer   = 10
+                      @recovery_timer   = 50
                       @push_back_speed  = 0
                     end
 
