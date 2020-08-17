@@ -16,4 +16,8 @@ Controller commands:
 - L1/LB : sword
 - R1/RB : axe
 
-by LillteBOxes, RiceCooker and jujule
+Game by LillteBOxes, RiceCooker and jujule
+
+Journey color palette: https://lospec.com/palette-list/journey
+
+Hot Chili font: https://beadybox.itch.io/hot-chili
